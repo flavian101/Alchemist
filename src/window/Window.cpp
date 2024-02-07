@@ -7,7 +7,8 @@ Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR w
 	m_windowTitle(windowTitle),
 	m_windowClass(windowClass),
 	m_width(Width),
-	m_height(Height)
+	m_height(Height),
+	m_hwnd(nullptr)
 {
 	if (!Initialize())
 	{
@@ -17,7 +18,10 @@ Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR w
 
 Window::~Window()
 {
-	DestroyWindow(m_hwnd);
+	if (m_hwnd)
+	{
+		DestroyWindow(m_hwnd);
+	}
 }
 
 bool Window::Initialize()
@@ -67,7 +71,7 @@ bool Window::Initialize()
 		NULL,
 		NULL,
 		m_hInstance,
-		NULL
+		this
 	);
 
 	if (!m_hwnd)
@@ -79,8 +83,7 @@ bool Window::Initialize()
 
 	ShowWindow(m_hwnd, m_nShowWnd);
 	UpdateWindow(m_hwnd);
-
-
+	SetFocus(m_hwnd);
     return true;
 }
 
