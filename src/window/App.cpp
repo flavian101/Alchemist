@@ -2,7 +2,8 @@
 
 App::App(HINSTANCE hInstance, int showWnd)
     :
-    window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720)
+    window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
+    triangle(window.Gfx())
 {
 
 }
@@ -25,4 +26,7 @@ int App::createLoop()
 }
 void App::Render()
 {
+    window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
+    triangle.Draw(window.Gfx());
+    window.Gfx().End();
 }

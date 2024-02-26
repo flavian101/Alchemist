@@ -23,6 +23,14 @@ Window::~Window()
 		DestroyWindow(m_hwnd);
 	}
 }
+Graphics& Window::Gfx()
+{
+	if (!pGfx)
+	{
+		MessageBox(m_hwnd, L"failed initialize graphics Object", L"error", MB_OK);
+	}
+	return *pGfx;
+}
 
 bool Window::Initialize()
 {
@@ -50,7 +58,7 @@ bool Window::Initialize()
 	wc.hInstance = m_hInstance;
 	wc.hIcon = nullptr;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = nullptr;
+	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);;
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = m_windowClass;
 	wc.hIconSm = nullptr;
@@ -65,7 +73,7 @@ bool Window::Initialize()
 		NULL,
 		m_windowClass,
 		m_windowTitle,
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		m_width, m_height,
 		NULL,
@@ -84,6 +92,8 @@ bool Window::Initialize()
 	ShowWindow(m_hwnd, m_nShowWnd);
 	UpdateWindow(m_hwnd);
 	SetFocus(m_hwnd);
+
+	pGfx = std::make_unique<Graphics>(m_hwnd,m_width, m_height,false);
     return true;
 }
 

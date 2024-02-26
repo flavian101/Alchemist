@@ -1,6 +1,6 @@
 #pragma once
 #include "Window.h"
-
+#include "models/Triangle.h"
 
 class App
 {
@@ -15,4 +15,5 @@ private:
 	//
 private:
 	Window window;
+	Triangle triangle;
 };

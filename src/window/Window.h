@@ -2,9 +2,11 @@
 #include "stdafx.h"
 #include <optional>
 #include <memory>
+#include "Graphics/Graphics.h"
 
 class Window
 {
+	friend class Graphics;
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
@@ -13,18 +15,23 @@ private:
 	LPCWSTR m_windowClass;
 	int m_width;
 	int m_height;
+	std::unique_ptr<Graphics> pGfx;
+
 
 public:
+	
 	Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle,
 		LPCWSTR windowClass, int Width, int Height);
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 	~Window();
 
-	bool Initialize();
+	Graphics& Gfx();
 	static std::optional<int> ProcessMessages();
 
+
 private:
+	bool Initialize();
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
