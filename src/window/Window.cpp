@@ -1,4 +1,6 @@
 #include "Window.h"
+#include "imgui_impl_win32.h"
+
 
 Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height)
 	:
@@ -20,6 +22,8 @@ Window::~Window()
 {
 	if (m_hwnd)
 	{
+		ImGui_ImplWin32_Shutdown();
+
 		DestroyWindow(m_hwnd);
 	}
 }
@@ -92,7 +96,7 @@ bool Window::Initialize()
 	ShowWindow(m_hwnd, m_nShowWnd);
 	UpdateWindow(m_hwnd);
 	SetFocus(m_hwnd);
-
+	ImGui_ImplWin32_Init(m_hwnd);
 	pGfx = std::make_unique<Graphics>(m_hwnd,m_width, m_height,false);
     return true;
 }
@@ -138,9 +142,13 @@ LRESULT Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 
 }
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+		return true;
+	
 	switch (msg)
 	{
 	case WM_KEYDOWN:

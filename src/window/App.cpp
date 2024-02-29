@@ -1,5 +1,7 @@
 #include "App.h"
 
+
+
 App::App(HINSTANCE hInstance, int showWnd)
     :
     window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
@@ -28,5 +30,19 @@ void App::Render()
 {
     window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
     triangle.Draw(window.Gfx());
+
+    showImguiDemoWindow();
+   
     window.Gfx().End();
+
+  
+}
+
+void App::showImguiDemoWindow()
+{
+
+    if (showDemoWindow)
+    {
+        ImGui::ShowDemoWindow(&showDemoWindow);
+    }
 }

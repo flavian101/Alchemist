@@ -13,6 +13,9 @@ public:
 	void ClearDepthColor(float red, float green, float blue);
 	void Render(UINT IndexCount);
 	void End();
+	void EnableImgui();
+	void DisableImgui();
+	bool isImguiEnabled()const noexcept;
 
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
@@ -43,6 +46,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> DSLessEqual;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
+
+	//imgui
+	bool imguiEnabled = true;
 
 
 };

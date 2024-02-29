@@ -1,6 +1,8 @@
 #include "Graphics.h"
 #include <cassert>
 #include "ErrorEx.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 
 Graphics::Graphics(HWND hWnd, int Width, int Height, bool FullScreen)
 	:
@@ -12,17 +14,26 @@ Graphics::Graphics(HWND hWnd, int Width, int Height, bool FullScreen)
 	{
 		MessageBox(hWnd, L"Failed to initialize Direct3D", L"Error", MB_OK | MB_ICONEXCLAMATION);
 	}
+	
+	ImGui_ImplDX11_Init(pDevice.Get(), pContext.Get());
+
 }
 
 Graphics::~Graphics()
 {
-	
+	ImGui_ImplDX11_Shutdown();
+
 }
 
 void Graphics::ClearDepthColor(float red, float green, float blue)
 {
-	
-	//
+	if (imguiEnabled)
+	{
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+	}
+
 	const float color[] = {red, green, blue, 1.0f};
 	pContext->ClearRenderTargetView(pRenderTarget.Get(), color);
 	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u);
@@ -40,6 +51,13 @@ void Graphics::Render(UINT indexCount)
 
 void Graphics::End()
 {
+	//imgui frame end
+	if (imguiEnabled)
+	{
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	if (isVsyncEnabled)
 	{
 		CHECK_RESULT(pSwapChain->Present(1u, 0u));
@@ -48,6 +66,21 @@ void Graphics::End()
 	{
 		CHECK_RESULT(pSwapChain->Present(0u, 0u));
 	}
+}
+
+void Graphics::EnableImgui()
+{
+	imguiEnabled = true;
+}
+
+void Graphics::DisableImgui()
+{
+	imguiEnabled = false;
+}
+
+bool Graphics::isImguiEnabled() const noexcept
+{
+	return imguiEnabled;;
 }
 
 Microsoft::WRL::ComPtr<ID3D11DeviceContext> Graphics::GetContext()
@@ -250,6 +283,8 @@ bool Graphics::Intitalize()
 	vp.TopLeftY = 0.0f;
 	pContext->RSSetViewports(1u, &vp);
 
+	
+
 	delete[] displayModeList;
 	displayModeList = 0;
 	adapterOutput.Reset();
@@ -257,6 +292,8 @@ bool Graphics::Intitalize()
 	factory.Reset();
 
 	Resize();
+
+
 	return true;
 }
 
