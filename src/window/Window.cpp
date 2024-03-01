@@ -73,13 +73,19 @@ bool Window::Initialize()
 			L"Error", MB_OK | MB_ICONERROR);
 		return 1;
 	}
+
+	//create windows rect
+	RECT initialRect = { 0,0,m_width, m_height };
+	AdjustWindowRectEx(&initialRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
+	LONG initialWidth = initialRect.right - initialRect.left;
+	LONG initialHeight = initialRect.bottom - initialRect.top;
 	m_hwnd = CreateWindowEx(
 		NULL,
 		m_windowClass,
 		m_windowTitle,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		m_width, m_height,
+		initialWidth, initialHeight,
 		NULL,
 		NULL,
 		m_hInstance,

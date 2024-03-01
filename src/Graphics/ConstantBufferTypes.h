@@ -3,6 +3,10 @@
 
 
 using namespace DirectX;
+struct cb_vs2DConstantBuffer
+{
+    
+};
 
 struct cb_vsConstantBuffer
 {
