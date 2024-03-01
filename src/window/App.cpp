@@ -28,10 +28,22 @@ int App::createLoop()
 }
 void App::Render()
 {
+    //timer
+    const auto dt = timer.Mark() * speedfactor;
+
     window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
+
     triangle.Draw(window.Gfx());
 
-    showImguiDemoWindow();
+   // showImguiDemoWindow();
+    if (ImGui::Begin("Simulation Speed"))
+    {
+       // ImGui::SliderFloat("Speed Factor", &speedfactor, 0.0f, 6.0f, "%.4f", 3.2f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
+    ImGui::End();
+
    
     window.Gfx().End();
 
