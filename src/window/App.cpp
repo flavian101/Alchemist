@@ -36,14 +36,8 @@ void App::Render()
     triangle.Draw(window.Gfx());
 
    // showImguiDemoWindow();
-    if (ImGui::Begin("Simulation Speed"))
-    {
-        //ImGui::SliderFloat("Speed Factor", &speedfactor, 0.0f, 6.0f, "%.4f", 3.2f);
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    }
-    ImGui::End();
-
+  
+    window.Gfx().controlWindow();
    
     window.Gfx().End();
 

@@ -20,6 +20,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 
+	void controlWindow();
+
 private:
 	bool Intitalize(); 
 

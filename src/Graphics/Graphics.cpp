@@ -93,6 +93,18 @@ Microsoft::WRL::ComPtr<ID3D11Device> Graphics::GetDevice()
 	return pDevice;
 }
 
+void Graphics::controlWindow()
+{
+	if (ImGui::Begin("Graphics Settings"))
+	{
+		//ImGui::SliderFloat("Speed Factor", &speedfactor, 0.0f, 6.0f, "%.4f", 3.2f);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Checkbox("Vsync",& isVsyncEnabled);
+	}
+	ImGui::End();
+}
+
 bool Graphics::Intitalize()
 {
 	HRESULT hr = 0;
