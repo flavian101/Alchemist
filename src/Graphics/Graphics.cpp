@@ -68,6 +68,12 @@ void Graphics::End()
 	}
 }
 
+void Graphics::ToggleMsaa(bool enableMsaa)
+{
+	is4xMsaaEnabled = enableMsaa;
+	Resize();
+}
+
 void Graphics::EnableImgui()
 {
 	imguiEnabled = true;
@@ -101,6 +107,13 @@ void Graphics::controlWindow()
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
 			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Checkbox("Vsync",& isVsyncEnabled);
+		bool msaaChanged = ImGui::Checkbox("Msaa", &is4xMsaaEnabled);
+		// Check if MSAA checkbox value changed
+		if (msaaChanged)
+		{
+			Intitalize();
+			//ToggleMsaa(is4xMsaaEnabled); // Toggle MSAA based on the new value
+		}
 	}
 	ImGui::End();
 }
@@ -188,13 +201,15 @@ bool Graphics::Intitalize()
 	assert(m4xMsaaQuality > 0);
 
 	
+
+	
 	//swapChain
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.BufferDesc.Width = m_width;
 	swapChainDesc.BufferDesc.Height = m_height;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	swapChainDesc.BufferCount = DXGI_MAX_SWAP_CHAIN_BUFFERS;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferCount = 1u;
 	if (isVsyncEnabled)
 	{
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
@@ -210,21 +225,25 @@ bool Graphics::Intitalize()
 
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.OutputWindow = hWnd;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	//use 4x MSAA
 	if (is4xMsaaEnabled)
 	{
+		OutputDebugString(L"msaa is true");
 		swapChainDesc.SampleDesc.Count = 4;
 		swapChainDesc.SampleDesc.Quality = m4xMsaaQuality - 1;
 	}
 	else
 	{
 		swapChainDesc.SampleDesc.Count = 1;
-	}	swapChainDesc.SampleDesc.Quality = 0;
-	
+		swapChainDesc.SampleDesc.Quality = 0;
+		OutputDebugString(L"msaa is false");
+	}
 	swapChainDesc.Windowed = isFullscreenEnabled;
 
 	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; best perfomance
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; 
+	
+	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; 
 	swapChainDesc.Flags = 0;
 
 	CHECK_RESULT(factory->CreateSwapChain(pDevice.Get(), &swapChainDesc, pSwapChain.GetAddressOf()));
@@ -267,8 +286,16 @@ bool Graphics::Intitalize()
 	descDepth.MipLevels = 1u;
 	descDepth.ArraySize = 1u;
 	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
-	descDepth.SampleDesc.Count = 1u;
-	descDepth.SampleDesc.Quality = 0u;
+	if (is4xMsaaEnabled)
+	{
+		descDepth.SampleDesc.Count = 4;
+		descDepth.SampleDesc.Quality = m4xMsaaQuality - 1;
+	}
+	else
+	{
+		descDepth.SampleDesc.Count = 1u;
+		descDepth.SampleDesc.Quality = 0u;
+	}
 	descDepth.Usage = D3D11_USAGE_DEFAULT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	CHECK_RESULT(pDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil));
@@ -276,7 +303,14 @@ bool Graphics::Intitalize()
 	//create depth view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	if (is4xMsaaEnabled)
+	{
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	}
+	else
+	{
+		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	}
 	descDSV.Texture2D.MipSlice = 0u;
 	pDevice->CreateDepthStencilView(
 		pDepthStencil.Get(), &descDSV, pDSV.GetAddressOf());
@@ -286,7 +320,7 @@ bool Graphics::Intitalize()
 
 
 	// configure viewport
-	D3D11_VIEWPORT vp;
+	
 	vp.Width = (float)m_width;
 	vp.Height = (float)m_height;
 	vp.MinDepth = 0.0f;
@@ -303,7 +337,8 @@ bool Graphics::Intitalize()
 	adapter.Reset();
 	factory.Reset();
 
-	Resize();
+	
+
 
 
 	return true;
@@ -311,4 +346,41 @@ bool Graphics::Intitalize()
 
 void Graphics::Resize()
 {
+
+	if (pContext == nullptr || pDevice == nullptr || pSwapChain == nullptr) {
+		// Handle null pointer error
+		return;
+	}
+
+	// Release existing render target and depth stencil views
+	pRenderTarget.Reset();
+	//pDSV.Reset();
+	//pDepthStencil.Reset();
+
+	// Resize the swap chain
+	HRESULT hr = pSwapChain->ResizeBuffers(1, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	if (FAILED(hr)) {
+		// Handle error during ResizeBuffers
+		return;
+	}
+
+	// Recreate render target view
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer;
+	hr = pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer);
+	if (FAILED(hr)) {
+		// Handle error during GetBuffer
+		return;
+	}
+	hr = pDevice->CreateRenderTargetView(pBackBuffer.Get(), 0, pRenderTarget.GetAddressOf());
+	if (FAILED(hr)) {
+		// Handle error during CreateRenderTargetView
+		return;
+	}
+	pBackBuffer.Reset();
+
+	pContext->OMSetRenderTargets(1, pRenderTarget.GetAddressOf(), pDSV.Get());
+
+	
+	
+	
 }

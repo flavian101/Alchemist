@@ -13,6 +13,7 @@ public:
 	void ClearDepthColor(float red, float green, float blue);
 	void Render(UINT IndexCount);
 	void End();
+	void ToggleMsaa(bool enableMsaa);
 	void EnableImgui();
 	void DisableImgui();
 	bool isImguiEnabled()const noexcept;
@@ -40,6 +41,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTarget = nullptr;
+	D3D11_VIEWPORT vp;
 	bool isFullscreenEnabled = TRUE;
 	bool isVsyncEnabled = false;
 	bool is4xMsaaEnabled = false;

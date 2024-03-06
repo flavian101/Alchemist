@@ -36,23 +36,23 @@ Utils::IndexBuffer::IndexBuffer(Graphics& g, std::vector<unsigned short>& i)
     :
     indices(i)
 {
-    // Output debug message to indicate function entry
-    OutputDebugString(L"IndexBuffer constructor entry\n");
-
-    // Output debug message to show size of indices vector
-    wchar_t debugMsg[100];
-    swprintf_s(debugMsg, L"Size of indices vector: %d\n", indices.size());
-    OutputDebugString(debugMsg);
-
-    // Ensure Graphics object is initialized
-    if (g.GetDevice() == nullptr) {
-        // Output error message if Graphics device is null
-        OutputDebugString(L"Graphics device is null\n");
-    
-        return;
-    }
-
-  
+//    // Output debug message to indicate function entry
+//    OutputDebugString(L"IndexBuffer constructor entry\n");
+//
+//    // Output debug message to show size of indices vector
+//    wchar_t debugMsg[100];
+//    swprintf_s(debugMsg, L"Size of indices vector: %d\n", indices.size());
+//    OutputDebugString(debugMsg);
+//
+//    // Ensure Graphics object is initialized
+//    if (g.GetDevice() == nullptr) {
+//        // Output error message if Graphics device is null
+//        OutputDebugString(L"Graphics device is null\n");
+//    
+//        return;
+//    }
+//
+//  
 
 
     D3D11_BUFFER_DESC idDesc;
