@@ -4,7 +4,7 @@
 
 App::App(HINSTANCE hInstance, int showWnd)
     :
-    window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
+    window(hInstance, showWnd, L"engine", L"DirectX", 1920, 1080),
     triangle(window.Gfx())
 {
 
@@ -33,11 +33,12 @@ void App::Render()
 
     window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
 
+     window.Gfx().controlWindow();
     triangle.Draw(window.Gfx());
 
    // showImguiDemoWindow();
   
-    window.Gfx().controlWindow();
+   
    
     window.Gfx().End();
 

@@ -13,7 +13,7 @@ public:
 	void ClearDepthColor(float red, float green, float blue);
 	void Render(UINT IndexCount);
 	void End();
-	void ToggleMsaa(bool enableMsaa);
+	
 	void EnableImgui();
 	void DisableImgui();
 	bool isImguiEnabled()const noexcept;
@@ -25,6 +25,9 @@ public:
 
 private:
 	bool Intitalize(); 
+	bool CreateDevice();
+	bool DepthStencil();
+	void ToggleMsaa(bool enableMsaa);
 
 	void Resize();
 
@@ -44,7 +47,7 @@ private:
 	D3D11_VIEWPORT vp;
 	bool isFullscreenEnabled = TRUE;
 	bool isVsyncEnabled = false;
-	bool is4xMsaaEnabled = false;
+	bool enableMsaa = false;
 	UINT m4xMsaaQuality;
 	//depth
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
