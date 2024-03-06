@@ -4,7 +4,7 @@
 
 App::App(HINSTANCE hInstance, int showWnd)
     :
-    window(hInstance, showWnd, L"engine", L"DirectX", 1920, 1080),
+    window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
     triangle(window.Gfx())
 {
 
