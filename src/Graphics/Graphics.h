@@ -6,7 +6,7 @@
 class Graphics
 {
 public:
-	Graphics(HWND hWnd, int Width, int Height, bool FullScreen);
+Graphics(HWND hwnd, int Width, int Height, bool FullScreen);
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 	~Graphics();
@@ -24,6 +24,7 @@ public:
 	DirectX::XMMATRIX GetProjectionMatrix() const;
 	void SetViewMatrix(DirectX::FXMMATRIX viewMatrix);
 	DirectX::XMMATRIX GetViewMatrix()const;
+
 
 private:
 	bool Intitalize(); 

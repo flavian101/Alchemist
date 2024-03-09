@@ -61,7 +61,7 @@ Triangle::Triangle(Graphics& g)
 	
 }
 
-void Triangle::Draw(Graphics& g, FXMVECTOR camPos, FXMVECTOR camTarget, float angle)
+void Triangle::Draw(Graphics& g, FXMVECTOR camPos, FXMVECTOR camTarget)
 {
 	modelTransform = XMMatrixIdentity();
 	Scale = XMMatrixScaling(2.0f, 2.0f, 2.0f);

@@ -7,7 +7,7 @@ class Triangle
 public:
 	Triangle(Graphics& g);
 
-	void Draw(Graphics& g, FXMVECTOR camPos, FXMVECTOR camTarget, float angle);
+	void Draw(Graphics& g, FXMVECTOR camPos, FXMVECTOR camTarget);
 	Mesh getTriangle(Graphics& g);
 
 private:

@@ -3,34 +3,32 @@
 Camera::Camera(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& target, const DirectX::XMVECTOR& up)
     : camPosition(position), camTarget(target), camUp(up)
 {
-    UpdateCamera();
+    camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
 }
 
 void Camera::UpdateCamera()
 {
-    using namespace DirectX;
+	using namespace DirectX;
+	camRotationMatrix = XMMatrixRotationRollPitchYaw(camPitch, camYaw, 0);
+	camTarget = XMVector3TransformCoord(DefaultForward, camRotationMatrix);
+	camTarget = XMVector3Normalize(camTarget);
 
-    // Calculate rotation matrix
-    camRotationMatrix = XMMatrixRotationRollPitchYaw(camPitch, camYaw, 0);
+	XMMATRIX RotateYTempMatrix;
+	RotateYTempMatrix = XMMatrixRotationY(camYaw);
 
-    // Calculate new target direction
-    camTarget = XMVector3TransformCoord(DefaultForward, camRotationMatrix);
-    camTarget = XMVector3Normalize(camTarget);
+	camRight = XMVector3TransformCoord(DefaultRight, RotateYTempMatrix);
+	camUp = XMVector3TransformCoord(camUp, RotateYTempMatrix);
+	camForward = XMVector3TransformCoord(DefaultForward, RotateYTempMatrix);
 
-    // Calculate new right and up vectors
-    camRight = XMVector3TransformCoord(DefaultRight, camRotationMatrix);
-    camUp = XMVector3TransformCoord(camUp, camRotationMatrix);
+	camPosition += moveLeftRight * camRight;
+	camPosition += moveBackForward * camForward;
 
-    // Calculate new position based on movement
-    XMVECTOR moveDirection = moveLeftRight * camRight + moveBackForward * camTarget;
-    camPosition += moveDirection;
+	moveLeftRight = 0.0f;
+	moveBackForward = 0.0f;
 
-    // Reset movement variables
-    moveLeftRight = 0.0f;
-    moveBackForward = 0.0f;
+	camTarget = camPosition + camTarget;
 
-    // Update the view matrix
-    camView = XMMatrixLookAtLH(camPosition, camPosition + camTarget, camUp);
+	camView = XMMatrixLookAtLH(camPosition, camTarget, camUp);
 }
 
 DirectX::XMMATRIX Camera::GetView() const
@@ -44,8 +42,8 @@ DirectX::XMVECTOR Camera::GetPos() const
 }
 
 DirectX::XMVECTOR Camera::GetTarget() const
-{
-    return camPosition + camTarget;
+{   
+	return camTarget;
 }
 
 void Camera::SetPosition(const DirectX::XMVECTOR& position)

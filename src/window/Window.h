@@ -28,6 +28,8 @@ public:
 
 	Graphics& Gfx();
 	static std::optional<int> ProcessMessages();
+	HWND GetHwnd()const;
+	HINSTANCE GetHinstance()const;
 
 
 private:

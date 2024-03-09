@@ -4,9 +4,9 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
-Graphics::Graphics(HWND hWnd, int Width, int Height, bool FullScreen)
+Graphics::Graphics(HWND hwnd, int Width, int Height, bool FullScreen)
 	:
-	hWnd(hWnd),
+	hWnd(hwnd),
 	m_width(Width),
 	m_height(Height)
 {
@@ -69,12 +69,12 @@ Graphics::Graphics(HWND hWnd, int Width, int Height, bool FullScreen)
 	}
 
 	ImGui_ImplDX11_Init(GetDevice().Get(), GetContext().Get());
-
+	
 	if (!Intitalize())
 	{
 		MessageBox(hWnd,L"failed to initialize swapchain",L"Error", MB_ICONEXCLAMATION);
 	}
-	
+
 }
 
 Graphics::~Graphics()
@@ -415,3 +415,5 @@ DirectX::XMMATRIX Graphics::GetViewMatrix() const
 {
 	return view;
 }
+
+

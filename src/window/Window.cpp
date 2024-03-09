@@ -101,8 +101,8 @@ bool Window::Initialize()
 	}
 
 	ShowWindow(m_hwnd, m_nShowWnd);
-	UpdateWindow(m_hwnd);
-	SetFocus(m_hwnd);
+	//UpdateWindow(m_hwnd);
+	//SetFocus(m_hwnd);
 	ImGui_ImplWin32_Init(m_hwnd);
 	pGfx = std::make_unique<Graphics>(m_hwnd,m_width, m_height,false);
     return true;
@@ -122,6 +122,18 @@ std::optional<int> Window::ProcessMessages()
 	}
 	return {};
 }
+
+HWND Window::GetHwnd() const
+{
+	
+	return m_hwnd;
+}
+
+HINSTANCE Window::GetHinstance() const
+{
+	return m_hInstance;
+}
+
 
 LRESULT Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {

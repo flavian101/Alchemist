@@ -4,6 +4,8 @@
 #include "ImguiManager.h"
 #include "Graphics/FrameTime.h"
 #include "Graphics/Camera.h"
+#include "Input\Input.h"
+#include <vector>
 
 
 class App
@@ -25,4 +27,5 @@ private:
 	Triangle triangle;
 	bool showDemoWindow = true;
 	Camera camera;
+	std::unique_ptr<Input> input;
 };
