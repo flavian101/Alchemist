@@ -75,8 +75,6 @@ Graphics::Graphics(HWND hWnd, int Width, int Height, bool FullScreen)
 		MessageBox(hWnd,L"failed to initialize swapchain",L"Error", MB_ICONEXCLAMATION);
 	}
 	
-
-
 }
 
 Graphics::~Graphics()
@@ -98,19 +96,20 @@ void Graphics::ClearDepthColor(float red, float green, float blue)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
-
+	
 	const float color[] = {red, green, blue, 1.0f};
 	pContext->ClearRenderTargetView(pRenderTarget.Get(), color);
-	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u);
+	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 
 	//Set our Render Target
-	//pContext->OMSetRenderTargets(1u, pRenderTarget.GetAddressOf(), pDSV.Get());
+	pContext->OMSetRenderTargets(1u, pRenderTarget.GetAddressOf(), pDSV.Get());
 
 
 }
 
 void Graphics::Render(UINT indexCount)
 {
+	pContext->RSSetState(CCWcullMode.Get());
 	pContext->DrawIndexed(indexCount,0,0);
 }
 
@@ -131,6 +130,8 @@ void Graphics::End()
 	{
 		CHECK_RESULT(pSwapChain->Present(0u, 0u));
 	}
+
+
 }
 
 void Graphics::controlWindow()
@@ -148,11 +149,13 @@ void Graphics::controlWindow()
 			//Intitalize();
 			ToggleMsaa(enableMsaa); // Toggle MSAA based on the new value
 		}
+
 	
 
 	}
 	ImGui::End();
 }
+
 
 bool Graphics::Intitalize()
 {
@@ -161,7 +164,7 @@ bool Graphics::Intitalize()
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 	swapChainDesc.BufferDesc.Width = m_width;
 	swapChainDesc.BufferDesc.Height = m_height;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	swapChainDesc.BufferCount = 1u;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -196,8 +199,12 @@ bool Graphics::Intitalize()
 	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; 
 	swapChainDesc.Flags = 0;
 	CHECK_RESULT(factory->CreateSwapChain(pDevice.Get(), &swapChainDesc, pSwapChain.GetAddressOf()));
+	
+	
+	Resize(m_width,m_height);
 
-	Resize();
+	
+
 
 	return true;
 }
@@ -241,7 +248,7 @@ bool Graphics::DepthStencil()
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	dsDesc.DepthEnable = TRUE;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	dsDesc.StencilEnable = true;
 	dsDesc.StencilReadMask = 0xFF;
 	dsDesc.StencilWriteMask = 0xFF;
@@ -264,7 +271,7 @@ bool Graphics::DepthStencil()
 	return true;
 }
 
-void Graphics::Resize()
+void Graphics::Resize(UINT width, UINT height)
 {
 	DepthStencil();
 	assert(pContext);
@@ -273,12 +280,12 @@ void Graphics::Resize()
 
 	// Release existing render target and depth stencil views
 	pRenderTarget.Reset();
-	pDSV.Reset();
-	pDepthStencil.Reset();
+	//pDSV.Reset();
+	//pDepthStencil.Reset();
 	
 	
 	// Resize the swap chain
-	CHECK_RESULT(pSwapChain->ResizeBuffers(1u, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+	CHECK_RESULT(pSwapChain->ResizeBuffers(1u, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	// Recreate render target view
 	Microsoft::WRL::ComPtr<ID3D11Resource> pBackBuffer;
 	CHECK_RESULT(pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
@@ -287,11 +294,11 @@ void Graphics::Resize()
 
 	//create the depth class
 	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = (float)m_width;
-	descDepth.Height = (float)m_height;
+	descDepth.Width = (float)width;
+	descDepth.Height = (float)height;
 	descDepth.MipLevels = 1u;
 	descDepth.ArraySize = 1u;
-	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	if (enableMsaa)
 	{
 		descDepth.SampleDesc.Count = 4;
@@ -311,7 +318,7 @@ void Graphics::Resize()
 
 	//create depth view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	if (enableMsaa)
 	{
 		descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
@@ -328,13 +335,22 @@ void Graphics::Resize()
 
 
 	// configure viewport
-	vp.Width = (float)m_width;
-	vp.Height = (float)m_height;
+	vp.Width = (float)width;
+	vp.Height = (float)height;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0.0f;
 	vp.TopLeftY = 0.0f;
 	pContext->RSSetViewports(1u, &vp);
+
+	D3D11_RASTERIZER_DESC rDesc;
+	ZeroMemory(&rDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rDesc.FillMode = D3D11_FILL_SOLID;
+	rDesc.CullMode = D3D11_CULL_NONE;
+	rDesc.FrontCounterClockwise = false;
+	rDesc.CullMode = D3D11_CULL_NONE;
+	CHECK_RESULT(pDevice->CreateRasterizerState(&rDesc, CCWcullMode.GetAddressOf()));
+
 	
 }
 
@@ -349,6 +365,7 @@ void Graphics::ToggleMsaa(bool enableMsaa)
 	pSwapChain.Reset();
 	pDepthStencil.Reset();
 	DSLessEqual.Reset();
+	CCWcullMode.Reset();
 	Intitalize();
 	
 }
@@ -376,4 +393,25 @@ Microsoft::WRL::ComPtr<ID3D11DeviceContext> Graphics::GetContext()
 Microsoft::WRL::ComPtr<ID3D11Device> Graphics::GetDevice()
 {
 	return pDevice;
+}
+
+
+void Graphics::SetProjectionMatrix(DirectX::FXMMATRIX projectionMatrix)
+{
+	projection = projectionMatrix;
+}
+
+DirectX::XMMATRIX Graphics::GetProjectionMatrix() const
+{
+	return projection;
+}
+
+void Graphics::SetViewMatrix(DirectX::FXMMATRIX viewMatrix)
+{
+	view = viewMatrix;
+}
+
+DirectX::XMMATRIX Graphics::GetViewMatrix() const
+{
+	return view;
 }

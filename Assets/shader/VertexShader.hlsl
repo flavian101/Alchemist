@@ -1,6 +1,12 @@
+cbuffer cb_vsConstantBuffer
+{
+    matrix WVP; // float4x4 is the same as matrix in HLSL
+    matrix Model;
+};
+
 struct VertexIn
 {
-    float3 pos : POSITION;
+    float4 pos : POSITION;
     float4 color : COLOR;
 };
 
@@ -10,10 +16,10 @@ struct VertexOut
     float4 color : COLOR;
 };
 
-VertexOut main(VertexIn vIn)
+VertexOut main(VertexIn vin)
 {
     VertexOut vOut;
-    vOut.posH = float4(vIn.pos, 1.0f);
-    vOut.color = vIn.color; 
+    vOut.posH = mul(vin.pos, WVP);
+    vOut.color = vin.color;
     return vOut;
 }

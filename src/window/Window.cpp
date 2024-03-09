@@ -16,6 +16,7 @@ Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR w
 	{
 		MessageBox(m_hwnd, L"failed to create Window", L"ERROR", MB_OK | MB_ICONERROR);
 	}
+	
 }
 
 Window::~Window()
@@ -157,6 +158,14 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	
 	switch (msg)
 	{
+	case WM_SIZE:
+		m_width = LOWORD(lParam);
+		m_height = HIWORD(lParam);
+		//if (pGfx) // Check if pGfx is initialized
+		//{
+		//	pGfx->Resize(m_width, m_height);
+		//}
+		return 0;
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{
@@ -166,6 +175,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
+	
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

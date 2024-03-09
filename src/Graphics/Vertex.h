@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
+using namespace DirectX;
 class Vertex
 {
 public:
@@ -32,17 +33,15 @@ public:
 	Vertex(float x, float y,float z, float r, float g, float b)
 		:
 		pos3(x, y,z),
-		col(r, g, b, 1.f)
-		
+		col(r, g, b, 1.f)	
 	{
-
 	}
 
 private:
-	DirectX::XMFLOAT3 pos3;
+	XMFLOAT3 pos3;
 	//DirectX::XMFLOAT2 pos2;
 	//DirectX::XMFLOAT2 tex;
 	//DirectX::XMFLOAT3 normals;
-	DirectX::XMFLOAT4 col;
+	XMFLOAT4 col;
 
 };

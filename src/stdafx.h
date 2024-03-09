@@ -12,5 +12,5 @@
 #pragma comment(lib,"D3DCompiler.lib")
 
 
-
+#include <DirectXMath.h>
 #include <wrl.h>

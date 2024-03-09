@@ -13,15 +13,17 @@ public:
 	void ClearDepthColor(float red, float green, float blue);
 	void Render(UINT IndexCount);
 	void End();
-	
+	void Resize(UINT width, UINT height);
 	void EnableImgui();
 	void DisableImgui();
 	bool isImguiEnabled()const noexcept;
-
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
-
 	void controlWindow();
+	void SetProjectionMatrix(DirectX::FXMMATRIX projectionMatrix);
+	DirectX::XMMATRIX GetProjectionMatrix() const;
+	void SetViewMatrix(DirectX::FXMMATRIX viewMatrix);
+	DirectX::XMMATRIX GetViewMatrix()const;
 
 private:
 	bool Intitalize(); 
@@ -29,7 +31,7 @@ private:
 	bool DepthStencil();
 	void ToggleMsaa(bool enableMsaa);
 
-	void Resize();
+	
 
 	//
 private:
@@ -56,6 +58,13 @@ private:
 
 	//imgui
 	bool imguiEnabled = true;
+	//matrices
+	DirectX::XMMATRIX projection;
+	DirectX::XMMATRIX view;
+
+	//raster states
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode;
+
 
 
 };

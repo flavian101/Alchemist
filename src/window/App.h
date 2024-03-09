@@ -2,7 +2,8 @@
 #include "Window.h"
 #include "models/Triangle.h"
 #include "ImguiManager.h"
-#include "Graphics\FrameTime.h"
+#include "Graphics/FrameTime.h"
+#include "Graphics/Camera.h"
 
 
 class App
@@ -23,4 +24,5 @@ private:
 	Window window;
 	Triangle triangle;
 	bool showDemoWindow = true;
+	Camera camera;
 };

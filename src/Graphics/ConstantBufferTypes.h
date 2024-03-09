@@ -11,8 +11,7 @@ struct cb_vs2DConstantBuffer
 struct cb_vsConstantBuffer
 {
 	XMMATRIX WVP;
-	XMMATRIX Model;
-
+    XMMATRIX Model;
 };
 struct Light
 {

@@ -9,6 +9,7 @@ Mesh::Mesh(Graphics& g, std::vector<unsigned short>& indices,
 	Utils::IndexBuffer id(g, indices);
 	id.Bind(g);
 
+	vsBuffer.Initialize(g);
 	Utils::VertexBuffer vb(g, v);
 	vb.Bind(g);
 	Utils::VertexShader vs(g, vertexShader);
@@ -26,7 +27,15 @@ Mesh::Mesh(Graphics& g, std::vector<unsigned short>& indices,
 
 }
 
-void Mesh::Draw(Graphics& g)
+void Mesh::Draw(Graphics& g, XMMATRIX modelMatrix, XMVECTOR camPos, XMVECTOR camTarget)
 {
+	Model = modelMatrix;
+
+	WVP = Model * g.GetViewMatrix() * g.GetProjectionMatrix();
+	vsBuffer.data.WVP = XMMatrixTranspose(WVP);
+	vsBuffer.data.Model = XMMatrixTranspose(Model);
+	vsBuffer.Update(g);
+	g.GetContext()->VSSetConstantBuffers(0, 1, vsBuffer.GetAddressOf());
+
 	g.Render(indexCount);
 }
