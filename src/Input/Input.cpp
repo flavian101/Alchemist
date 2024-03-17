@@ -38,37 +38,43 @@ void Input::DetectInput(float time, Camera& cam)
 		PostMessage(m_hwnd, WM_DESTROY, 0, 0);
 	}
 
-	float speed = 0.02f * time;
-	if (keyboardState[DIK_LSHIFT] & 0x80)
-	{
-		if (keyboardState[DIK_A] & 0x80)
-		{
-			cam.moveLeftRight -= speed;
-		}
-		else if (keyboardState[DIK_D] & 0x80)
-		{
-			cam.moveLeftRight += speed;
-		}
-		else if (keyboardState[DIK_W] & 0x80)
-		{
-			cam.moveBackForward += speed;
-		}
-		else if (keyboardState[DIK_S] & 0x80)
-		{
-			cam.moveBackForward -= speed;
-		}
-		else
-		{
-			speed = 0.02;
-		}
-		if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
-		{
-			cam.camYaw += mouseLastState.lX * 0.001f;
+    float speed = 0.02f * time;
+    if (mouseCurrState.rgbButtons[2] & 0x80) // Middle mouse button pressed
+    {
+       
+        if (keyboardState[DIK_A] & 0x80)
+        {
+            cam.moveLeftRight -= speed;
+        }
+        else if (keyboardState[DIK_D] & 0x80)
+        {
+            cam.moveLeftRight += speed;
+        }
+        else if (keyboardState[DIK_W] & 0x80)
+        {
+            cam.moveBackForward += speed;
+        }
+        else if (keyboardState[DIK_S] & 0x80)
+        {
+            cam.moveBackForward -= speed;
+        }
 
-			cam.camPitch += mouseCurrState.lY * 0.001f;
+        // Update camera rotation based on mouse movement
+        if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
+        {
+            cam.camYaw += mouseLastState.lX * 0.001f;
+            cam.camPitch += mouseCurrState.lY * -0.001f;
+            mouseLastState = mouseCurrState;
+        }
+    }
+    else
+    {
+        
+        cam.moveLeftRight = 0.0f;
+        cam.moveBackForward = 0.0f;
+    }
 
-			mouseLastState = mouseCurrState;
-		}
-		cam.UpdateCamera();
-	}
+  
+		//cam.FreeLook();
+	
 }

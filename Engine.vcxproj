@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -154,17 +154,27 @@
     <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_tables.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Sample\SampleScene.cpp" />
+    <ClCompile Include="src\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Graphics\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Graphics\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\models\Model.cpp" />
+    <ClCompile Include="src\Scene\ShaderManager.cpp" />
+    <ClCompile Include="src\models\Transform.cpp" />
+    <ClCompile Include="src\Scene\RenderableObject.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\FrameTime.cpp" />
     <ClCompile Include="src\window\ImguiManager.cpp" />
-    <ClCompile Include="src\Graphics\Mesh.cpp" />
+    <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Graphics\Graphics.cpp" />
     <ClCompile Include="src\window\App.cpp" />
     <ClCompile Include="src\window\Window.cpp" />
     <ClCompile Include="src\window\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Utilis.cpp" />
-    <ClCompile Include="src\models\Triangle.cpp" />
+    <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\imgui\imconfig.h" />
@@ -175,13 +185,23 @@
     <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
     <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Sample\SampleScene.h" />
+    <ClInclude Include="src\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Graphics\OrthographicCamera.h" />
+    <ClInclude Include="src\Graphics\PerspectiveCamera.h" />
+    <ClInclude Include="src\models\Model.h" />
+    <ClInclude Include="src\Scene\ShaderManager.h" />
+    <ClInclude Include="src\models\Transform.h" />
+    <ClInclude Include="src\Scene\RenderableObject.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
+    <ClInclude Include="src\Scene\SceneManager.h" />
     <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\Graphics\Camera.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\ConstantBufferTypes.h" />
     <ClInclude Include="src\Graphics\FrameTime.h" />
     <ClInclude Include="src\window\ImguiManager.h" />
-    <ClInclude Include="src\Graphics\Mesh.h" />
+    <ClInclude Include="src\models\Mesh.h" />
     <ClInclude Include="src\Graphics\ErrorEx.h" />
     <ClInclude Include="src\Graphics\Graphics.h" />
     <ClInclude Include="dependencies\stb\stb image.h" />
@@ -190,7 +210,7 @@
     <ClInclude Include="src\window\App.h" />
     <ClInclude Include="src\window\Window.h" />
     <ClInclude Include="src\Graphics\Utilis.h" />
-    <ClInclude Include="src\models\Triangle.h" />
+    <ClInclude Include="src\Sample\Cube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

@@ -1,17 +1,19 @@
 #include "App.h"
+#include "Sample\SampleScene.h"
 
 
 
 App::App(HINSTANCE hInstance, int showWnd)
     :
     window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
-    camera(XMVectorSet(0.0f, 5.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)),
-    triangle(window.Gfx())
-   
+    s_scene("Sample", window.Gfx())
+   // manager(window.Gfx())
 {
-    input = std::make_unique<Input>(window);
-    window.Gfx().SetProjectionMatrix(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 100.0f));
+    //SampleScene* samp = new SampleScene("Sample", window.Gfx());
+   // manager.AddScene(samp);
+   // manager.SetActiveScene("Sample");
 }
+
 
 int App::createLoop()
 {
@@ -23,6 +25,8 @@ int App::createLoop()
             //if return optional has value, means we'are exiting the program by returning the exit code
             return *ecode;
         }
+        //manager.Update(timer.Peek());
+        s_scene.Update(timer.Peek());
         Render();
     }
 
@@ -36,18 +40,21 @@ void App::Render()
     const float dt = timer.Peek();
     window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
 
-    window.Gfx().SetViewMatrix(camera.GetView());
-    input->DetectInput(dt,camera);
-    window.Gfx().controlWindow();
-
-    triangle.Draw(window.Gfx(),camera.GetPos(), camera.GetTarget());
-
-   // showImguiDemoWindow();
+   //manager.Render();
+    s_scene.Render();
 
     window.Gfx().End();
 
   
 }
+App::~App()
+{
+  //  for (auto scene : manager.GetScenes())
+  //  {
+  //      delete scene;
+  //  }
+}
+
 
 void App::showImguiDemoWindow()
 {

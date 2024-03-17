@@ -3,11 +3,16 @@
 #include "stb image.h"
 
 
-Utils::VertexBuffer::VertexBuffer(Graphics& g, std::vector<Vertex>& vertices)
+Utils::VertexBuffer::VertexBuffer(Graphics& g)
+    :
+    m_graphics(g),
+    stride(0),
+    pVertexBuffer(nullptr)
+{}
+
+void Utils::VertexBuffer::InitializeVertexBuffer(std::vector<Vertex>& vertices)
 {
-    size_t numV = vertices.size();
-    
-    stride  = sizeof(Vertex);
+    stride = sizeof(Vertex);
     D3D11_BUFFER_DESC vbDesc;
     ZeroMemory(&vbDesc, sizeof(vbDesc));
     vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -23,38 +28,26 @@ Utils::VertexBuffer::VertexBuffer(Graphics& g, std::vector<Vertex>& vertices)
     vbData.pSysMem = vertices.data();
     vbData.SysMemPitch = 0;
     vbData.SysMemSlicePitch = 0;
-    CHECK_RESULT(g.GetDevice()->CreateBuffer(&vbDesc, &vbData, pVertexBuffer.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDevice()->CreateBuffer(&vbDesc, &vbData, pVertexBuffer.GetAddressOf()));
 
 }
 
-void Utils::VertexBuffer::Bind(Graphics& g)
+void Utils::VertexBuffer::Bind()
 {
-    g.GetContext()->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
+    m_graphics.GetContext()->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
 }
 
-Utils::IndexBuffer::IndexBuffer(Graphics& g, std::vector<unsigned short>& i)
+Utils::IndexBuffer::IndexBuffer(Graphics& g)
     :
-    indices(i)
+    m_graphics(g),
+    pIndexBuffer(nullptr)
 {
-//    // Output debug message to indicate function entry
-//    OutputDebugString(L"IndexBuffer constructor entry\n");
-//
-//    // Output debug message to show size of indices vector
-//    wchar_t debugMsg[100];
-//    swprintf_s(debugMsg, L"Size of indices vector: %d\n", indices.size());
-//    OutputDebugString(debugMsg);
-//
-//    // Ensure Graphics object is initialized
-//    if (g.GetDevice() == nullptr) {
-//        // Output error message if Graphics device is null
-//        OutputDebugString(L"Graphics device is null\n");
-//    
-//        return;
-//    }
-//
-//  
 
+    
+}
 
+void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indices)
+{
     D3D11_BUFFER_DESC idDesc;
     ZeroMemory(&idDesc, sizeof(idDesc));
     idDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -63,13 +56,13 @@ Utils::IndexBuffer::IndexBuffer(Graphics& g, std::vector<unsigned short>& i)
     idDesc.MiscFlags = 0;
     UINT stride = indices.size() * sizeof(unsigned short);
     idDesc.ByteWidth = stride;
-   // idDesc.ByteWidth = indices.size() *sizeof(unsigned short);
+    // idDesc.ByteWidth = indices.size() *sizeof(unsigned short);
     idDesc.StructureByteStride = sizeof(unsigned short);
 
     D3D11_SUBRESOURCE_DATA idData{};
     idData.pSysMem = indices.data();
 
-    CHECK_RESULT(g.GetDevice()->CreateBuffer(&idDesc, &idData, pIndexBuffer.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDevice()->CreateBuffer(&idDesc, &idData, pIndexBuffer.GetAddressOf()));
     // Ensure pIndexBuffer ComPtr is valid
     if (pIndexBuffer == nullptr) {
         // Output error message if pIndexBuffer is null
@@ -78,11 +71,17 @@ Utils::IndexBuffer::IndexBuffer(Graphics& g, std::vector<unsigned short>& i)
     }
 }
 
-void Utils::IndexBuffer::Bind(Graphics& g)
+void Utils::IndexBuffer::Bind()
 {
-    g.GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+    m_graphics.GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 }
-Utils::InputLayout::InputLayout(Graphics& g, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
+Utils::InputLayout::InputLayout(Graphics& g)
+    :
+    m_graphics(g)
+{
+   
+}
+void Utils::InputLayout::CreateLayout(Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -91,25 +90,29 @@ Utils::InputLayout::InputLayout(Graphics& g, Microsoft::WRL::ComPtr<ID3DBlob> pV
 
     };
     UINT numElements = ARRAYSIZE(layout);
-    CHECK_RESULT(g.GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
+    CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
         pVsByteCode->GetBufferSize(), pInputLayout.GetAddressOf()));
 
 }
 
-void Utils::InputLayout::Bind(Graphics& g)
+void Utils::InputLayout::Bind()
 {
-    g.GetContext()->IASetInputLayout(pInputLayout.Get());
+    m_graphics.GetContext()->IASetInputLayout(pInputLayout.Get());
 }
 
-Utils::VertexShader::VertexShader(Graphics& g, LPCWSTR path)
+Utils::VertexShader::VertexShader(Graphics& g)
+    :
+    m_graphics(g)
+{}
+
+void Utils::VertexShader::LoadVertexShader(LPCWSTR path)
 {
     D3DReadFileToBlob(path, pShaderBlob.GetAddressOf());
     if (pShaderBlob == NULL)
     {
-        MessageBox(NULL,L"empty vertex shader",L"ERROR", MB_OK |MB_ICONEXCLAMATION);
+        MessageBox(NULL, L"empty vertex shader", L"ERROR", MB_OK | MB_ICONEXCLAMATION);
     }
-    CHECK_RESULT(g.GetDevice()->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf()));
-
+    CHECK_RESULT(m_graphics.GetDevice()->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf()));
 
 }
 
@@ -118,29 +121,37 @@ ID3D10Blob* Utils::VertexShader::GetByteCode()
     return pShaderBlob.Get();
 }
 
-void Utils::VertexShader::Bind(Graphics& g)
+void Utils::VertexShader::Bind()
 {
-    g.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
+    m_graphics.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
 }
 
-Utils::PixelShader::PixelShader(Graphics& g, LPCWSTR path)
+Utils::PixelShader::PixelShader(Graphics& g)
+    :
+    m_graphics(g)
+{
+}
+
+void Utils::PixelShader::LoadPixelShader(LPCWSTR path)
 {
     D3DReadFileToBlob(path, &pShaderBlob);
-    g.GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
+    m_graphics.GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
+
 }
 
-void Utils::PixelShader::Bind(Graphics& g)
+void Utils::PixelShader::Bind()
 {
-    g.GetContext()->PSSetShader(pPixelShader.Get(), nullptr,0);
+    m_graphics.GetContext()->PSSetShader(pPixelShader.Get(), nullptr,0);
 }
 Utils::Topology::Topology(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
     :
-    type(type)
+    type(type),
+    m_graphics(g)
 {}
 
-void Utils::Topology::Bind(Graphics& g)
+void Utils::Topology::Bind()
 {
-    g.GetContext()->IASetPrimitiveTopology(type);
+    m_graphics.GetContext()->IASetPrimitiveTopology(type);
 }
 
 Utils::Texture::Texture(Graphics& g, const char* path, UINT slot)

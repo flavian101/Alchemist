@@ -1,9 +1,12 @@
-#include "Triangle.h"
+#include "Cube.h"
 
 
 
 
-Triangle::Triangle(Graphics& g)
+Cube::Cube(Graphics& g, ShaderManager manager)
+    :Model(g,manager),
+    m_graphic(g)
+   
 {
 
 	// Define vertices for the cube
@@ -58,25 +61,11 @@ Triangle::Triangle(Graphics& g)
     indices.push_back(3);
     indices.push_back(7);
 
-	
+    CreateMesh(indices, vertices);
+
 }
 
-void Triangle::Draw(Graphics& g, FXMVECTOR camPos, FXMVECTOR camTarget)
-{
-	modelTransform = XMMatrixIdentity();
-	Scale = XMMatrixScaling(2.0f, 2.0f, 2.0f);
-	Translation = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-    
-	//modelTransform = XMMatrixMultiply(Scale,XMMatrixMultiply(Translation, Rotation));
-    modelTransform = Scale * Translation;
-	getTriangle(g).Draw(g,modelTransform ,camPos, camTarget);
-}
 
-Mesh Triangle::getTriangle(Graphics& g)
-{
-	return Mesh(g, indices, vertices,
-		L"Assets/shader/VertexShader.cso",
-		L"Assets/shader/PixelShader.cso"
-		
-	);
-}
+
+
+

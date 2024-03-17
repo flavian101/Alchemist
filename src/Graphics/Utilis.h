@@ -8,9 +8,11 @@ namespace Utils
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(Graphics& g, std::vector<Vertex>& vertices);
-		void Bind(Graphics& g);
+		VertexBuffer(Graphics& g);
+		void InitializeVertexBuffer(std::vector<Vertex>& vertices);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		UINT stride;
 		UINT offset = 0u;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
@@ -20,27 +22,32 @@ namespace Utils
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(Graphics& g, std::vector<unsigned short>& i);
-		void Bind(Graphics& g);
+		IndexBuffer(Graphics& g);
+		void InitializeIndexBuffer(std::vector<unsigned short>& i);
+		void Bind();
 	private:
-		std::vector<unsigned short>& indices ;
+		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr< ID3D11Buffer> pIndexBuffer;
 	};
 	class InputLayout
 	{
 	public:
-		InputLayout(Graphics& g, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
-		void Bind(Graphics& g);
+		InputLayout(Graphics& g);
+		void CreateLayout(Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
 	};
 	class VertexShader
 	{
 	public:
-		VertexShader(Graphics& g, LPCWSTR path);
+		VertexShader(Graphics& g);
+		void LoadVertexShader(LPCWSTR path);
 		ID3D10Blob* GetByteCode();
-		void Bind(Graphics& g);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr< ID3D11VertexShader> pVertexShader = nullptr;
 		Microsoft::WRL::ComPtr< ID3DBlob> pShaderBlob = nullptr;
 
@@ -48,10 +55,11 @@ namespace Utils
 	class PixelShader
 	{
 	public:
-		PixelShader(Graphics& g, LPCWSTR path);
-
-		void Bind(Graphics& g);
+		PixelShader(Graphics& g);
+		void LoadPixelShader(LPCWSTR path);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader = nullptr;
 		Microsoft::WRL::ComPtr< ID3DBlob> pShaderBlob = nullptr;
 
@@ -60,9 +68,10 @@ namespace Utils
 	{
 	public:
 		Topology(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type);
-		void Bind(Graphics& g);
+		void Bind();
 
 	private:
+		Graphics& m_graphics;
 		D3D11_PRIMITIVE_TOPOLOGY type;
 	};
 	class Texture

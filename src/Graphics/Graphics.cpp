@@ -70,6 +70,7 @@ Graphics::Graphics(HWND hwnd, int Width, int Height, bool FullScreen)
 
 	ImGui_ImplDX11_Init(GetDevice().Get(), GetContext().Get());
 	
+
 	if (!Intitalize())
 	{
 		MessageBox(hWnd,L"failed to initialize swapchain",L"Error", MB_ICONEXCLAMATION);
@@ -136,6 +137,10 @@ void Graphics::End()
 
 void Graphics::controlWindow()
 {
+
+
+	
+
 	if (ImGui::Begin("Graphics Settings"))
 	{
 		//ImGui::SliderFloat("Speed Factor", &speedfactor, 0.0f, 6.0f, "%.4f", 3.2f);
@@ -154,6 +159,8 @@ void Graphics::controlWindow()
 
 	}
 	ImGui::End();
+
+
 }
 
 
