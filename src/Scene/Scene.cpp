@@ -9,6 +9,11 @@ Scene::Scene(const std::string& name, Graphics& g)
 	// Initialize scene and renderable objects
 }
 
+void Scene::Create()
+{
+
+}
+
 void Scene::AddObject(RenderableObject& object)
 {
 	m_objects.push_back(object);

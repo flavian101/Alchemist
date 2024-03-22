@@ -1,10 +1,20 @@
 #include "PerspectiveCamera.h"
 
 
+PerspectiveCamera::PerspectiveCamera(float aspectRatio,
+    float nearPlane, float farPlane,
+    const DirectX::XMVECTOR& position,
+    const DirectX::XMVECTOR& target,
+    const DirectX::XMVECTOR& up)
+    : Camera(), m_FOV(XM_PI / 4.0f) // Set a default FOV of 45 degrees
 
-PerspectiveCamera::PerspectiveCamera(float FOV)
-    : Camera(9.0f / 16.0f, 0.5f, 100.0f, DirectX::XMVectorSet(0.0f, 5.0f, -10.0f, 1.0f), DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 {
+    // Initialize camera position, target, and up vector
+    camPosition = position;
+    camTarget = target;
+    camUp = up;
+
+    // Calculate the initial view matrix
     camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
 }
 
@@ -18,8 +28,12 @@ void PerspectiveCamera::SetCamera(float FOV, float aspectRatio, float nearPlane,
 
 DirectX::XMMATRIX PerspectiveCamera::GetProjectionMatrix() const
 {
-    return DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 100.0f);
-//    return DirectX::XMMatrixPerspectiveLH(1.0f, m_aspectRatio, m_nearPlane, m_farPlane);
+   // return DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 100.0f);
+    return DirectX::XMMatrixPerspectiveFovLH(m_FOV, m_aspectRatio, m_nearPlane, m_farPlane);
+}
+
+void PerspectiveCamera::Update(float delta)
+{
 }
 
 void PerspectiveCamera::FreeLook()
@@ -101,4 +115,32 @@ void PerspectiveCamera::ContrlWindow()
         // Example: camera.SetCameraMode(CameraMode::ThirdPerson);
         break;
     }
+}
+
+
+
+DirectX::XMMATRIX PerspectiveCamera::GetView() const
+{
+    return camView;
+}
+
+DirectX::XMVECTOR PerspectiveCamera::GetPos() const
+{
+    return camPosition;
+}
+
+DirectX::XMVECTOR PerspectiveCamera::GetTarget() const
+{
+    return camTarget;
+}
+
+void PerspectiveCamera::SetPosition(DirectX::XMVECTOR& position)
+{
+    camPosition = position;
+
+}
+
+void PerspectiveCamera::SetTarget(DirectX::XMVECTOR& target)
+{
+    camTarget = XMVector3Normalize(target - camPosition);
 }

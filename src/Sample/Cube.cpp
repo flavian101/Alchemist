@@ -9,7 +9,11 @@ Cube::Cube(Graphics& g, ShaderManager manager)
    
 {
 
-	// Define vertices for the cube
+}
+
+void Cube::CreateCube()
+{
+    // Define vertices for the cube
 	vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-left-back
 	vertices.push_back(Vertex(-1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f)); // top-left-back
 	vertices.push_back(Vertex(+1.0f, +1.0f, -1.0f, 0.0f, 0.0f, 1.0f)); // top-right-back
@@ -62,7 +66,6 @@ Cube::Cube(Graphics& g, ShaderManager manager)
     indices.push_back(7);
 
     CreateMesh(indices, vertices);
-
 }
 
 

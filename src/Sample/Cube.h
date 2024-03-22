@@ -6,6 +6,7 @@ class Cube : public Model
 
 public:
 	Cube(Graphics& g, ShaderManager manager);
+	void CreateCube();
 
 private:
 	Graphics& m_graphic;

@@ -5,7 +5,7 @@ class Scene
 {
 public:
 	Scene(const std::string& name, Graphics& g);
-
+	void Create();
 	void AddObject(RenderableObject& object);
 	void RemoveObject(RenderableObject& object);
 	void Update(float time);

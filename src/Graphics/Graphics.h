@@ -24,6 +24,9 @@ Graphics(HWND hwnd, int Width, int Height, bool FullScreen);
 	DirectX::XMMATRIX GetProjectionMatrix() const;
 	void SetViewMatrix(DirectX::FXMMATRIX viewMatrix);
 	DirectX::XMMATRIX GetViewMatrix()const;
+	float getAspectRatio();
+	float getWidth();
+	float getHeight();
 
 
 private:

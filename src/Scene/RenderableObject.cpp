@@ -5,9 +5,7 @@ RenderableObject::RenderableObject(Graphics& g,ShaderManager shaderManager)
 	m_graphics(g),
 	m_shaderManager(shaderManager),
 	m_transform(g)
-{
-	
-}
+{}
 
 RenderableObject::~RenderableObject()
 {

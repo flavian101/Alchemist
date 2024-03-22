@@ -423,4 +423,19 @@ DirectX::XMMATRIX Graphics::GetViewMatrix() const
 	return view;
 }
 
+float Graphics::getAspectRatio()
+{
+	return m_width/ m_height;
+}
+
+float Graphics::getWidth()
+{
+	return m_width;
+}
+
+float Graphics::getHeight()
+{
+	return m_height;
+}
+
 

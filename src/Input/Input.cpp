@@ -21,7 +21,7 @@ Input::Input(Window& win)
 
 }
 
-void Input::DetectInput(float time, Camera& cam)
+void Input::DetectInput(float time, PerspectiveCamera& cam)
 {
 	DIMOUSESTATE mouseCurrState;
 
@@ -41,6 +41,7 @@ void Input::DetectInput(float time, Camera& cam)
     float speed = 0.02f * time;
     if (mouseCurrState.rgbButtons[2] & 0x80) // Middle mouse button pressed
     {
+        
        
         if (keyboardState[DIK_A] & 0x80)
         {

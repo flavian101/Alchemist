@@ -5,13 +5,24 @@
 class SceneCamera
 {
 public:
-	SceneCamera();
-	PerspectiveCamera CreatePerspective(float FOV);
-	OrthographicCamera CreateOthorgaphic(float width, float height);
+	SceneCamera(PerspectiveCamera* perspectiveCamera); 
+
+	SceneCamera(OrthographicCamera* orthographicCamera);
+
+	void SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera);
+	void SetOrthographicCamera(OrthographicCamera* newOrthographicCamera);
+
+	Camera* getActiveCamera() const;
+
+	bool isPerspectiveCamera();
+
+	PerspectiveCamera* GetPerspective();
+	OrthographicCamera* GetOthorgraphic();
 	void ControlWindow();
 
 private:
-	float m_FOV;
-	float m_width, m_height;
+	PerspectiveCamera* m_perspectiveCamera;
+	OrthographicCamera* m_orthographicCamera;
+	bool isPerspective;
 };
 

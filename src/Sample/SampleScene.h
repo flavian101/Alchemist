@@ -11,13 +11,17 @@ public:
 
 	void Update(float delta);
 	void Render();
-
+	void SwitchToPerspective();
+	void SwitchToOrthographic();
 
 private:
-	SceneCamera camera;
+	SceneCamera* camera;
+	PerspectiveCamera* pespectiveCamera;
+	OrthographicCamera* orthographicCamera;
 	Graphics& m_graphics;
 	ShaderManager cubeShader;
 	Cube cube;
+	
 	
 };
 

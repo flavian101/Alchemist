@@ -1,28 +1,61 @@
 #include "SceneCamera.h"
 
-SceneCamera::SceneCamera()    
+SceneCamera::SceneCamera(OrthographicCamera* orthographicCamera)
+    : m_orthographicCamera(orthographicCamera),
+      m_perspectiveCamera(nullptr),
+      isPerspective(false)
+{}
+SceneCamera::SceneCamera(PerspectiveCamera* perspectiveCamera)
+    : m_perspectiveCamera(perspectiveCamera),
+      m_orthographicCamera(nullptr),
+      isPerspective(true)
+{}
+void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera)
 {
+    m_perspectiveCamera = newPerspectiveCamera;
+    isPerspective = true;
 }
 
-PerspectiveCamera SceneCamera::CreatePerspective(float FOV)
+void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamera)
 {
-    m_FOV = FOV;
-    return PerspectiveCamera(FOV);
+    m_orthographicCamera = newOrthographicCamera;
+    isPerspective = false;
 }
 
-OrthographicCamera SceneCamera::CreateOthorgaphic(float width, float height)
+Camera* SceneCamera::getActiveCamera() const
 {
-    m_width = width;
-    m_height = height;
-    return OrthographicCamera(width, height);
+    if (isPerspective)
+        return m_perspectiveCamera;
+    else
+        return m_orthographicCamera;
 }
+
+
+bool SceneCamera::isPerspectiveCamera()
+{
+    return isPerspective;
+}
+
+
+
+PerspectiveCamera* SceneCamera::GetPerspective()
+{
+    return m_perspectiveCamera;
+}
+
+OrthographicCamera* SceneCamera::GetOthorgraphic()
+{
+ 
+    return m_orthographicCamera;
+}
+
 
 void SceneCamera::ControlWindow()
 {
     ImGui::Begin("Camera type");
 
-    const char* items[] = { "Perspective", "Otrhographic" };
-    static int currentItem = 0; // Use integer index instead of string comparison
+    const char* items[] = { "Perspective", "Orthographic" };
+    static int currentItem = isPerspective ? 0 : 1; // Initialize based on current camera type
 
     if (ImGui::BeginCombo("Type", items[currentItem]))
     {
@@ -30,7 +63,10 @@ void SceneCamera::ControlWindow()
         {
             bool is_selected = (currentItem == n); // Check against loop index directly
             if (ImGui::Selectable(items[n], is_selected))
+            {
                 currentItem = n; // Update the selected item index directly
+                isPerspective = (n == 0); // Update camera type
+            }
             if (is_selected)
                 ImGui::SetItemDefaultFocus(); // Set initial focus when opening the combo
         }
@@ -38,15 +74,4 @@ void SceneCamera::ControlWindow()
     }
 
     ImGui::End();
-
-    // Perform actions based on the selected item after the ImGui window ends
-    switch (currentItem)
-    {
-    case 0:
-        CreatePerspective(m_FOV);
-        break;
-    case 1: 
-        CreateOthorgaphic(m_width, m_height);
-        break;
-    }
 }
