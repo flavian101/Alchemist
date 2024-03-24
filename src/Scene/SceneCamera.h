@@ -1,6 +1,6 @@
 #pragma once
-#include "Graphics\PerspectiveCamera.h"
-#include "Graphics\OrthographicCamera.h"
+#include "Graphics\camera\PerspectiveCamera.h"
+#include "Graphics\camera\OrthographicCamera.h"
 
 class SceneCamera
 {
@@ -8,7 +8,8 @@ public:
 	SceneCamera(PerspectiveCamera* perspectiveCamera); 
 
 	SceneCamera(OrthographicCamera* orthographicCamera);
-
+	~SceneCamera();
+	void Add(Camera* camera);
 	void SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera);
 	void SetOrthographicCamera(OrthographicCamera* newOrthographicCamera);
 

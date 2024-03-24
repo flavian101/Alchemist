@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "Graphics/ErrorEx.h"
-#include "Graphics/PerspectiveCamera.h"
+#include "Graphics\ErrorEx.h"
+#include "Graphics\Camera\CameraController.h"
 #include "window\Window.h"
 
 class Input
@@ -16,6 +16,7 @@ private:
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> pMouse;
 	DIMOUSESTATE mouseLastState;
 	LPDIRECTINPUT8  DirectInput;
+	CameraController* controller;
 
 };
 

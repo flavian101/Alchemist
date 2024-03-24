@@ -147,7 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Graphics\CameraController.cpp" />
+    <ClCompile Include="FirstPerson.cpp" />
+    <ClCompile Include="FreeLook.cpp" />
+    <ClCompile Include="src\Sample\Plane.cpp" />
+    <ClCompile Include="src\Graphics\Camera\CameraController.cpp" />
     <ClCompile Include="dependencies\imgui\imgui.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_draw.cpp" />
@@ -157,8 +160,8 @@
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Sample\SampleScene.cpp" />
     <ClCompile Include="src\Scene\SceneCamera.cpp" />
-    <ClCompile Include="src\Graphics\OrthographicCamera.cpp" />
-    <ClCompile Include="src\Graphics\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\Graphics\Camera\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Graphics\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="src\models\Model.cpp" />
     <ClCompile Include="src\Scene\ShaderManager.cpp" />
     <ClCompile Include="src\models\Transform.cpp" />
@@ -166,7 +169,7 @@
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
-    <ClCompile Include="src\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="src\Graphics\FrameTime.cpp" />
     <ClCompile Include="src\window\ImguiManager.cpp" />
     <ClCompile Include="src\models\Mesh.cpp" />
@@ -176,9 +179,13 @@
     <ClCompile Include="src\window\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Utilis.cpp" />
     <ClCompile Include="src\Sample\Cube.cpp" />
+    <ClCompile Include="ThirdPerson.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Graphics\CameraController.h" />
+    <ClInclude Include="FirstPerson.h" />
+    <ClInclude Include="FreeLook.h" />
+    <ClInclude Include="src\Sample\Plane.h" />
+    <ClInclude Include="src\Graphics\Camera\CameraController.h" />
     <ClInclude Include="dependencies\imgui\imconfig.h" />
     <ClInclude Include="dependencies\imgui\imgui.h" />
     <ClInclude Include="dependencies\imgui\imgui_impl_dx11.h" />
@@ -189,8 +196,8 @@
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Sample\SampleScene.h" />
     <ClInclude Include="src\Scene\SceneCamera.h" />
-    <ClInclude Include="src\Graphics\OrthographicCamera.h" />
-    <ClInclude Include="src\Graphics\PerspectiveCamera.h" />
+    <ClInclude Include="src\Graphics\Camera\OrthographicCamera.h" />
+    <ClInclude Include="src\Graphics\Camera\PerspectiveCamera.h" />
     <ClInclude Include="src\models\Model.h" />
     <ClInclude Include="src\Scene\ShaderManager.h" />
     <ClInclude Include="src\models\Transform.h" />
@@ -198,7 +205,7 @@
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneManager.h" />
     <ClInclude Include="src\Input\Input.h" />
-    <ClInclude Include="src\Graphics\Camera.h" />
+    <ClInclude Include="src\Graphics\Camera\Camera.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\ConstantBufferTypes.h" />
     <ClInclude Include="src\Graphics\FrameTime.h" />
@@ -213,6 +220,7 @@
     <ClInclude Include="src\window\Window.h" />
     <ClInclude Include="src\Graphics\Utilis.h" />
     <ClInclude Include="src\Sample\Cube.h" />
+    <ClInclude Include="ThirdPerson.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

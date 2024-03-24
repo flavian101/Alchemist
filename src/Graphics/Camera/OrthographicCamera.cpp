@@ -45,6 +45,11 @@ DirectX::XMMATRIX OrthographicCamera::GetView() const
 	return camView;
 }
 
+void OrthographicCamera::ControlWindow()
+{
+	
+}
+
 DirectX::XMVECTOR OrthographicCamera::GetPos() const
 {
 	return camPosition;

@@ -6,7 +6,7 @@
 App::App(HINSTANCE hInstance, int showWnd)
     :
     window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
-    s_scene("Sample", window.Gfx())
+    s_scene("Sample", window.Gfx(), window)
    // manager(window.Gfx())
 {
     //SampleScene* samp = new SampleScene("Sample", window.Gfx());
@@ -26,7 +26,7 @@ int App::createLoop()
             return *ecode;
         }
         //manager.Update(timer.Peek());
-        s_scene.Update(timer.Peek());
+        s_scene.Update(timer.Mark());
         Render();
     }
 

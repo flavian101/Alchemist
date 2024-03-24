@@ -14,6 +14,7 @@ public:
 
 	void Update(float delta)override;
 	DirectX::XMMATRIX GetView()const override;
+	void ControlWindow()override;
 	DirectX::XMVECTOR GetPos() const;
 	DirectX::XMVECTOR GetTarget() const;
 

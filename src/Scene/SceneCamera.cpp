@@ -10,6 +10,15 @@ SceneCamera::SceneCamera(PerspectiveCamera* perspectiveCamera)
       m_orthographicCamera(nullptr),
       isPerspective(true)
 {}
+SceneCamera::~SceneCamera()
+{
+    // Clean up your cameras here
+    delete m_perspectiveCamera;
+    delete m_orthographicCamera;
+}
+void SceneCamera::Add(Camera* camera)
+{
+}
 void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera)
 {
     m_perspectiveCamera = newPerspectiveCamera;
@@ -72,6 +81,19 @@ void SceneCamera::ControlWindow()
         }
         ImGui::EndCombo();
     }
+    if (isPerspective)
+    {
+        m_perspectiveCamera->ControlWindow();
+      
+
+        //float aspectRatio = m_perspectiveCamera->GetAspectRatio();
+        //if (ImGui::SliderFloat("Aspect Ratio", &aspectRatio, 0.1f, 10.0f))
+        //{
+        //    m_perspectiveCamera->SetAspectRatio(aspectRatio);
+        //}
+    }
 
     ImGui::End();
+
+   
 }

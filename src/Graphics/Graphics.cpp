@@ -425,7 +425,7 @@ DirectX::XMMATRIX Graphics::GetViewMatrix() const
 
 float Graphics::getAspectRatio()
 {
-	return m_width/ m_height;
+	return static_cast<float>(m_width) / static_cast<float>(m_height);
 }
 
 float Graphics::getWidth()

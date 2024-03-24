@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics.h"
+
 #include <DirectXMath.h>
 #include "window\ImguiManager.h"
 
@@ -14,6 +14,7 @@ public:
 	virtual DirectX::XMMATRIX GetView()const = 0;
 
 	virtual void Update(float delta) = 0;
+	virtual void ControlWindow() = 0;
 
 public: ///reset
 	
