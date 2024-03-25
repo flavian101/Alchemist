@@ -10,13 +10,13 @@ ImguiManager::ImguiManager()
     ImGuiStyle& style = ImGui::GetStyle();
 
     // Window styles
-    style.WindowRounding = 5.0f; // Rounded window corners
+    style.WindowRounding = 3.0f; // Rounded window corners
     style.WindowBorderSize = 1.0f; // Window border size
     style.WindowTitleAlign = ImVec2(0.5f, 0.5f); // Center window titles
 
     // Frame styles
     style.FramePadding = ImVec2(8, 4); // Decrease frame padding
-    style.FrameRounding = 4.0f; // Rounded frame corners
+    style.FrameRounding = 2.0f; // Rounded frame corners
     style.FrameBorderSize = 1.0f; // Increase frame border size for better visibility
 
     // Colors
@@ -35,6 +35,8 @@ ImguiManager::ImguiManager()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    io.Fonts->AddFontFromFileTTF("Assets/font/constan.ttf", 13.0f);
 }
 
 ImguiManager::~ImguiManager()
