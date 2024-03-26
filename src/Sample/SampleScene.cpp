@@ -56,15 +56,21 @@ void SampleScene::Initialize()
 void SampleScene::Update(float delta)
 {
 
-	if (camera->isPerspectiveCamera())
-	{
-		SwitchToPerspective();
-		input.DetectInput(delta, *pespectiveCamera);
+	// Update selected camera based on user input
+	selectedCamera = camera->GetSelectedCamera();
 
-	}
-	else
+	if (selectedCamera)
 	{
-		SwitchToOrthographic();
+		if (selectedCamera->isPerspectiveCamera())
+		{
+			SwitchToPerspective();
+			input.DetectInput(delta, *selectedCamera->GetPerspective());
+		}
+		else
+		{
+			SwitchToOrthographic();
+			// Handle input for orthographic camera if needed
+		}
 	}
 	camera->getActiveCamera()->Update(delta);
 	cube.Update(delta);
