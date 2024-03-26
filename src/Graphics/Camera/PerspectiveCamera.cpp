@@ -14,18 +14,21 @@ PerspectiveCamera::PerspectiveCamera(float aspectRatio,
     camPosition = position;
     camTarget = target;
     camUp = up;
+    this->m_aspectRatio = aspectRatio;
+    this->m_nearPlane = nearPlane;
+    this->m_farPlane = farPlane;
 
 
     // Calculate the initial view matrix
-    camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
+    this->camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
 }
 
 void PerspectiveCamera::SetCamera(float FOV, float aspectRatio, float nearPlane, float farPlane)
 {
-    m_FOV = FOV;
-    m_aspectRatio = aspectRatio;
-    m_nearPlane = nearPlane;
-    m_farPlane = farPlane;
+   this->m_FOV = FOV;
+   this->m_aspectRatio = aspectRatio;
+   this->m_nearPlane = nearPlane;
+   this->m_farPlane = farPlane;
 }
 
 DirectX::XMMATRIX PerspectiveCamera::GetProjectionMatrix() const

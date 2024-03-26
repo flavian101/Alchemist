@@ -9,7 +9,8 @@ SampleScene::SampleScene(std::string name,Graphics& g, Window& win)
 	camera(nullptr),
 	pespectiveCamera(nullptr),
 	orthographicCamera(nullptr),
-	input(win)
+	input(win),
+	selectedCamera(nullptr)
 {
 	Initialize();
 	
@@ -28,9 +29,8 @@ void SampleScene::Initialize()
 	orthographicCamera->SetCamera(m_graphics.getWidth(), m_graphics.getHeight(), 1.0f, 5.0f);
 
 
-	camera = new SceneCamera(pespectiveCamera);
+	camera = new SceneCamera("main", pespectiveCamera);
 	camera->SetPerspectiveCamera(pespectiveCamera);
-	
 	
 	cube.CreateCube();
 	DirectX::XMFLOAT3 scale(2.0f, 2.0f, 2.0f);
@@ -55,6 +55,7 @@ void SampleScene::Initialize()
 
 void SampleScene::Update(float delta)
 {
+
 	if (camera->isPerspectiveCamera())
 	{
 		SwitchToPerspective();
@@ -73,10 +74,15 @@ void SampleScene::Update(float delta)
 
 void SampleScene::Render() 
 {
-	m_graphics.SetViewMatrix(camera->getActiveCamera()->GetView());///
-	m_graphics.SetProjectionMatrix(camera->getActiveCamera()->GetProjectionMatrix());
 	m_graphics.controlWindow();
 	camera->ControlWindow();
+
+	selectedCamera = camera->GetSelectedCamera();
+	if (selectedCamera)
+	{
+		m_graphics.SetViewMatrix(selectedCamera->getActiveCamera()->GetView());///
+		m_graphics.SetProjectionMatrix(selectedCamera->getActiveCamera()->GetProjectionMatrix());
+	}
 	cubeShader.BindShaders();
 	cube.Render();
 	plane.Render();

@@ -27,6 +27,7 @@ private:
 	Plane plane;
 	Input input;
 	CameraController cameraController;
+	SceneCamera* selectedCamera;
 
 	
 	
