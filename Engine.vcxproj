@@ -114,11 +114,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalIncludeDirectories>$(SolutionDir)dependencies\imgui;$(SolutionDir)src;$(SolutionDir)dependencies\stb;$(SolutionDir)dependencies\imgui$(SolutionDir)dependencies\imgui</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,8 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FirstPerson.cpp" />
-    <ClCompile Include="FreeLook.cpp" />
+    <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Sample\Plane.cpp" />
     <ClCompile Include="src\Graphics\Camera\CameraController.cpp" />
     <ClCompile Include="dependencies\imgui\imgui.cpp" />
@@ -172,18 +172,15 @@
     <ClCompile Include="src\Graphics\Camera\Camera.cpp" />
     <ClCompile Include="src\Graphics\FrameTime.cpp" />
     <ClCompile Include="src\window\ImguiManager.cpp" />
-    <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Graphics\Graphics.cpp" />
     <ClCompile Include="src\window\App.cpp" />
     <ClCompile Include="src\window\Window.cpp" />
     <ClCompile Include="src\window\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Utilis.cpp" />
     <ClCompile Include="src\Sample\Cube.cpp" />
-    <ClCompile Include="ThirdPerson.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FirstPerson.h" />
-    <ClInclude Include="FreeLook.h" />
+    <ClInclude Include="src\MathUtils\MathUtils.h" />
     <ClInclude Include="src\Sample\Plane.h" />
     <ClInclude Include="src\Graphics\Camera\CameraController.h" />
     <ClInclude Include="dependencies\imgui\imconfig.h" />
@@ -220,7 +217,6 @@
     <ClInclude Include="src\window\Window.h" />
     <ClInclude Include="src\Graphics\Utilis.h" />
     <ClInclude Include="src\Sample\Cube.h" />
-    <ClInclude Include="ThirdPerson.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

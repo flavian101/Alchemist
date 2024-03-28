@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include <algorithm>
+#include "MathUtils\MathUtils.h"
 
 
 class PerspectiveCamera :public Camera
@@ -11,7 +12,7 @@ public:
 		FreeLook,
 		ThirdPerson
 	};
-	PerspectiveCamera(float aspectRatio = (9.0f / 16.0f), float nearPlane = 1.0f, float farPlane = 1000.0f,
+	PerspectiveCamera(float aspectRatio = static_cast<float>(16.0f)/static_cast<float>(9.0f), float nearPlane = 1.0f, float farPlane = 1000.0f,
 		const DirectX::XMVECTOR& position = DirectX::XMVectorSet(0.0f, 5.0f, -10.0f, 1.0f),
 		const DirectX::XMVECTOR& target =   DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		const DirectX::XMVECTOR& up =       DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
@@ -23,6 +24,8 @@ public:
 	DirectX::XMMATRIX GetView()const override;
 	void FreeLookCamera(float delta);
 	void FirstPersonCamera(float delta);
+	void UpdateCharacterPosition(const DirectX::XMVECTOR& newPosition, const XMVECTOR& newOrientation);
+	void UpdateThirdPersonCamera(float delta);
 	void ThirdPersonCamera(float delta);
 	void Reset();
 
@@ -49,6 +52,7 @@ public:
 	void SetPitch(float pitch);
 	float GetPitch() { return camPitch; }
 	float GetCamRoll() { return camRoll; }
+	float GetCameraSpeed() { return cameraSpeed; }
 
 	// Getter methods for movement variables
 	float GetMoveLeftRight() const { return moveLeftRight; }
@@ -63,13 +67,14 @@ public:
 	
 	void ControlWindow() override;
 	void ThirdPersonWindow();
+	void FreeLookWindow();
 	CameraMode GetCameraMode() const { return mode; }
 	
 	float GetFOV() const;
 	void setFOV(float fov);
 
 public:
-	CameraMode mode = FreeLook;
+	CameraMode mode;
 	XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -89,8 +94,18 @@ private:
 	float camRoll = 0.0f;
 
 
-	float cameraSpeed = 2.0f;
-	float distance = 15.0f;
+	float cameraSpeed;
+	float distance;
+
+	// Variables for third-person camera
+	DirectX::XMVECTOR characterPosition;
+	DirectX::XMVECTOR characterOrientation;
+	float cameraOffsetY = 10.0f; // Vertical offset from the character
+	float cameraRadius = 15.0f; // Distance from the character
+	float cameraLag = 0.1f; // Camera smoothing factor
+
+	DirectX::XMVECTOR prevCamPosition;
+	DirectX::XMVECTOR prevCamTarget;
 
 	
 

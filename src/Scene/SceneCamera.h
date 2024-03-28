@@ -18,6 +18,8 @@ public:
 
     void SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera);
     void SetOrthographicCamera(OrthographicCamera* newOrthographicCamera);
+    void Update(float delta);
+    void Render();
     Camera* getActiveCamera() const;
     SceneCamera* GetSelectedCamera() const;
     bool isPerspectiveCamera();

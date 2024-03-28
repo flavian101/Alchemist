@@ -25,22 +25,37 @@ void RenderableObject::Render()
 
 }
 
-XMMATRIX RenderableObject::GetTransform()
+XMMATRIX RenderableObject::GetTransform()const 
 {
 	return m_transform.GetTransform();
 }
 
-void RenderableObject::setTranslation(XMFLOAT3& translation)
+XMVECTOR RenderableObject::GetTranslation() const
+{
+	return m_transform.GetPosition();
+}
+
+XMVECTOR RenderableObject::GetRotation() const
+{
+	return m_transform.GetRotation();
+}
+
+XMVECTOR RenderableObject::GetScale()const
+{
+	return m_transform.GetScale();;
+}
+
+void RenderableObject::setTranslation(const XMFLOAT3& translation)
 {
 	m_transform.SetPosition(translation);
 }
 
-void RenderableObject::setRotation(XMFLOAT3& rotation)
+void RenderableObject::setRotation(const XMFLOAT3& rotation)
 {
 	m_transform.SetRotation(rotation);
 }
 
-void RenderableObject::setScale(XMFLOAT3& scale)
+void RenderableObject::setScale(const XMFLOAT3& scale)
 {
 	m_transform.SetScale(scale);
 }

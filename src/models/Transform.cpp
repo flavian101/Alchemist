@@ -18,7 +18,7 @@ Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT3& rotat
 //	return XMVectorSet(float3.x, float3.y, float3.z, 0.0f);;
 //}
 //
-XMMATRIX Transform::GetTransform()
+XMMATRIX Transform::GetTransform() const
 {
 	return transform;
 }

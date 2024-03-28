@@ -29,7 +29,7 @@ public:
     XMVECTOR GetPosition() const { return m_position; }
     XMVECTOR GetRotation() const { return m_rotation; }
     XMVECTOR GetScale() const { return m_scale; }
-    XMMATRIX GetTransform();
+    XMMATRIX GetTransform() const;
 
     // Update method (e.g., for animation)
     void Update(float time);

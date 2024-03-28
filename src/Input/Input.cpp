@@ -25,7 +25,7 @@ Input::Input(Window& win)
 
 }
 
-void Input::DetectInput(float time, PerspectiveCamera& cam)
+void Input::DetectInput(float time, PerspectiveCamera& cam, Cube& character)
 {
 	DIMOUSESTATE mouseCurrState;
 
@@ -46,7 +46,7 @@ void Input::DetectInput(float time, PerspectiveCamera& cam)
     if (cam.GetCameraMode() == PerspectiveCamera::FreeLook)
     {
         // Define movement speed
-        float speed = 10.0f;
+        float speed = cam.GetCameraSpeed();
 
         // Check if the middle mouse button is pressed
         if (mouseCurrState.rgbButtons[2] & 0x80)
@@ -69,15 +69,15 @@ void Input::DetectInput(float time, PerspectiveCamera& cam)
                 cam.SetMoveBackForward(cam.GetMoveBackForward() - speed);
             }
             
-          
+            if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
+            {
                 // Camera rotation
                 cam.RotateYaw(mouseCurrState.lX * 0.001f);
                 cam.RotatePitch(mouseCurrState.lY * -0.001f);
-            
-            // Apply camera shake if the 'E' key is pressed
-            if (keyboardState[DIK_E] & 0x80)
+            }
+             if (keyboardState[DIK_E] & 0x80)
             {
-                controller->CameraShake(&cam, 0.02f, 1.0f, time); // Adjust intensity and duration as needed
+                controller->CameraShake(&cam, 0.02f, 10.0f, time); // Adjust intensity and duration as needed
             }
         }
         else
@@ -91,51 +91,65 @@ void Input::DetectInput(float time, PerspectiveCamera& cam)
     else if (cam.GetCameraMode() == PerspectiveCamera::ThirdPerson)
     {
         // Define movement speed and rotation sensitivity (adjust these as needed)
-        float speed = 0.5f;
-        float rotationSensitivity = 0.000001f;
-        float camYaw = cam.GetYaw();
-        float camPitch = cam.GetPitch();
+        float moveSpeed = cam.GetCameraSpeed();
+        float rotationSpeed = DirectX::XM_PI * 0.5f; // 90 degrees per second
+        float yawAngle;
+
+        XMVECTOR characterPosition = character.GetTranslation();
+        XMVECTOR characterOrientatin = character.GetRotation();
 
 
-        // Camera movement
-        if (keyboardState[DIK_A] & 0x80)
-        {
-            cam.SetMoveLeftRight(cam.GetMoveLeftRight() - speed);
-        }
-        else if (keyboardState[DIK_D] & 0x80)
-        {
-            cam.SetMoveLeftRight(cam.GetMoveLeftRight() + speed);
-        }
+        // Camera movement based on keyboard input
         if (keyboardState[DIK_W] & 0x80)
         {
-            cam.SetMoveBackForward(cam.GetMoveBackForward() + speed);
+            character.Move(character.GetRotation(), moveSpeed, time);
+            //cam.SetMoveBackForward(speed * time);
         }
         else if (keyboardState[DIK_S] & 0x80)
         {
-            cam.SetMoveBackForward(cam.GetMoveBackForward() - speed);
+            character.Move(-character.GetRotation(), moveSpeed, time);
+            //cam.SetMoveBackForward(-speed * time);
         }
+        if (keyboardState[DIK_A] & 0x80)
+        {
+            character.Move(XMVector3Cross(character.GetRotation(), DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)), moveSpeed, time);
+           // cam.SetMoveLeftRight(-speed * time);
+        }
+        else if (keyboardState[DIK_D] & 0x80)
+        {
+            character.Move(-XMVector3Cross(character.GetRotation(), DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)), moveSpeed, time);
 
+           // cam.SetMoveLeftRight(speed * time);
+        }
 
         if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
         {
-           
-            camYaw += mouseLastState.lX * 0.002f;
-            cam.setYaw(camYaw);
-           
-            
-            camPitch += mouseCurrState.lY * 0.002f;
-            cam.SetPitch(camPitch);
+            yawAngle = mouseCurrState.lX * rotationSpeed * time;
+            character.Rotate(yawAngle, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
-            // Limit pitch to prevent flipping over
-            camPitch = std::clamp(camPitch, -XM_PIDIV2, XM_PIDIV2);
+            // Apply mouse movement to yaw and pitch
+           // camYaw += mouseCurrState.lX * rotationSensitivity;
+           // camPitch += mouseCurrState.lY * -rotationSensitivity;
+           //
+           // // Limit pitch to prevent flipping over
+           // camPitch = std::clamp(camPitch, -XM_PIDIV2, XM_PIDIV2);
+           //
+           // // Set new yaw and pitch
+           // cam.setYaw(camYaw);
+           // cam.SetPitch(camPitch);
 
             mouseLastState = mouseCurrState;
         }
 
-        cam.ThirdPersonCamera(time);
-        // (Optional) Reset movement values after update (for a more responsive feel)
-        cam.SetMoveBackForward(0.0f);
-        cam.SetMoveLeftRight(0.0f);
+       
+        cam.UpdateCharacterPosition(characterPosition, characterOrientatin);
+
+        cam.UpdateThirdPersonCamera(time);
+
+       // cam.ThirdPersonCamera(time);
+       // // (Optional) Reset movement values after update (for a more responsive feel)
+       // cam.SetMoveBackForward(0.0f);
+       // cam.SetMoveLeftRight(0.0f);
     }
 
 }

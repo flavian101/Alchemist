@@ -84,9 +84,6 @@
     <ClCompile Include="src\Scene\RenderableObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\models\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\Camera\PerspectiveCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,13 +102,7 @@
     <ClCompile Include="src\Sample\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FreeLook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdPerson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FirstPerson.cpp">
+    <ClCompile Include="src\models\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -224,13 +215,7 @@
     <ClInclude Include="src\Sample\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FreeLook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdPerson.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FirstPerson.h">
+    <ClInclude Include="src\MathUtils\MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

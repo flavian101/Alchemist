@@ -33,19 +33,12 @@ void SampleScene::Initialize()
 	camera->SetPerspectiveCamera(pespectiveCamera);
 	
 	cube.CreateCube();
-	DirectX::XMFLOAT3 scale(2.0f, 2.0f, 2.0f);
-	DirectX::XMFLOAT3 posc(0.0f, 1.0f, 0.0f);
-
-	cube.setScale(scale);
-	cube.setTranslation(posc);
+	
 	
 
 	plane.CreatePlane();
 	DirectX::XMFLOAT3 scalep(500.0f, 0.0f, 500.0f);
 	plane.setScale(scalep);
-
-	DirectX::XMFLOAT3 pos(0.0f, 0.0f, 0.0f);
-	plane.setTranslation(pos);
 
 	
 
@@ -64,7 +57,7 @@ void SampleScene::Update(float delta)
 		if (selectedCamera->isPerspectiveCamera())
 		{
 			SwitchToPerspective();
-			input.DetectInput(delta, *selectedCamera->GetPerspective());
+			input.DetectInput(delta, *selectedCamera->GetPerspective(),cube);
 		}
 		else
 		{

@@ -2,6 +2,7 @@
 #include "Graphics\Utilis.h"
 #include "ShaderManager.h"
 #include "models\Transform.h"
+#include "MathUtils\MathUtils.h"
 
 /// <summary>
 /// set the pixel constant buffer
@@ -14,10 +15,13 @@ public:
 	~RenderableObject();
 	virtual void Update(float time);
 	virtual void Render();
-	XMMATRIX GetTransform();
-	void setTranslation(XMFLOAT3& translation);
-	void setRotation(XMFLOAT3& rotation);
-	void setScale(XMFLOAT3& scale);
+	XMMATRIX GetTransform()const;
+	XMVECTOR GetTranslation()const;
+	XMVECTOR GetRotation()const;
+	XMVECTOR GetScale()const;
+	void setTranslation(const XMFLOAT3& translation);
+	void setRotation(const XMFLOAT3& rotation);
+	void setScale(const XMFLOAT3& scale);
 
 
 	ShaderManager GetShadermanager();

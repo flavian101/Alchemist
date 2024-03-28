@@ -44,6 +44,15 @@ void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamer
     isPerspective = false;
 }
 
+void SceneCamera::Update(float delta)
+{
+
+}
+
+void SceneCamera::Render()
+{
+}
+
 Camera* SceneCamera::getActiveCamera() const
 {
     if (isPerspective)
@@ -167,7 +176,7 @@ void SceneCamera::ControlWindow()
     // Camera Type Selection
     const char* items[] = { "Perspective", "Orthographic" };
     static int currentItem = m_selectedCamera && m_selectedCamera->isPerspectiveCamera() ? 0 : 1;
-
+   
     if (ImGui::BeginCombo("Type", items[currentItem]))
     {
         for (int n = 0; n < IM_ARRAYSIZE(items); n++)

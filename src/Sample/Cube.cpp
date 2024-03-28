@@ -8,6 +8,10 @@ Cube::Cube(Graphics& g, ShaderManager manager)
     m_graphic(g)
    
 {
+    m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
+    this->setTranslation(Math::XMVectorToFloat3(m_position));
+    m_orientation = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+    this->setRotation(Math::XMVectorToFloat3(m_orientation));
 
 }
 
@@ -66,6 +70,30 @@ void Cube::CreateCube()
     indices.push_back(7);
 
     CreateMesh(indices, vertices);
+}
+
+void Cube::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)
+{
+    
+    //Calculate the displacement vector based on the direction , speed and delta time
+    XMVECTOR displacement = direction * (speed * deltaTime);
+
+    m_position += displacement;
+    this->setTranslation(Math::XMVectorToFloat3(m_position));
+}
+
+void Cube::Rotate(float angle, const DirectX::XMVECTOR& axis)
+{
+    // Create a rotation quaternion based on the angle and axis
+    DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationAxis(axis, angle);
+
+    // Apply the rotation quaternion to the cube's orientation
+    m_orientation = DirectX::XMQuaternionMultiply(rotation, m_orientation);
+
+    // Normalize the orientation quaternion
+    m_orientation = DirectX::XMQuaternionNormalize(m_orientation);
+
+    this->setRotation(Math::XMVectorToFloat3(m_orientation));
 }
 
 
