@@ -22,6 +22,7 @@ PerspectiveCamera::PerspectiveCamera(float aspectRatio,
     this->m_farPlane = farPlane;
     this->cameraSpeed = 2.0f;
     this->distance = 4.0f;
+    this->cameraOffsetY = 4.0f;
 
 
     // Calculate the initial view matrix

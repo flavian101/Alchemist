@@ -1,4 +1,9 @@
 #pragma once
+#include "Sample\Cube.h"
+#include "Sample\Plane.h"
+#include "Scene\SceneCamera.h"
+#include "window\Window.h"
+#include "Input\Input.h"
 #include "models\Model.h"
 
 class Scene
@@ -6,8 +11,9 @@ class Scene
 public:
 	Scene(const std::string& name, Graphics& g);
 	void Create();
-	void AddObject(RenderableObject& object);
-	void RemoveObject(RenderableObject& object);
+	void AddObject(RenderableObject* object);
+	void RemoveObject(RenderableObject* object);
+
 	void Update(float time);
 	void Render();
 
@@ -19,7 +25,7 @@ public:
 
 private:
 	Graphics& m_graphics;
-	std::vector<RenderableObject> m_objects;
+	std::vector<RenderableObject>* m_objects;
 	std::string m_name;
 };
 

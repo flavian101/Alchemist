@@ -100,7 +100,7 @@ private:
 	// Variables for third-person camera
 	DirectX::XMVECTOR characterPosition;
 	DirectX::XMVECTOR characterOrientation;
-	float cameraOffsetY = 10.0f; // Vertical offset from the character
+	float cameraOffsetY ; // Vertical offset from the character
 	float cameraRadius = 15.0f; // Distance from the character
 	float cameraLag = 0.1f; // Camera smoothing factor
 

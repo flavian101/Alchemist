@@ -1,10 +1,6 @@
 #pragma once
 #include "Scene\Scene.h"
-#include "Cube.h"
-#include "Plane.h"
-#include "Scene\SceneCamera.h"
-#include "window\Window.h"
-#include "Input\Input.h"
+
 
 class SampleScene: public Scene
 {
