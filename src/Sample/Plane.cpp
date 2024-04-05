@@ -5,6 +5,10 @@ Plane::Plane(Graphics& g, ShaderManager maneger)
 	Model(g,maneger),
 	m_graphic(g)
 {
+	m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	this->setTranslation(Math::XMVectorToFloat3(m_position));
+	m_scale = XMVectorSet(20.0f, 0.0f, 20.0f, 0.0f);
+	this->setScale(Math::XMVectorToFloat3(m_scale));
 }
 
 void Plane::CreatePlane()

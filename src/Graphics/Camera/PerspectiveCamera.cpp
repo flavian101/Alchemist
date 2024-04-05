@@ -22,7 +22,7 @@ PerspectiveCamera::PerspectiveCamera(float aspectRatio,
     this->m_farPlane = farPlane;
     this->cameraSpeed = 2.0f;
     this->distance = 4.0f;
-    this->cameraOffsetY = 4.0f;
+    this->cameraOffsetY = 6.0f;
 
 
     // Calculate the initial view matrix
@@ -116,6 +116,8 @@ void PerspectiveCamera::ControlWindow()
 void PerspectiveCamera::ThirdPersonWindow()
 {
     ImGui::Text("Third person Settings");
+    ImGui::Text("delta %.3f ",time);
+
     Math::ImGuiDragXMVector3("target", camTarget);
     Math::ImGuiDragXMVector3("position", camPosition);
     ImGui::PushItemWidth(100);
@@ -268,57 +270,41 @@ void PerspectiveCamera::UpdateCharacterPosition(const DirectX::XMVECTOR& newPosi
 
 void PerspectiveCamera::UpdateThirdPersonCamera(float delta)
 {
-    // Calculate the desired camera position and target based on character position and orientation
-    XMVECTOR desiredCamPosition = characterPosition - characterOrientation * cameraRadius;
-    desiredCamPosition = XMVectorSetY(desiredCamPosition, desiredCamPosition.m128_f32[1] + cameraOffsetY);
-    XMVECTOR desiredCamTarget = characterPosition;
+    time = delta;
+    // Convert the character's orientation to a rotation matrix
+    XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(characterOrientation);
 
-    // Smooth the camera movement
-    camPosition = XMVectorLerp(prevCamPosition, desiredCamPosition, cameraLag);
-    camTarget = XMVectorLerp(prevCamTarget, desiredCamTarget, cameraLag);
+    // Calculate the desired camera position
+    XMVECTOR cameraOffset = XMVectorSet(0.0f, cameraOffsetY, -cameraRadius, 0.0f);
 
-    // Calculate the camera's orientation based on the difference between the character's position and the camera's position
-    XMVECTOR camForward = XMVector3Normalize(desiredCamPosition - characterPosition);
-    XMVECTOR camRight = XMVector3Normalize(XMVector3Cross(camUp, camForward));
-    XMVECTOR camUp = XMVector3Normalize(XMVector3Cross(camForward, camRight));
+    XMVECTOR desiredCameraPosition = XMVector3TransformCoord(cameraOffset, rotationMatrix);
+    desiredCameraPosition = XMVectorAdd(desiredCameraPosition, characterPosition);
+
+    // Clamp the cameraLag value between 0 and 1
+    float clampedCameraLag = std::clamp(cameraLag, 0.0f, 1.0f);
+
+    // Smooth camera movement
+    XMVECTOR smoothedPosition = XMVectorLerp(camPosition, desiredCameraPosition, clampedCameraLag * delta);
+
+    // Update the camera position
+    camPosition= smoothedPosition;
+
+    // Calculate the camera target (where the camera is looking) //changed to z
+    XMVECTOR cameraTarget = XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotationMatrix);
+    cameraTarget = XMVectorAdd(cameraTarget, characterPosition);
+
+    // Update the camera target
+    camTarget = cameraTarget;
+
+    // Calculate the view matrix
+    XMVECTOR cameraUpDirection = XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotationMatrix);
+
+    // Update the camera's up vector
+    camUp = cameraUpDirection;
 
     // Update the view matrix
     camView = XMMatrixLookAtLH(camPosition, camTarget, camUp);
-
-    // Store the current camera position and target for the next frame
-    prevCamPosition = camPosition;
-    prevCamTarget = camTarget;
-}
-
-void PerspectiveCamera::ThirdPersonCamera(float delta)
-{
-    // Calculate the rotation matrix based on pitch and yaw
-    DirectX::XMMATRIX camRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(-camPitch, camYaw, 0);
-
-    // Derive the forward vector from the rotation matrix
-    DirectX::XMVECTOR camForward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f); // Default forward vector in the +Z direction
-    camForward = DirectX::XMVector3TransformNormal(camForward, camRotationMatrix);
-    camForward = DirectX::XMVector3Normalize(camForward);
-
-    // Derive the right vector from the forward vector (cross product with world up vector)
-    DirectX::XMVECTOR camRight = DirectX::XMVector3Cross(camForward, DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // World up vector is (0, 1, 0)
-    camRight = DirectX::XMVector3Normalize(camRight);
-
-    // Update camera target based on moveBackForward and moveLeftRight
-    camTarget += camForward * moveBackForward + camRight * moveLeftRight;
-
-    // Calculate the new camera position based on the transformed forward vector and distance from the target
-    DirectX::XMVECTOR newCamPosition = DirectX::XMVectorAdd(camTarget, DirectX::XMVectorScale(camForward, -distance)); // Move along negative forward vector
-
-    // Set the camera position
-    camPosition = newCamPosition;
-
-    // Update the camera view matrix
-    camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Set camUp to world up direction
-
-    // Reset movement values after update (for a more responsive feel)
-    moveBackForward = 0.0f;
-    moveLeftRight = 0.0f;
+   
 }
 
 void PerspectiveCamera::Reset()
@@ -343,4 +329,31 @@ float PerspectiveCamera::GetFOV() const
 void PerspectiveCamera::setFOV(float fov)
 {
     m_FOV = fov;
+}
+
+void PerspectiveCamera::AddYaw(float angle)
+{
+    camYaw += angle;
+    UpdateVectors();
+}
+
+void PerspectiveCamera::AddPitch(float angle)
+{
+    camPitch += angle;
+
+    camPitch = std::clamp(camPitch, -XM_PIDIV2 + 0.1f, XM_PIDIV2 - 0.1f); // Add a small offset to avoid precision issues
+    UpdateVectors();
+}
+
+void PerspectiveCamera::UpdateVectors()
+{
+    // Calculate the new camera orientation from the yaw and pitch angles
+    XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMVECTOR cameraDirection = XMVectorSet(cos(camPitch) * sin(camYaw), sin(camPitch), cos(camPitch) * cos(camYaw), 0.0f);
+    XMVECTOR cameraRight = XMVector3Cross(upDirection, cameraDirection);
+
+    // Update the camera's orientation vectors
+    camUp = upDirection;
+    camForward = cameraDirection;
+    camRight = cameraRight;
 }

@@ -17,5 +17,8 @@ private:
 protected:
 	Graphics& m_graphics;
 	Mesh m_mesh;
+	DirectX::XMVECTOR m_position;
+	DirectX::XMVECTOR m_orientation;
+	DirectX::XMVECTOR m_scale;
 };
 

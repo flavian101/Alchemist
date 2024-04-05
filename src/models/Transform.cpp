@@ -1,10 +1,10 @@
 #include "Transform.h"
 
-Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT3& rotation, const XMFLOAT3& scale)
+Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotation, const XMFLOAT3& scale)
 	:
 	m_graphics(g),
 	m_position(XMLoadFloat3(&position)),
-	m_rotation(XMLoadFloat3(&rotation)),
+	m_rotation(XMLoadFloat4(&rotation)),
 	m_scale(XMLoadFloat3(&scale))
 {
 	CB_Buffer.Initialize(g);

@@ -6,7 +6,8 @@
 App::App(HINSTANCE hInstance, int showWnd)
     :
     window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
-    s_scene("Sample", window.Gfx(), window)
+    s_scene("Sample", window.Gfx(), window),
+    timer()
    // manager(window.Gfx())
 {
     //SampleScene* samp = new SampleScene("Sample", window.Gfx());
@@ -26,7 +27,7 @@ int App::createLoop()
             return *ecode;
         }
         //manager.Update(timer.Peek());
-        s_scene.Update(timer.Mark());
+        s_scene.Update(timer.Tick());
         Render();
     }
 
@@ -37,7 +38,7 @@ void App::Render()
 {
     //timer
    // const auto dt = timer.Mark() * speedfactor;
-    const float dt = timer.Peek();
+    const float dt = timer.Tick();
     window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
 
    //manager.Render();

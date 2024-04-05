@@ -13,7 +13,7 @@ public:
 		ThirdPerson
 	};
 	PerspectiveCamera(float aspectRatio = static_cast<float>(16.0f)/static_cast<float>(9.0f), float nearPlane = 1.0f, float farPlane = 1000.0f,
-		const DirectX::XMVECTOR& position = DirectX::XMVectorSet(0.0f, 5.0f, -10.0f, 1.0f),
+		const DirectX::XMVECTOR& position = DirectX::XMVectorSet(0.0f, 6.0f, -16.0f, 1.0f),
 		const DirectX::XMVECTOR& target =   DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		const DirectX::XMVECTOR& up =       DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
@@ -26,7 +26,6 @@ public:
 	void FirstPersonCamera(float delta);
 	void UpdateCharacterPosition(const DirectX::XMVECTOR& newPosition, const XMVECTOR& newOrientation);
 	void UpdateThirdPersonCamera(float delta);
-	void ThirdPersonCamera(float delta);
 	void Reset();
 
 
@@ -72,7 +71,9 @@ public:
 	
 	float GetFOV() const;
 	void setFOV(float fov);
-
+	void AddYaw(float angle);
+	void AddPitch(float angle);
+	void UpdateVectors();
 public:
 	CameraMode mode;
 	XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -101,11 +102,12 @@ private:
 	DirectX::XMVECTOR characterPosition;
 	DirectX::XMVECTOR characterOrientation;
 	float cameraOffsetY ; // Vertical offset from the character
-	float cameraRadius = 15.0f; // Distance from the character
-	float cameraLag = 0.1f; // Camera smoothing factor
+	float cameraRadius = 10.0f; // Distance from the character
+	float cameraLag = 1.0f; // Camera smoothing factor
 
 	DirectX::XMVECTOR prevCamPosition;
 	DirectX::XMVECTOR prevCamTarget;
+	float time;
 
 	
 

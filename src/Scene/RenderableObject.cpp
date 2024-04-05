@@ -50,7 +50,7 @@ void RenderableObject::setTranslation(const XMFLOAT3& translation)
 	m_transform.SetPosition(translation);
 }
 
-void RenderableObject::setRotation(const XMFLOAT3& rotation)
+void RenderableObject::setRotation(const XMFLOAT4& rotation)
 {
 	m_transform.SetRotation(rotation);
 }

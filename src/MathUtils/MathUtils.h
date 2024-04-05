@@ -23,4 +23,11 @@ namespace Math {
         XMStoreFloat3(&result, vector);
         return result;
     }
+    inline XMFLOAT4 XMVectorToFloat4(const XMVECTOR& quaternion)
+    {
+        XMFLOAT4 result;
+        XMStoreFloat4(&result, quaternion);
+        return result;
+    }
+
 }

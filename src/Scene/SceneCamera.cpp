@@ -1,8 +1,7 @@
 // SceneCamera.cpp
 
 #include "SceneCamera.h"
-#include <iostream>
-#include "imgui.h"
+
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
 
 SceneCamera::SceneCamera(const std::string& name, PerspectiveCamera* perspectiveCamera)
@@ -28,8 +27,10 @@ SceneCamera::SceneCamera(const std::string& name, OrthographicCamera* orthograph
 SceneCamera::~SceneCamera()
 {
     // Clean up your cameras here
-    delete m_perspectiveCamera;
-    delete m_orthographicCamera;
+    //delete m_perspectiveCamera;
+   // delete m_orthographicCamera;
+   // delete m_selectedCamera;
+
 }
 
 void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera)
@@ -46,7 +47,7 @@ void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamer
 
 void SceneCamera::Update(float delta)
 {
-
+    
 }
 
 void SceneCamera::Render()

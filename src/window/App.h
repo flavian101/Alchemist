@@ -24,6 +24,6 @@ private:
 	Window window;
 	bool showDemoWindow = true;
 	//SceneManager manager;
-	SampleScene s_scene;
+	Scene s_scene;
 	
 };

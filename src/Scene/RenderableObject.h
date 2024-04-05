@@ -20,7 +20,7 @@ public:
 	XMVECTOR GetRotation()const;
 	XMVECTOR GetScale()const;
 	void setTranslation(const XMFLOAT3& translation);
-	void setRotation(const XMFLOAT3& rotation);
+	void setRotation(const XMFLOAT4& rotation);
 	void setScale(const XMFLOAT3& scale);
 
 

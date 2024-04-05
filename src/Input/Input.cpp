@@ -92,64 +92,45 @@ void Input::DetectInput(float time, PerspectiveCamera& cam, Cube& character)
     {
         // Define movement speed and rotation sensitivity (adjust these as needed)
         float moveSpeed = cam.GetCameraSpeed();
-        float rotationSpeed = DirectX::XM_PI * 0.5f; // 90 degrees per second
-        float yawAngle;
-
+        float rotationSpeed = 45.0f;
         XMVECTOR characterPosition = character.GetTranslation();
-        XMVECTOR characterOrientatin = character.GetRotation();
+        XMVECTOR characterOrientation = character.GetRotation();
 
-
+        // Convert the orientation quaternion to a forward direction vector
+        XMVECTOR forwardDirection = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), characterOrientation);
         // Camera movement based on keyboard input
         if (keyboardState[DIK_W] & 0x80)
         {
-            character.Move(character.GetRotation(), moveSpeed, time);
-            //cam.SetMoveBackForward(speed * time);
+            character.Move(forwardDirection, moveSpeed, time);
         }
         else if (keyboardState[DIK_S] & 0x80)
         {
-            character.Move(-character.GetRotation(), moveSpeed, time);
-            //cam.SetMoveBackForward(-speed * time);
+            character.Move(-forwardDirection, moveSpeed, time);
         }
         if (keyboardState[DIK_A] & 0x80)
         {
-            character.Move(XMVector3Cross(character.GetRotation(), DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)), moveSpeed, time);
-           // cam.SetMoveLeftRight(-speed * time);
+            character.Rotate(-rotationSpeed * time);
         }
         else if (keyboardState[DIK_D] & 0x80)
         {
-            character.Move(-XMVector3Cross(character.GetRotation(), DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)), moveSpeed, time);
-
-           // cam.SetMoveLeftRight(speed * time);
+            character.Rotate(rotationSpeed * time);
         }
 
         if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
         {
-            yawAngle = mouseCurrState.lX * rotationSpeed * time;
-            character.Rotate(yawAngle, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+            float yawAngle = mouseCurrState.lX * rotationSpeed * time;
+            float pitchAngle = mouseCurrState.lY * -rotationSpeed * time;
+            // Limit pitch to prevent flipping over
+            pitchAngle = std::clamp(pitchAngle, -XM_PIDIV2, XM_PIDIV2);
+            // Update camera yaw and pitch
+            cam.AddYaw(yawAngle);
+            cam.AddPitch(pitchAngle);
 
-            // Apply mouse movement to yaw and pitch
-           // camYaw += mouseCurrState.lX * rotationSensitivity;
-           // camPitch += mouseCurrState.lY * -rotationSensitivity;
-           //
-           // // Limit pitch to prevent flipping over
-           // camPitch = std::clamp(camPitch, -XM_PIDIV2, XM_PIDIV2);
-           //
-           // // Set new yaw and pitch
-           // cam.setYaw(camYaw);
-           // cam.SetPitch(camPitch);
 
             mouseLastState = mouseCurrState;
         }
-
-       
-        cam.UpdateCharacterPosition(characterPosition, characterOrientatin);
-
+        cam.UpdateCharacterPosition(characterPosition, characterOrientation);
         cam.UpdateThirdPersonCamera(time);
-
-       // cam.ThirdPersonCamera(time);
-       // // (Optional) Reset movement values after update (for a more responsive feel)
-       // cam.SetMoveBackForward(0.0f);
-       // cam.SetMoveLeftRight(0.0f);
     }
 
 }

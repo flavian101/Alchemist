@@ -10,8 +10,8 @@ Cube::Cube(Graphics& g, ShaderManager manager)
 {
     m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
     this->setTranslation(Math::XMVectorToFloat3(m_position));
-    m_orientation = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-    this->setRotation(Math::XMVectorToFloat3(m_orientation));
+    m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
+    this->setRotation(Math::XMVectorToFloat4(m_orientation));
 
 }
 
@@ -74,26 +74,30 @@ void Cube::CreateCube()
 
 void Cube::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)
 {
-    
-    //Calculate the displacement vector based on the direction , speed and delta time
-    XMVECTOR displacement = direction * (speed * deltaTime);
+    XMVECTOR normalizedDirection = XMVector3Normalize(direction);
+    XMVECTOR movement = normalizedDirection * speed * deltaTime;
 
-    m_position += displacement;
+   
+    m_position = XMVectorAdd(m_position, movement);
     this->setTranslation(Math::XMVectorToFloat3(m_position));
 }
 
-void Cube::Rotate(float angle, const DirectX::XMVECTOR& axis)
+void Cube::Rotate(float angleInDegrees)
 {
-    // Create a rotation quaternion based on the angle and axis
-    DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationAxis(axis, angle);
 
-    // Apply the rotation quaternion to the cube's orientation
-    m_orientation = DirectX::XMQuaternionMultiply(rotation, m_orientation);
+    float angleInRadians = XMConvertToRadians(angleInDegrees);
+    DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+    // Create a rotation quaternion
+    DirectX::XMVECTOR rotationQuaternion = DirectX::XMQuaternionRotationAxis(rotationAxis, angleInRadians);
+
+    // Apply the rotation to the character's orientation
+    m_orientation = DirectX::XMQuaternionMultiply(m_orientation, rotationQuaternion);
 
     // Normalize the orientation quaternion
     m_orientation = DirectX::XMQuaternionNormalize(m_orientation);
 
-    this->setRotation(Math::XMVectorToFloat3(m_orientation));
+    this->setRotation(Math::XMVectorToFloat4(m_orientation));
 }
 
 

@@ -1,7 +1,7 @@
 #include "SampleScene.h"
 
 SampleScene::SampleScene(std::string name,Graphics& g, Window& win)
-	:Scene(name,g),
+	:Scene(name,g,win),
 	m_graphics(g),
 	cubeShader(g),
 	cube(g,cubeShader),
