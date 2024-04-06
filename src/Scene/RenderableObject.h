@@ -3,6 +3,7 @@
 #include "ShaderManager.h"
 #include "models\Transform.h"
 #include "MathUtils\MathUtils.h"
+#include <string>
 
 /// <summary>
 /// set the pixel constant buffer
@@ -11,7 +12,7 @@
 class RenderableObject
 {
 public:
-	RenderableObject(Graphics& g, ShaderManager shaderManager);
+	RenderableObject(const std::string& name,Graphics& g, ShaderManager shaderManager);
 	~RenderableObject();
 	virtual void Update(float time);
 	virtual void Render();
@@ -24,13 +25,17 @@ public:
 	void setScale(const XMFLOAT3& scale);
 
 
-	ShaderManager GetShadermanager();
+	ShaderManager GetShadermanager()const;
+	std::string getName()const;
+	void setName(const std::string& name);
+	virtual void controlWindow();
 	
 private:
 	Graphics& m_graphics;
 
 
 protected:
+	std::string m_name;
 	ShaderManager m_shaderManager;
 	Transform m_transform;
 

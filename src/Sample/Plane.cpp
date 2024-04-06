@@ -1,8 +1,8 @@
 #include "Plane.h"
 
-Plane::Plane(Graphics& g, ShaderManager maneger)
+Plane::Plane(const std::string& name,Graphics& g, ShaderManager maneger)
 	:
-	Model(g,maneger),
+	Model(name,g,maneger),
 	m_graphic(g)
 {
 	m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);

@@ -3,8 +3,8 @@
 
 
 
-Cube::Cube(Graphics& g, ShaderManager manager)
-    :Model(g,manager),
+Cube::Cube(const std::string& name,Graphics& g, ShaderManager manager)
+    :Model(name,g,manager),
     m_graphic(g)
    
 {

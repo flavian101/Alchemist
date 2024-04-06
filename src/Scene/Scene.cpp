@@ -10,7 +10,8 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	perspectiveCamera(nullptr),	
 	orthographicCamera(nullptr), 
 	cube(nullptr),			
-	plane(nullptr)			
+	plane(nullptr),
+	m_selectedModel(nullptr)
 
 {
 	input = new Input(win);
@@ -31,11 +32,11 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	sceneCamera->SetPerspectiveCamera(perspectiveCamera);
 
 	//model loading 
-	cube = new Cube(m_graphics, *defaultShader);
+	cube = new Cube("player", m_graphics, *defaultShader);
 	cube->CreateCube();
 	AddObject(cube);
 
-	plane = new Plane(m_graphics, *defaultShader);
+	plane = new Plane("ground", m_graphics, *defaultShader);
 	plane->CreatePlane();
 	AddObject(plane);
 
@@ -66,7 +67,12 @@ void Scene::AddObject(Model* object)
 
 void Scene::RemoveObject(Model* object)
 {
-	//m_objects.p
+	// Remove the object from the vector
+	auto it = std::find(m_models.begin(), m_models.end(), object);
+	if (it != m_models.end())
+	{
+		m_models.erase(it);
+	}
 }
 
 void Scene::Update(float deltaTime)
@@ -97,6 +103,7 @@ void Scene::Render()
 {
 	m_graphics.controlWindow();
 	sceneCamera->ControlWindow();
+	this->controlWindow();
 
 	selectedCamera = sceneCamera->GetSelectedCamera();
 	if (selectedCamera)
@@ -110,6 +117,8 @@ void Scene::Render()
 	{
 		obj->Render();
 	}
+
+	
 }
 
 void Scene::SwitchToPerspective()
@@ -121,15 +130,81 @@ void Scene::SwitchToOrthographic()
 {
 	sceneCamera->SetOrthographicCamera(orthographicCamera);
 }
-
 void Scene::controlWindow()
 {
-	if (ImGui::Begin("Scene objects"))
+
+	ImGui::Begin("Scene properties");
+
+	ImGui::Text("Models");
+
+	// Display a list of models in a child window
+	if (ImGui::BeginChild("models", ImVec2(0, 200), true))
 	{
+		for (auto& model : m_models)
+		{
+			// Display model names as selectable items
+			if (ImGui::Selectable(model->getName().c_str()))
+			{
+				// Update the selected model
+				m_selectedModel = model;
+			}
 
+			// Open a context menu when right-clicked on a model
+			if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
+			{
+				// Add option to rename the model
+				if (ImGui::MenuItem("Rename"))
+				{
+					// Set the flag to show the rename input field
+					m_renameModel = true;
+				}
 
+				// Add option to delete the model
+				if (ImGui::MenuItem("Delete"))
+				{
+					// Remove the model from the scene
+					RemoveObject(model);
+				}
 
+				ImGui::EndPopup();
+			}
+		}
+		ImGui::EndChild();
 	}
+
+	// Display properties of the selected model
+	if (m_selectedModel)
+	{
+		m_selectedModel->controlWindow();
+	}
+
+	// Show input field for renaming the model
+	if (m_renameModel)
+	{
+		ImGui::OpenPopup("Rename Model");
+		if (ImGui::BeginPopup("Rename Model", NULL))
+		{
+			static char newName[128] = ""; // Buffer to store new name
+			ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
+
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				// Set the new name for the selected model
+				m_selectedModel->setName(newName);
+				ImGui::CloseCurrentPopup();
+				m_renameModel = false; // Reset the flag
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				ImGui::CloseCurrentPopup();
+				m_renameModel = false; // Reset the flag
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
 	ImGui::End();
 }
 

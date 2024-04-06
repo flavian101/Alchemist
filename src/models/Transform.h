@@ -33,12 +33,10 @@ public:
 
     // Update method (e.g., for animation)
     void Update(float time);
-        // Example: Update position, rotation, etc.
-    
+        void BindConstantBuffer();
 
-    // Render method (might be empty if rendering is handled elsewhere)
-    void BindConstantBuffer();
-        // Example: Render the entity (might not be implemented here)
+        //imgui window
+        void controlWindow();
 
 private:
     XMMATRIX transform;

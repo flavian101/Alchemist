@@ -6,10 +6,11 @@
 class Model : public RenderableObject
 {
 public:
-	Model(Graphics& g, ShaderManager shaderManager);
+	Model(const std::string& name,Graphics& g, ShaderManager shaderManager);
 
 	void CreateMesh( std::vector<unsigned short>& indices, std::vector<Vertex> vertices);
 	virtual void Render() override;
+	void controlWindow()override ;
 
 	
 

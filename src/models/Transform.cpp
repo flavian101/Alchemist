@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <MathUtils\MathUtils.h>
 
 Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotation, const XMFLOAT3& scale)
 	:
@@ -44,4 +45,11 @@ void Transform::Update(float time)
 void Transform::BindConstantBuffer()
 {
 	m_graphics.GetContext()->VSSetConstantBuffers(0, 1, CB_Buffer.GetAddressOf());
+}
+
+void Transform::controlWindow()
+{
+	Math::ImGuiDragXMVector3("position", m_position);
+	Math::ImGuiDragXMVector3("Rotation", m_rotation);
+	Math::ImGuiDragXMVector3("Scale", m_scale);
 }
