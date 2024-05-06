@@ -37,7 +37,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	AddObject(cube);
 
 	plane = new Plane("ground", m_graphics, *defaultShader);
-	plane->CreatePlane();
+	plane->CreatePlane(10.0f,10.0f,50.0f,50.0f);
 	AddObject(plane);
 
 
