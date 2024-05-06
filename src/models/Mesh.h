@@ -1,28 +1,19 @@
 #pragma once
-#include "DirectXMath.h"
-#include "Graphics\Utilis.h"
-//#include "ConstantBuffer.h"
-
+#include "MeshParts.h"
+#include <vector>
+#include <memory>
 
 class Mesh
 {
 public:
-	Mesh(Graphics& g);
+    Mesh(Graphics& g);
 
-	void setIndices(std::vector<unsigned short>& indices);
-	void setVertices(std::vector<Vertex>& vertices);
-	std::vector<unsigned short>& getIndices();
-	std::vector<Vertex>& getVertices();
-	void Bind();
+    void AddMeshPart(MeshParts parts);
+    void Bind();
+    void Render();
+
 
 private:
-	Graphics& m_graphics;
-	Utils::VertexBuffer vertexBuffer;
-	Utils::IndexBuffer indexBuffer;
-	Utils::Topology topology;
-	std::vector<unsigned short> m_indices;
-	std::vector<Vertex> m_vertices;
-	UINT indexCount =0u;
-	
+    Graphics& m_graphics;
+    std::vector<MeshParts> m_meshParts;
 };
-

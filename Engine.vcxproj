@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\models\MeshParts.cpp" />
     <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Sample\Plane.cpp" />
     <ClCompile Include="src\Graphics\Camera\CameraController.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\models\MeshParts.h" />
     <ClInclude Include="src\MathUtils\MathUtils.h" />
     <ClInclude Include="src\Sample\Plane.h" />
     <ClInclude Include="src\Graphics\Camera\CameraController.h" />

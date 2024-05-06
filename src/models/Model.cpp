@@ -9,18 +9,18 @@ Model::Model(const std::string& name,Graphics& g, ShaderManager shaderManager)
 	
 }
 
-void Model::CreateMesh(std::vector<unsigned short>& indices, std::vector<Vertex> vertices)
+void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<unsigned short>& indices )
 {
-	m_mesh.setIndices(indices);
-	m_mesh.setVertices(vertices);
-
+	MeshParts* part = new MeshParts(m_graphics);
+	part->Initialize(indices, vertices);
+	m_mesh.AddMeshPart(*part);
 }
 
 void Model::Render()
 {
 	m_transform.BindConstantBuffer();
 	m_mesh.Bind();
-	m_graphics.Render(this->m_mesh.getIndices().size());
+	m_mesh.Render();
 }
 
 void Model::controlWindow()
@@ -30,8 +30,8 @@ void Model::controlWindow()
 
 	ImGui::Text("Information");
 	ImGui::Text("name %s",m_name.c_str());
-	ImGui::Text("index count %d", m_mesh.getIndices().size());
-	ImGui::Text("Vertex count %d", m_mesh.getVertices().size());
+	//ImGui::Text("index count %d", m_mesh.getIndices().size());
+	//ImGui::Text("Vertex count %d", m_mesh.getVertices().size());
 
 
 

@@ -5,8 +5,7 @@
 
 Cube::Cube(const std::string& name,Graphics& g, ShaderManager manager)
     :Model(name,g,manager),
-    m_graphic(g)
-   
+    m_graphic(g)   
 {
     m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
     this->setTranslation(Math::XMVectorToFloat3(m_position));
@@ -69,7 +68,7 @@ void Cube::CreateCube()
     indices.push_back(3);
     indices.push_back(7);
 
-    CreateMesh(indices, vertices);
+    CreateMesh(vertices, indices);
 }
 
 void Cube::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)

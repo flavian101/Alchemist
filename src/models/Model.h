@@ -8,7 +8,8 @@ class Model : public RenderableObject
 public:
 	Model(const std::string& name,Graphics& g, ShaderManager shaderManager);
 
-	void CreateMesh( std::vector<unsigned short>& indices, std::vector<Vertex> vertices);
+	void CreateMesh(const std::vector<Vertex>& vertices,const  std::vector<unsigned short>& indices );
+
 	virtual void Render() override;
 	void controlWindow()override ;
 

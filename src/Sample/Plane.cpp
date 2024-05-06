@@ -27,5 +27,5 @@ void Plane::CreatePlane()
 	indices.push_back(2);
 	indices.push_back(3);
 
-	CreateMesh(indices, vertices);
+	CreateMesh(vertices, indices);
 }

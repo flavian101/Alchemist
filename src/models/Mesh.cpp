@@ -2,45 +2,30 @@
 
 Mesh::Mesh(Graphics& g)
 	:
-	m_graphics(g),
-	vertexBuffer(g),
-	indexBuffer(g),
-	topology(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
+	m_graphics(g)
 {
 }
 
-void Mesh::setIndices(std::vector<unsigned short>& indices)
+void Mesh::AddMeshPart(MeshParts parts)
 {
-	this->m_indices = indices;
-	indexCount = m_indices.size();
-	indexBuffer.InitializeIndexBuffer(m_indices);
-	
+	m_meshParts.emplace_back(m_graphics);
+	m_meshParts.back().Initialize(parts.getIndices(), parts.getVertices());
 }
-
-void Mesh::setVertices(std::vector<Vertex>& vertices)
-{
-	this->m_vertices = vertices;
-	vertexBuffer.InitializeVertexBuffer(m_vertices);
-
-}
-
-std::vector<unsigned short>& Mesh::getIndices()
-{
-	return m_indices;
-}
-
-std::vector<Vertex>& Mesh::getVertices()
-{
-	return m_vertices;
-}
-
 void Mesh::Bind()
 {
-	topology.Bind();
-	vertexBuffer.Bind();
-	indexBuffer.Bind();
-
-
+	for (auto& meshPart : m_meshParts)
+	{
+		meshPart.Bind();
+	}
 }
+
+void Mesh::Render()
+{
+	for (auto& meshPart : m_meshParts)
+	{
+		m_graphics.Render(meshPart.IndexCount());
+	}
+}
+
 
 
