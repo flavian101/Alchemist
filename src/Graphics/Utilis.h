@@ -33,7 +33,7 @@ namespace Utils
 	{
 	public:
 		InputLayout(Graphics& g);
-		void CreateLayout(Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
+		void CreateLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		void Bind();
 	private:
 		Graphics& m_graphics;
@@ -77,9 +77,11 @@ namespace Utils
 	class Texture
 	{
 	public:
-		Texture(Graphics& g, const char* path, UINT slot = 0);
-		void Bind(Graphics& g);
+		Texture(Graphics& g);
+		void LoadTexture(const char* path, UINT slot = 0);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		UINT m_slot;
 		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView> textureView;
 		Microsoft::WRL::ComPtr < ID3D11Texture2D> pTex = nullptr;
@@ -89,8 +91,9 @@ namespace Utils
 	public:
 		Sampler(Graphics& g);
 
-		void Bind(Graphics& g);
+		void Bind();
 	private:
+		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
 	};
 

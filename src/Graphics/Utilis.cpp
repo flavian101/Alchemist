@@ -1,6 +1,7 @@
 #include "Utilis.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb image.h"
+#include <codecvt>
 
 
 Utils::VertexBuffer::VertexBuffer(Graphics& g)
@@ -81,16 +82,9 @@ Utils::InputLayout::InputLayout(Graphics& g)
 {
    
 }
-void Utils::InputLayout::CreateLayout(Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
+void Utils::InputLayout::CreateLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-
-    };
-    UINT numElements = ARRAYSIZE(layout);
-    CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
+    CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layoutDesc, numElements, pVsByteCode->GetBufferPointer(),
         pVsByteCode->GetBufferSize(), pInputLayout.GetAddressOf()));
 
 }
@@ -154,19 +148,25 @@ void Utils::Topology::Bind()
     m_graphics.GetContext()->IASetPrimitiveTopology(type);
 }
 
-Utils::Texture::Texture(Graphics& g, const char* path, UINT slot)
+Utils::Texture::Texture(Graphics& g)
     :
-    m_slot(slot)
+    m_graphics(g)
+{}
+
+void Utils::Texture::LoadTexture(const char* path, UINT slot)
 {
-    int image_Width, image_height, image_Channels, image_Desired_channels = 4;
+    m_slot = slot;
+    int image_Width, image_height , image_Channels, image_Desired_channels = 4;
 
     unsigned char* data = stbi_load(path, &image_Width, &image_height,
         &image_Channels, image_Desired_channels);
 
     if (data == NULL)
     {
+      //  std::wstring errorMsg = L"Failed to load the texture";
+        //errorMsg += std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(path);
+       // MessageBox(nullptr, errorMsg.c_str(), L"ERROR", MB_ICONWARNING | MB_OK);
         MessageBox(nullptr, L"Failed to load the texture", L"ERROR", MB_ICONWARNING | MB_OK);
-        //MessageBox(g.getHwnd(), (L"Failed to load the texture"+ (LPCWSTR)filename), L"ERROR", MB_ICONWARNING | MB_OK);
     }
     int image_pitch = image_Width * 4;
 
@@ -187,7 +187,7 @@ Utils::Texture::Texture(Graphics& g, const char* path, UINT slot)
     sts.pSysMem = data;
     sts.SysMemPitch = image_pitch;
 
-    CHECK_RESULT(g.GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
     // create the resource view on the texture
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Format = ts.Format;
@@ -195,20 +195,20 @@ Utils::Texture::Texture(Graphics& g, const char* path, UINT slot)
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
 
-    CHECK_RESULT( g.GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
-
+    CHECK_RESULT(m_graphics.GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
 
     stbi_image_free(data);
-
 }
 
-void Utils::Texture::Bind(Graphics& g)
+void Utils::Texture::Bind()
 {
-    g.GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
+    m_graphics.GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
 
 }
 
 Utils::Sampler::Sampler(Graphics& g)
+    :
+    m_graphics(g)
 {
     D3D11_SAMPLER_DESC sp;
     ZeroMemory(&sp, sizeof(sp));
@@ -227,9 +227,9 @@ Utils::Sampler::Sampler(Graphics& g)
 
 
 }
-void Utils::Sampler::Bind(Graphics& g)
+void Utils::Sampler::Bind()
 {
-    g.GetContext()->PSSetSamplers(0, 1, pSampler.GetAddressOf());
+    m_graphics.GetContext()->PSSetSamplers(0, 1, pSampler.GetAddressOf());
 
 }
 

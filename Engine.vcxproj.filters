@@ -231,5 +231,9 @@
   <ItemGroup>
     <FxCompile Include="Assets\shader\PixelShader.hlsl" />
     <FxCompile Include="Assets\shader\VertexShader.hlsl" />
+    <FxCompile Include="Assets\shader\T_vertexShader.hlsl" />
+    <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

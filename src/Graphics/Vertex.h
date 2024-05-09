@@ -1,47 +1,43 @@
 #pragma once
+
 #include <DirectXMath.h>
-#include <vector>
 
 using namespace DirectX;
+
 class Vertex
 {
 public:
-	Vertex();
-	//Vertex(float x, float y, float z,
-	//	float u, float v,
-	//	float nx, float ny, float nz)
-	//	:
-	//	pos3(x, y, z),
-	//	tex(u, v),
-	//	normals(nx, ny, nz),
-	//	pos2(0.0f,0.0f),
-	//	col(0.0f,0.0f,0.0f,0.0f)
-	//{
-	//
-	//}
-	//Vertex(float x, float y,
-	//	float u, float v)
-	//	:
-	//	pos2(x, y),
-	//	tex(u, v),
-	//	pos3(0,0,0),
-	//	normals(0.0f,0.0f,0.0f),
-	//	col(0.0f, 0.0f, 0.0f, 0.0f)
-	//{
-	//
-	//}
-	Vertex(float x, float y,float z, float r, float g, float b)
-		:
-		pos3(x, y,z),
-		col(r, g, b, 1.f)	
-	{
-	}
+    union
+    {
+        struct Pos3Col
+        {
+            XMFLOAT3 pos;
+            XMFLOAT4 col;
+           // float padding1; // Add padding to ensure consistent size
+        } pos3Col;
 
-private:
-	XMFLOAT3 pos3;
-	//DirectX::XMFLOAT2 pos2;
-	//DirectX::XMFLOAT2 tex;
-	//DirectX::XMFLOAT3 normals;
-	XMFLOAT4 col;
+        struct Pos2TexCol
+        {
+            XMFLOAT3 pos;
+            XMFLOAT2 tex;
+        } pos3Tex;
 
+        //more
+    };
+
+    Vertex(float x, float y, float z, float r, float g, float b)
+    {
+        pos3Col.pos = XMFLOAT3(x, y, z);
+       // pos3Col.padding1 = 0.0f; // Initialize padding
+        pos3Col.col = XMFLOAT4(r, g, b, 1.0f);
+    }
+
+    Vertex(float x, float y,float z, float u, float v)
+    {
+        pos3Tex.pos = XMFLOAT3(x, y, z);
+        pos3Tex.tex = XMFLOAT2(u, v);
+    }
+
+    // Ensure proper destruction of union members
+    ~Vertex() {}
 };

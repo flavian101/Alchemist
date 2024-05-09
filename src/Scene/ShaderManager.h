@@ -9,6 +9,7 @@ public:
 	ShaderManager(Graphics& g);
 
 	void LoadShaders(LPCWSTR vertexShader, LPCWSTR pixelShader);
+	void SetShaderLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements);
 	void BindShaders();
 	// Getter methods for shaders
 	Utils::VertexShader GetVertexShader() { return m_vertexShader; }

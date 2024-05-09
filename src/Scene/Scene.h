@@ -45,6 +45,7 @@ private:
 	Plane* plane;
 	Input* input;
 	ShaderManager* defaultShader;
+	ShaderManager* texturedShader;
 	Model* m_selectedModel;
 	bool m_renameModel = false;
 

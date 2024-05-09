@@ -17,14 +17,15 @@ Cube::Cube(const std::string& name,Graphics& g, ShaderManager manager)
 void Cube::CreateCube()
 {
     // Define vertices for the cube
-	vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-left-back
-	vertices.push_back(Vertex(-1.0f, +1.0f, -1.0f, 0.0f, 1.0f, 0.0f)); // top-left-back
-	vertices.push_back(Vertex(+1.0f, +1.0f, -1.0f, 0.0f, 0.0f, 1.0f)); // top-right-back
-	vertices.push_back(Vertex(+1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.0f)); // bottom-right-back
-	vertices.push_back(Vertex(-1.0f, -1.0f, +1.0f, 0.0f, 1.0f, 1.0f)); // bottom-left-front
-	vertices.push_back(Vertex(-1.0f, +1.0f, +1.0f, 1.0f, 1.0f, 1.0f)); // top-left-front
-	vertices.push_back(Vertex(+1.0f, +1.0f, +1.0f, 1.0f, 0.0f, 1.0f)); // top-right-front
-	vertices.push_back(Vertex(+1.0f, -1.0f, +1.0f, 1.0f, 0.0f, 0.0f)); // bottom-right-front
+    vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f)); // bottom-left-back
+    vertices.push_back(Vertex(-1.0f, +1.0f, -1.0f, 0.0f, 1.0f)); // top-left-back
+    vertices.push_back(Vertex(+1.0f, +1.0f, -1.0f, 1.0f, 1.0f)); // top-right-back
+    vertices.push_back(Vertex(+1.0f, -1.0f, -1.0f, 1.0f, 0.0f)); // bottom-right-back
+    vertices.push_back(Vertex(-1.0f, -1.0f, +1.0f, 1.0f, 0.0f)); // bottom-left-front
+    vertices.push_back(Vertex(-1.0f, +1.0f, +1.0f, 1.0f, 1.0f)); // top-left-front
+    vertices.push_back(Vertex(+1.0f, +1.0f, +1.0f, 0.0f, 1.0f)); // top-right-front
+    vertices.push_back(Vertex(+1.0f, -1.0f, +1.0f, 0.0f, 0.0f)); // bottom-right-front
+
 
     indices.push_back(0);
     indices.push_back(1);
@@ -68,7 +69,8 @@ void Cube::CreateCube()
     indices.push_back(3);
     indices.push_back(7);
 
-    CreateMesh(vertices, indices);
+    //CreateMesh(vertices, indices);
+    TexturedMesh(vertices, indices, "Assets/textures/metalpanel.jpg", 0);
 }
 
 void Cube::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)

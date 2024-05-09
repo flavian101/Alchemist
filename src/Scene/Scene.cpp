@@ -2,11 +2,12 @@
 
 Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	:
-	m_graphics(g),
 	m_name(name),
-	sceneCamera(nullptr)	,
+	m_graphics(g),
+	sceneCamera(nullptr),
 	input(nullptr),
-	defaultShader(nullptr),			
+	defaultShader(nullptr),
+	texturedShader(nullptr),
 	perspectiveCamera(nullptr),	
 	orthographicCamera(nullptr), 
 	cube(nullptr),			
@@ -19,6 +20,26 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	defaultShader = new ShaderManager(m_graphics);
 	defaultShader->LoadShaders(L"Assets/shader/VertexShader.cso",
 		L"Assets/shader/PixelShader.cso");
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+
+	};
+	UINT numElements = ARRAYSIZE(layout);
+	defaultShader->SetShaderLayout(layout,numElements);
+
+	texturedShader = new ShaderManager(m_graphics);
+	texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.cso",
+		L"Assets/shader/T_pixelShader.cso");
+	D3D11_INPUT_ELEMENT_DESC TextureLayout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+
+	};
+	UINT t_numElements = ARRAYSIZE(TextureLayout);
+	texturedShader->SetShaderLayout(TextureLayout, t_numElements);
 
 	perspectiveCamera = new PerspectiveCamera();
 	perspectiveCamera->SetCamera(45.0f, m_graphics.getAspectRatio(), 1.0f, 1000.0f);
@@ -54,6 +75,7 @@ Scene::~Scene()
 	//delete orthographicCamera;
 	//delete controller;
 	delete defaultShader;
+	delete texturedShader;
 	delete cube;
 	delete plane;
 }
@@ -112,11 +134,13 @@ void Scene::Render()
 		m_graphics.SetProjectionMatrix(selectedCamera->getActiveCamera()->GetProjectionMatrix());
 	}
 	defaultShader->BindShaders();
-
-	for (auto obj : m_models)
-	{
-		obj->Render();
-	}
+	plane->Render();
+	texturedShader->BindShaders();
+	cube->Render();
+	//for (auto obj : m_models)
+	//{
+	//	obj->Render();
+	//}
 
 	
 }
