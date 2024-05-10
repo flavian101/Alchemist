@@ -41,6 +41,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	UINT t_numElements = ARRAYSIZE(TextureLayout);
 	texturedShader->SetShaderLayout(TextureLayout, t_numElements);
 
+	//cameras
 	perspectiveCamera = new PerspectiveCamera();
 	perspectiveCamera->SetCamera(45.0f, m_graphics.getAspectRatio(), 1.0f, 1000.0f);
 
@@ -53,7 +54,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	sceneCamera->SetPerspectiveCamera(perspectiveCamera);
 
 	//model loading 
-	cube = new Cube("player", m_graphics, *defaultShader);
+	cube = new Cube("player", m_graphics, *texturedShader);
 	cube->CreateCube();
 	AddObject(cube);
 
@@ -132,15 +133,11 @@ void Scene::Render()
 	{
 		m_graphics.SetViewMatrix(selectedCamera->getActiveCamera()->GetView());
 		m_graphics.SetProjectionMatrix(selectedCamera->getActiveCamera()->GetProjectionMatrix());
+	}	
+	for (auto obj : m_models)
+	{
+		obj->Render();
 	}
-	defaultShader->BindShaders();
-	plane->Render();
-	texturedShader->BindShaders();
-	cube->Render();
-	//for (auto obj : m_models)
-	//{
-	//	obj->Render();
-	//}
 
 	
 }

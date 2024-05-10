@@ -353,9 +353,8 @@ void Graphics::Resize(UINT width, UINT height)
 	D3D11_RASTERIZER_DESC rDesc;
 	ZeroMemory(&rDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rDesc.FillMode = D3D11_FILL_SOLID;
-	rDesc.CullMode = D3D11_CULL_NONE;
+	rDesc.CullMode = D3D11_CULL_BACK;
 	rDesc.FrontCounterClockwise = false;
-	rDesc.CullMode = D3D11_CULL_NONE;
 	CHECK_RESULT(pDevice->CreateRasterizerState(&rDesc, CCWcullMode.GetAddressOf()));
 
 	

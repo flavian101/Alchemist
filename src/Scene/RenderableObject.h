@@ -32,12 +32,12 @@ public:
 	
 private:
 	Graphics& m_graphics;
+	ShaderManager m_shaderManager;
+	Transform m_transform;
 
 
 protected:
 	std::string m_name;
-	ShaderManager m_shaderManager;
-	Transform m_transform;
 
 };
 

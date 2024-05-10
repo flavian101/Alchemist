@@ -21,6 +21,8 @@ private:
 protected:
 	Graphics& m_graphics;
 	Mesh m_mesh;
+	MeshParts* part;
+	ShaderManager m_manager;
 	Utils::Sampler* samp;
 	Utils::Texture* texture;
 	bool isTextured;

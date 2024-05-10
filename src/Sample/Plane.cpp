@@ -38,7 +38,6 @@ void Plane::CreatePlane(float width, float depth,
         }
     }
 
-    // Generate indices
     for (UINT i = 0; i < m - 1; ++i)
     {
         for (UINT j = 0; j < n - 1; ++j)
@@ -49,17 +48,16 @@ void Plane::CreatePlane(float width, float depth,
             UINT bottomLeft = (i + 1) * n + j;
             UINT bottomRight = bottomLeft + 1;
 
-            // Add indices for the quad
+            // Reverse the order of indices to create the quad in the opposite winding order
             indices.push_back(topLeft);
-            indices.push_back(bottomLeft);
             indices.push_back(topRight);
+            indices.push_back(bottomLeft);
 
             indices.push_back(topRight);
-            indices.push_back(bottomLeft);
             indices.push_back(bottomRight);
+            indices.push_back(bottomLeft);
         }
     }
-
 
     // Now you have the vertices and indices with color values
     // You can use them to create the mesh

@@ -4,7 +4,9 @@ Model::Model(const std::string& name,Graphics& g, ShaderManager shaderManager)
 	:
 	RenderableObject(name,g,shaderManager),
 	m_graphics(g),
+	m_manager(shaderManager),
 	m_mesh(g),
+	part(nullptr),
 	samp(nullptr),
 	texture(nullptr),
 	isTextured(false)
@@ -14,6 +16,7 @@ Model::Model(const std::string& name,Graphics& g, ShaderManager shaderManager)
 
 Model::~Model()
 {
+	delete part;
 	delete samp;
 	delete texture;
 }
@@ -33,7 +36,7 @@ void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<
 
 void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<unsigned short>& indices )
 {
-	MeshParts* part = new MeshParts(m_graphics);
+	part = new MeshParts(m_graphics);
 	part->Initialize(indices, vertices);
 	m_mesh.AddMeshPart(*part);
 }
@@ -44,7 +47,7 @@ void Model::Render()
 	{
 		texture->Bind();
 	}
-	m_transform.BindConstantBuffer();
+	RenderableObject::Render();
 	m_mesh.Bind();
 	m_mesh.Render();
 }
@@ -55,9 +58,9 @@ void Model::controlWindow()
 	ImGui::Separator();
 
 	ImGui::Text("Information");
-	ImGui::Text("name %s",m_name.c_str());
-	//ImGui::Text("index count %d", m_mesh.getIndices().size());
-	//ImGui::Text("Vertex count %d", m_mesh.getVertices().size());
+	ImGui::Text("name: %s",m_name.c_str());
+	ImGui::Text("index count: %d", part->getIndices().size());
+	ImGui::Text("Vertex count: %d", part->getVertices().size());
 
 
 
