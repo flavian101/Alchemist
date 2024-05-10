@@ -17,57 +17,90 @@ Cube::Cube(const std::string& name,Graphics& g, ShaderManager manager)
 void Cube::CreateCube()
 {
     // Define vertices for the cube
-    vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f)); // bottom-left-back
-    vertices.push_back(Vertex(-1.0f, +1.0f, -1.0f, 0.0f, 1.0f)); // top-left-back
-    vertices.push_back(Vertex(+1.0f, +1.0f, -1.0f, 1.0f, 1.0f)); // top-right-back
-    vertices.push_back(Vertex(+1.0f, -1.0f, -1.0f, 1.0f, 0.0f)); // bottom-right-back
-    vertices.push_back(Vertex(-1.0f, -1.0f, +1.0f, 1.0f, 0.0f)); // bottom-left-front
-    vertices.push_back(Vertex(-1.0f, +1.0f, +1.0f, 1.0f, 1.0f)); // top-left-front
-    vertices.push_back(Vertex(+1.0f, +1.0f, +1.0f, 0.0f, 1.0f)); // top-right-front
-    vertices.push_back(Vertex(+1.0f, -1.0f, +1.0f, 0.0f, 0.0f)); // bottom-right-front
+    vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-left-back
+    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 0.0f)); // top-left-back
+    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 0.0f)); // top-right-back
+    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-right-back
 
+    // Back face
+    vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 1.0f, 1.0f)); // bottom-left-front
+    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 0.0f, 1.0f)); // bottom-right-front
+    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-left-front
 
+    // Top Face
+    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f)); // top-left-back
+    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-left-front
+    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f)); // top-right-back
+
+    // Bottom Face
+    vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-left-back
+    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-right-back
+    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-right-front
+    vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f)); // bottom-left-front
+
+    // Left Face
+    vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 1.0f)); // bottom-left-front
+    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-left-front
+    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 1.0f, 0.0f)); // top-left-back
+    vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-left-back
+
+    // Right Face
+    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-right-back
+    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 0.0f, 0.0f)); // top-right-back
+    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 1.0f, 1.0f)); // bottom-right-front
+
+    indices.reserve(36); // Reserve space for efficiency
+
+    // Front Face
     indices.push_back(0);
     indices.push_back(1);
     indices.push_back(2);
     indices.push_back(0);
     indices.push_back(2);
     indices.push_back(3);
-    // Front face
+
+    // Back Face
     indices.push_back(4);
     indices.push_back(5);
     indices.push_back(6);
     indices.push_back(4);
-    indices.push_back(7);
-    indices.push_back(6);
-    // Left face
-    indices.push_back(4);
-    indices.push_back(5);
-    indices.push_back(1);
-    indices.push_back(4);
-    indices.push_back(1);
-    indices.push_back(0);
-    // Right face
-    indices.push_back(3);
-    indices.push_back(2);
-    indices.push_back(6);
-    indices.push_back(3);
     indices.push_back(6);
     indices.push_back(7);
-    // Top face
-    indices.push_back(1);
-    indices.push_back(5);
-    indices.push_back(6);
-    indices.push_back(1);
-    indices.push_back(6);
-    indices.push_back(2);
-    // Bottom face
-    indices.push_back(4);
-    indices.push_back(0);
-    indices.push_back(3);
-    indices.push_back(4);
-    indices.push_back(3);
-    indices.push_back(7);
+
+    // Top Face
+    indices.push_back(8);
+    indices.push_back(9);
+    indices.push_back(10);
+    indices.push_back(8);
+    indices.push_back(10);
+    indices.push_back(11);
+
+    // Bottom Face
+    indices.push_back(12);
+    indices.push_back(13);
+    indices.push_back(14);
+    indices.push_back(12);
+    indices.push_back(14);
+    indices.push_back(15);
+
+    // Left Face
+    indices.push_back(16);
+    indices.push_back(17);
+    indices.push_back(18);
+    indices.push_back(16);
+    indices.push_back(18);
+    indices.push_back(19);
+
+    // Right Face
+    indices.push_back(20);
+    indices.push_back(21);
+    indices.push_back(22);
+    indices.push_back(20);
+    indices.push_back(22);
+    indices.push_back(23);
 
     //CreateMesh(vertices, indices);
     TexturedMesh(vertices, indices, "Assets/textures/metalpanel.jpg", 0);

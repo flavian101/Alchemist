@@ -11,7 +11,7 @@ namespace Math {
         XMStoreFloat3(&float3, vector);
 
         // Pass the XMFLOAT3 by reference
-        if (ImGui::DragFloat3(label, &float3.x, 1.0f))
+        if (ImGui::DragFloat3(label, &float3.x, .1f))
         {
             // Update the XMVECTOR from the modified XMFLOAT3
             vector = XMLoadFloat3(&float3);
