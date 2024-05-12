@@ -41,6 +41,11 @@ void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<un
 	m_mesh.AddMeshPart(*part);
 }
 
+MeshParts* Model::getMesh()
+{
+	return part;
+}
+
 void Model::Render()
 {
 	if (isTextured)

@@ -4,6 +4,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	:
 	m_name(name),
 	m_graphics(g),
+	model(nullptr),
 	sceneCamera(nullptr),
 	input(nullptr),
 	defaultShader(nullptr),
@@ -161,6 +162,8 @@ void Scene::controlWindow()
 	// Display a list of models in a child window
 	if (ImGui::BeginChild("models", ImVec2(0, 200), true))
 	{
+		
+
 		for (auto& model : m_models)
 		{
 			// Display model names as selectable items
@@ -192,6 +195,29 @@ void Scene::controlWindow()
 		}
 		ImGui::EndChild();
 	}
+
+	static char modelName[128] = ""; // Buffer to store new name
+
+	// Button to add the object
+	if (ImGui::Button("Add object", ImVec2(100, 0)))
+	{
+		
+		// Only create and add the model if modelName is not empty
+		if (modelName[0] != '\0')
+		{
+			model = new Model(modelName, m_graphics, *defaultShader);
+
+			model->CreateMesh(cube->getMesh()->getVertices(),cube->getMesh()->getIndices());
+
+			m_models.push_back(model);
+
+			// Optionally, clear the modelName buffer after adding the model
+			modelName[0] = '\0';
+		}
+	}
+	// Input text field to name the new model
+	ImGui::InputText("New Name", modelName, IM_ARRAYSIZE(modelName));
+	
 
 	// Display properties of the selected model
 	if (m_selectedModel)

@@ -35,6 +35,7 @@ public:
 private:
 	Graphics& m_graphics;
 	std::vector<Model*> m_models; // Use std::vector<std::unique_ptr<Model>> for ownership
+	Model* model;
 	std::string m_name;
 	CameraController* controller;
 	SceneCamera* selectedCamera;

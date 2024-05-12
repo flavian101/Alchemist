@@ -11,6 +11,7 @@ public:
 
 	void TexturedMesh(const std::vector<Vertex>& vertices, const  std::vector<unsigned short>& indices, const char* path, UINT slot);
 	void CreateMesh(const std::vector<Vertex>& vertices,const  std::vector<unsigned short>& indices );
+	MeshParts* getMesh();
 
 	virtual void Render() override;
 	void controlWindow()override ;
