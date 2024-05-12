@@ -218,8 +218,8 @@ Utils::Sampler::Sampler(Graphics& g)
     sp.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     sp.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     sp.MipLODBias = 0.0f;
-    sp.MaxAnisotropy = 16;
-    sp.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    sp.MaxAnisotropy = 4u;
+    sp.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sp.MinLOD = 0;
     sp.MaxLOD = D3D11_FLOAT32_MAX;
 

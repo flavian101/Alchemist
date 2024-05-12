@@ -1,12 +1,12 @@
-cbuffer cb_vsConstantBuffer
+cbuffer cb_vsConstantBuffer : register(b0)
 {
-	matrix WVP;
-	matrix Model;
+    matrix WVP : packoffset(c0);
+    matrix Model : packoffset(c4);
 };
 
 struct VertexIn
 {
-	float4 pos : POSITION;
+	float3 pos : POSITION;
 	float2 tex : TEXCOORD;
 };
 
@@ -16,8 +16,8 @@ struct VertexOut
 	float2 tex : TEXCOORD;
 };
 
-Texture2D tex;
-SamplerState samp;
+Texture2D tex : register(t0);
+SamplerState samp : register(s0);
 float4 main(VertexOut ps_in) :SV_Target
 {
 	return tex.Sample(samp, ps_in.tex);

@@ -1,12 +1,12 @@
-cbuffer cb_vsConstantBuffer
+cbuffer cb_vsConstantBuffer : register(b0)
 {
-    matrix WVP; 
-    matrix Model;
+    matrix WVP : packoffset(c0);
+    matrix Model : packoffset(c4);
 };
 
 struct VertexIn
 {
-    float4 pos : POSITION;
+    float3 pos : POSITION;
     float2 tex : TEXCOORD;
 };
 
@@ -20,7 +20,7 @@ VertexOut main(VertexIn vin)
 {
     VertexOut vs_out;
      
-    vs_out.posH = mul(vin.pos, WVP);
+    vs_out.posH = mul(float4(vin.pos, 1.0f), WVP);
     vs_out.tex = vin.tex;
     
     return vs_out;

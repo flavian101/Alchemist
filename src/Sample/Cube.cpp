@@ -18,39 +18,39 @@ void Cube::CreateCube()
 {
     // Define vertices for the cube
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-left-back
-    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 0.0f)); // top-left-back
-    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 0.0f)); // top-right-back
-    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-right-back
+    vertices.push_back(Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 0.0f)); // top-left-back
+    vertices.push_back(Vertex( 1.0f,  1.0f, -1.0f, 1.0f, 0.0f)); // top-right-back
+    vertices.push_back(Vertex( 1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-right-back
 
     // Back face
     vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 1.0f, 1.0f)); // bottom-left-front
-    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 0.0f, 1.0f)); // bottom-right-front
-    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-right-front
-    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-left-front
+    vertices.push_back(Vertex( 1.0f, -1.0f, 1.0f, 0.0f, 1.0f)); // bottom-right-front
+    vertices.push_back(Vertex( 1.0f,  1.0f, 1.0f, 0.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex(-1.0f,  1.0f, 1.0f, 1.0f, 0.0f)); // top-left-front
 
     // Top Face
     vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f)); // top-left-back
-    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-left-front
-    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-right-front
-    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f)); // top-right-back
+    vertices.push_back(Vertex(-1.0f, 1.0f,  1.0f, 0.0f, 0.0f)); // top-left-front
+    vertices.push_back(Vertex( 1.0f, 1.0f,  1.0f, 1.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex( 1.0f, 1.0f, -1.0f, 1.0f, 1.0f)); // top-right-back
 
     // Bottom Face
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-left-back
-    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-right-back
-    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-right-front
-    vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f)); // bottom-left-front
+    vertices.push_back(Vertex( 1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-right-back
+    vertices.push_back(Vertex( 1.0f, -1.0f,  1.0f, 0.0f, 0.0f)); // bottom-right-front
+    vertices.push_back(Vertex(-1.0f, -1.0f,  1.0f, 1.0f, 0.0f)); // bottom-left-front
 
     // Left Face
-    vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 1.0f)); // bottom-left-front
-    vertices.push_back(Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f)); // top-left-front
-    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 1.0f, 0.0f)); // top-left-back
+    vertices.push_back(Vertex(-1.0f, -1.0f,  1.0f, 0.0f, 1.0f)); // bottom-left-front
+    vertices.push_back(Vertex(-1.0f,  1.0f,  1.0f, 0.0f, 0.0f)); // top-left-front
+    vertices.push_back(Vertex(-1.0f,  1.0f, -1.0f, 1.0f, 0.0f)); // top-left-back
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f)); // bottom-left-back
 
     // Right Face
     vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f)); // bottom-right-back
-    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 0.0f, 0.0f)); // top-right-back
-    vertices.push_back(Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f)); // top-right-front
-    vertices.push_back(Vertex(1.0f, -1.0f, 1.0f, 1.0f, 1.0f)); // bottom-right-front
+    vertices.push_back(Vertex(1.0f,  1.0f, -1.0f, 0.0f, 0.0f)); // top-right-back
+    vertices.push_back(Vertex(1.0f,  1.0f,  1.0f, 1.0f, 0.0f)); // top-right-front
+    vertices.push_back(Vertex(1.0f, -1.0f,  1.0f, 1.0f, 1.0f)); // bottom-right-front
 
     indices.reserve(36); // Reserve space for efficiency
 

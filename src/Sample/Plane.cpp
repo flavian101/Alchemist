@@ -7,7 +7,7 @@ Plane::Plane(const std::string& name,Graphics& g, ShaderManager maneger)
 {
 	m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	this->setTranslation(Math::XMVectorToFloat3(m_position));
-	m_scale = XMVectorSet(20.0f, 1.0f, 20.0f, 0.0f);
+	m_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	this->setScale(Math::XMVectorToFloat3(m_scale));
 }
 
@@ -66,7 +66,7 @@ void Plane::CreatePlane(float width, float depth,
 
 float Plane::calculateHeight(float x, float z)
 {
-    float frequency = 2.0f;
-    float amplitude = 20.0f;
+    float frequency =1.0f;
+    float amplitude = 3.0f;
     return amplitude * sin(frequency * x) * cos(frequency * z);
 }
