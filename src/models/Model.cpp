@@ -24,6 +24,7 @@ Model::~Model()
 
 void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, const char* path, UINT slot)
 {
+	m_slot = slot;
 	isTextured = true;
 	samp = new Utils::Sampler(m_graphics);
 	samp->Bind();

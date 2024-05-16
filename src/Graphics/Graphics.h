@@ -3,6 +3,7 @@
 #include "ErrorEx.h"
 #include <memory>
 
+
 class Graphics
 {
 public:
@@ -69,7 +70,6 @@ private:
 	//raster states
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode;
 	//save
-
 
 
 

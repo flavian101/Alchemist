@@ -4,6 +4,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	:
 	m_name(name),
 	m_graphics(g),
+	m_win(win),
 	model(nullptr),
 	sceneCamera(nullptr),
 	input(nullptr),
@@ -63,11 +64,6 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
 	AddObject(plane);
 
-
-
-
-
-	// Initialize scene and renderable objects
 }
 
 Scene::~Scene()
@@ -155,15 +151,12 @@ void Scene::SwitchToOrthographic()
 void Scene::controlWindow()
 {
 
-	ImGui::Begin("Scene properties");
+	ImGui::Begin("Scene Hyrechi");
 
-	ImGui::Text("Models");
 
 	// Display a list of models in a child window
 	if (ImGui::BeginChild("models", ImVec2(0, 200), true))
 	{
-		
-
 		for (auto& model : m_models)
 		{
 			// Display model names as selectable items
@@ -172,7 +165,6 @@ void Scene::controlWindow()
 				// Update the selected model
 				m_selectedModel = model;
 			}
-
 			// Open a context menu when right-clicked on a model
 			if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
 			{

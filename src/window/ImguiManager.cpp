@@ -16,7 +16,7 @@ ImguiManager::ImguiManager()
 
     // Frame styles
     style.FramePadding = ImVec2(8, 4); // Decrease frame padding
-    style.FrameRounding = 2.0f; // Rounded frame corners
+    style.FrameRounding = 4.0f; // Rounded frame corners
     style.FrameBorderSize = 1.0f; // Increase frame border size for better visibility
 
     // Colors

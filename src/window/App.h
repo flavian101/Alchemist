@@ -15,7 +15,7 @@ public:
 
 private:
 	void Render();
-	void showImguiDemoWindow();
+	void GameProjects();
 	//
 private:
 	FrameTime timer;
@@ -23,7 +23,6 @@ private:
 	ImguiManager imgui;
 	Window window;
 	bool showDemoWindow = true;
-	//SceneManager manager;
-	Scene s_scene;
+	SceneManager sceneManager;
 	
 };

@@ -12,13 +12,13 @@ public:
 	void TexturedMesh(const std::vector<Vertex>& vertices, const  std::vector<unsigned short>& indices, const char* path, UINT slot);
 	void CreateMesh(const std::vector<Vertex>& vertices,const  std::vector<unsigned short>& indices );
 	MeshParts* getMesh();
+	UINT getSlot() { return m_slot; }
 
 	virtual void Render() override;
 	void controlWindow()override ;
 
 	
 
-private:
 protected:
 	Graphics& m_graphics;
 	Mesh m_mesh;
@@ -26,6 +26,7 @@ protected:
 	ShaderManager m_manager;
 	Utils::Sampler* samp;
 	Utils::Texture* texture;
+	UINT m_slot;
 	bool isTextured;
 	DirectX::XMVECTOR m_position;
 	DirectX::XMVECTOR m_orientation;

@@ -80,6 +80,7 @@ namespace Utils
 		Texture(Graphics& g);
 		void LoadTexture(const char* path, UINT slot = 0);
 		void Bind();
+		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
 	private:
 		Graphics& m_graphics;
 		UINT m_slot;

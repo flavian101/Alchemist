@@ -1,13 +1,14 @@
 #pragma once
 #include "Graphics\Graphics.h"
-#include "Scene\Scene.h"
 #include <unordered_map>
-
+#include "Scene\Scene.h"
+//#include "dataPack/SceneSerializer.h"
+//
 
 class SceneManager
 {
 public:
-	SceneManager(Graphics &g);
+	SceneManager(Graphics &g,Window& win);
 	~SceneManager();
     // Add a scene to the manager
     void AddScene(Scene* scene);
@@ -26,12 +27,21 @@ public:
 
     // Render the active scene
     void Render();
-	
+
+    void ControlWindow();
+
 
 private:
 	Graphics& m_graphics;
+    Window& m_window;
     std::vector<Scene*> scenes;
     Scene* activeScene;
+    Utils::Texture* thumbnail;
+    bool showSceneWindow = true;
+    bool createScenePopup = false;
+    //friend class SceneSerializer;
+
+
 
 };
 
