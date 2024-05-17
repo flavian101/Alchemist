@@ -91,7 +91,7 @@ void SceneManager::ControlWindow()
     }
     ImGui::EndMainMenuBar();
 
-    if (ImGui::Begin("Scenes", &showSceneWindow))
+    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove))
     {
         ImGui::BeginChild("Scene List", ImVec2(600, 100), true);
         for (const auto& scene : scenes)

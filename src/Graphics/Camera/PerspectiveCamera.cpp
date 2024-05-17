@@ -57,14 +57,13 @@ void PerspectiveCamera::ControlWindow()
     ImGui::PushItemWidth(100.0f);
     ImGui::SliderFloat("FOV", &m_FOV, 30.0f, 120.0f);
     ImGui::SliderFloat("Near Plane", &m_nearPlane, 0.1f, 2.0f);
-    ImGui::SliderFloat("Far Plane", &m_farPlane, 10.0f, 1000.0f);
+    ImGui::SliderFloat("Far Plane", &m_farPlane, 10.0f, 10000.0f);
     ImGui::PopItemWidth();
     ImGui::Separator();
 
     ImGui::Text("Camera Mode");
-    static CameraMode currentCameraMode = mode; // Initialize with the current mode
     const char* items[] = { "Free Look", "Third Person" };
-    int currentItem = static_cast<int>(currentCameraMode);
+    int currentItem = static_cast<int>(mode);
     // Render the combo box
     if (ImGui::BeginCombo("##CameraModeCombo", items[currentItem])) {
         for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
@@ -77,38 +76,16 @@ void PerspectiveCamera::ControlWindow()
         }
         ImGui::EndCombo();
 
-        // Reset camera position and target when switching modes
-        if (currentCameraMode != static_cast<CameraMode>(currentItem)) {
-            if (currentItem == FreeLook) {
-              // Reset();
-
-            }
-            else if (currentItem == ThirdPerson) {
-                //Reset();
-
-            }
-            // Recalculate view matrix
-            camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
-        }
+        
     }
-
-    // Update the current camera mode based on the selected item
-    currentCameraMode = static_cast<CameraMode>(currentItem);
-
-    // Update the camera mode of the PerspectiveCamera instance
-    mode = currentCameraMode;
-
-    // Call ThirdPersonWindow if the current mode is ThirdPerson
-    if (currentCameraMode == ThirdPerson)
-    {
+    mode = static_cast<CameraMode>(currentItem);
+    if (mode == ThirdPerson) {
         ThirdPersonWindow();
-
     }
-    else if (currentCameraMode == FreeLook)
-    {
+    else if (mode == FreeLook) {
         FreeLookWindow();
-
     }
+
 
     ImGui::Columns(1);
 }

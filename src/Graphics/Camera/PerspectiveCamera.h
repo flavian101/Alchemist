@@ -4,14 +4,14 @@
 #include <algorithm>
 #include "MathUtils\MathUtils.h"
 
-
+enum CameraMode {
+	FreeLook,
+	ThirdPerson
+};
 class PerspectiveCamera :public Camera
 {
 public:
-	enum CameraMode {
-		FreeLook,
-		ThirdPerson
-	};
+
 	PerspectiveCamera(float aspectRatio = static_cast<float>(16.0f)/static_cast<float>(9.0f), float nearPlane = 1.0f, float farPlane = 1000.0f,
 		const DirectX::XMVECTOR& position = DirectX::XMVectorSet(0.0f, 6.0f, -16.0f, 1.0f),
 		const DirectX::XMVECTOR& target =   DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -75,14 +75,16 @@ public:
 	void AddPitch(float angle);
 	void UpdateVectors();
 public:
-	CameraMode mode;
+	CameraMode mode = FreeLook;
 	XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	XMVECTOR camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	
 	XMMATRIX camRotationMatrix;
-	
+	float camYaw = 0.0f;
+	float camPitch = 0.0f;
+	float camRoll = 0.0f;
 
 private:
 	float m_FOV;
@@ -90,9 +92,7 @@ private:
 	float moveLeftRight = 0.0f;
 	float moveBackForward = 0.0f;
 	float moveUpDown = 0.0f;
-	float camYaw = 0.0f;
-	float camPitch = 0.0f;
-	float camRoll = 0.0f;
+	
 
 
 	float cameraSpeed;

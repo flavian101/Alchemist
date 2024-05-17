@@ -29,7 +29,7 @@ void SampleScene::Initialize()
 	orthographicCamera->SetCamera(m_graphics.getWidth(), m_graphics.getHeight(), 1.0f, 5.0f);
 
 
-	camera = new SceneCamera("main", pespectiveCamera);
+	camera = new SceneCamera("main",m_graphics,true);
 	camera->SetPerspectiveCamera(pespectiveCamera);
 	
 	cube.CreateCube();

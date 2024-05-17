@@ -1,216 +1,153 @@
-// SceneCamera.cpp
-
 #include "SceneCamera.h"
 
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
+std::vector<std::string> SceneCamera::m_cameraNames;
 
-SceneCamera::SceneCamera(const std::string& name, PerspectiveCamera* perspectiveCamera)
+SceneCamera::SceneCamera(const std::string& name, Graphics& g, bool perspective)
     : m_name(name),
-    m_perspectiveCamera(perspectiveCamera),
-    m_orthographicCamera(nullptr),
-    isPerspective(true)
-{
-    m_cameras[name] = this;
-    m_cameraNames.push_back(name);
-}
-
-SceneCamera::SceneCamera(const std::string& name, OrthographicCamera* orthographicCamera)
-    : m_name(name),
+    m_graphics(g),
     m_perspectiveCamera(nullptr),
-    m_orthographicCamera(orthographicCamera),
-    isPerspective(false)
+    m_orthographicCamera(nullptr),
+    isPerspective(perspective),
+    m_selectedCamera(this)
 {
+    if (isPerspective) {
+        m_perspectiveCamera = new PerspectiveCamera();
+        m_perspectiveCamera->SetCamera(45.0f, m_graphics.getAspectRatio(), 1.0f, 1000.0f);
+    }
+    else {
+        m_orthographicCamera = new OrthographicCamera();
+        m_orthographicCamera->SetCamera(m_graphics.getWidth(), m_graphics.getHeight(), 1.0f, 5.0f);
+    }
+
     m_cameras[name] = this;
     m_cameraNames.push_back(name);
 }
 
-SceneCamera::~SceneCamera()
-{
-    // Clean up your cameras here
-    //delete m_perspectiveCamera;
-   // delete m_orthographicCamera;
-   // delete m_selectedCamera;
-
+SceneCamera::~SceneCamera() {
+    delete m_perspectiveCamera;
+    delete m_orthographicCamera;
 }
 
-void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera)
-{
+void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera) {
+    delete m_perspectiveCamera;  // Clean up the old camera
     m_perspectiveCamera = newPerspectiveCamera;
     isPerspective = true;
 }
 
-void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamera)
-{
+void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamera) {
+    delete m_orthographicCamera;  // Clean up the old camera
     m_orthographicCamera = newOrthographicCamera;
     isPerspective = false;
 }
 
-void SceneCamera::Update(float delta)
-{
-    
+void SceneCamera::Update(float delta) {
+    m_selectedCamera = this->GetSelectedCamera();
+    if (m_selectedCamera) {
+        m_selectedCamera->getActiveCamera()->Update(delta);
+    }
 }
 
-void SceneCamera::Render()
-{
+void SceneCamera::Render() {
+    m_selectedCamera = this->GetSelectedCamera();
+    if (m_selectedCamera) {
+        m_graphics.SetViewMatrix(m_selectedCamera->getActiveCamera()->GetView());
+        m_graphics.SetProjectionMatrix(m_selectedCamera->getActiveCamera()->GetProjectionMatrix());
+    }
 }
 
-Camera* SceneCamera::getActiveCamera() const
-{
+Camera* SceneCamera::getActiveCamera() const {
     if (isPerspective)
+    {
         return m_perspectiveCamera;
+    }
     else
+    {
         return m_orthographicCamera;
+    }
 }
 
-SceneCamera* SceneCamera::GetSelectedCamera() const
-{
+SceneCamera* SceneCamera::GetSelectedCamera() const {
     return m_selectedCamera;
 }
 
-bool SceneCamera::isPerspectiveCamera()
-{
+bool SceneCamera::isPerspectiveCamera() const {
     return isPerspective;
 }
 
-PerspectiveCamera* SceneCamera::GetPerspective()
-{
+PerspectiveCamera* SceneCamera::GetPerspective() {
     return m_perspectiveCamera;
 }
 
-OrthographicCamera* SceneCamera::GetOrthographic()
-{
+OrthographicCamera* SceneCamera::GetOrthographic() {
     return m_orthographicCamera;
 }
-// SceneCamera.cpp
-void SceneCamera::CreateNewCamera(const std::string& name, bool perspective)
-{
-    // Check if the camera already exists
-    if (m_cameras.find(name) != m_cameras.end())
-    {
+
+void SceneCamera::CreateNewCamera(const std::string& name, bool perspective) {
+    if (m_cameras.find(name) != m_cameras.end()) {
         std::cout << "A camera with the name '" << name << "' already exists." << std::endl;
         return;
     }
 
-    // Create the new camera based on the perspective flag
-    SceneCamera* newCamera;
-    if (perspective)
-    {
-        newCamera = new SceneCamera(name, new PerspectiveCamera());
-    }
-    else
-    {
-        newCamera = new SceneCamera(name, new OrthographicCamera());
-    }
-
-    // Add the camera to the map
+    SceneCamera* newCamera = new SceneCamera(name, m_graphics, perspective);
     m_cameras[name] = newCamera;
-
-    // Add the camera name to the vector
     m_cameraNames.push_back(name);
 }
 
-const std::map<std::string, SceneCamera*>& SceneCamera::GetCameras()
-{
+const std::map<std::string, SceneCamera*>& SceneCamera::GetCameras() const {
     return m_cameras;
 }
 
-// SceneCamera.cpp
-void SceneCamera::ControlWindow()
+void SceneCamera::ControlWindow() 
 {
-    ImGui::Begin("Camera");
-
-    // Camera Selection
-    const std::map<std::string, SceneCamera*>& cameras = GetCameras();
-
-    ImGui::Text("Select Camera:");
-    ImGui::BeginChild("CameraSelection", ImVec2(0, 100), true);
-    for (const auto& [name, camera] : cameras)
-    {
-        bool isSelected = (m_selectedCamera == camera);
-        if (ImGui::Selectable(name.c_str(), isSelected))
-        {
-            if (isSelected)
-                m_selectedCamera = nullptr; // Deselect the camera
-            else
-                m_selectedCamera = camera; // Select the camera
-        }
+    ImGui::Text("Camera Settings");
+    if (ImGui::Button("Create New Camera")) {
+        showCreateWindow = true;
     }
-    ImGui::EndChild();
-
-
-    ImGui::Separator();
-
-    // Button to create a new camera
-    if (ImGui::Button("Create New Camera"))
-    {
-        ImGui::OpenPopup("New Camera Popup");
-    }
-
-    // New camera pop-up
-    if (ImGui::BeginPopupModal("New Camera Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (showCreateWindow)
     {
         static char cameraName[128] = "";
         ImGui::InputText("Name", cameraName, IM_ARRAYSIZE(cameraName));
-
-        static int cameraType = 0;
-        const char* cameraTypes[] = { "Perspective", "Orthographic" };
-        ImGui::Combo("Type", &cameraType, cameraTypes, IM_ARRAYSIZE(cameraTypes));
-
-        if (ImGui::Button("Add Camera"))
-        {
-            if (cameraType == 0)
-                CreateNewCamera(cameraName, true); // Perspective
-            else
-                CreateNewCamera(cameraName, false); // Orthographic
-
-            ImGui::CloseCurrentPopup();
+        if (ImGui::Button("Add Camera")) {
+            CreateNewCamera(cameraName, true);
+            cameraName[0] = '\0'; // Clear the input text field after adding the camera
+            showCreateWindow = false; // Hide the create window after adding the camera
         }
-
         ImGui::SameLine();
-
-        if (ImGui::Button("Cancel"))
-            ImGui::CloseCurrentPopup();
-
-        ImGui::EndPopup();
-    }
-
-    // Camera Type Selection
-    const char* items[] = { "Perspective", "Orthographic" };
-    static int currentItem = m_selectedCamera && m_selectedCamera->isPerspectiveCamera() ? 0 : 1;
-   
-    if (ImGui::BeginCombo("Type", items[currentItem]))
-    {
-        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-        {
-            bool isSelected = (currentItem == n);
-            if (ImGui::Selectable(items[n], isSelected))
-            {
-                currentItem = n;
-                if (m_selectedCamera)
-                {
-                    if (n == 0)
-                        m_selectedCamera->SetPerspectiveCamera(new PerspectiveCamera());
-                    else
-                        m_selectedCamera->SetOrthographicCamera(new OrthographicCamera());
-                }
-            }
-            if (isSelected)
-                ImGui::SetItemDefaultFocus();
+        if (ImGui::Button("Cancel")) {
+            showCreateWindow = false; // Hide the create window when cancel button is clicked
         }
-        ImGui::EndCombo();
     }
 
-    // Display camera settings based on the selected camera type
-    if (m_selectedCamera && m_selectedCamera->isPerspectiveCamera())
-    {
-        // Assuming GetPerspective() returns a PerspectiveCamera pointer
-        m_selectedCamera->GetPerspective()->ControlWindow();
-    }
-    else if (m_selectedCamera && !m_selectedCamera->isPerspectiveCamera())
-    {
-        // Assuming GetOrthographic() returns an OrthographicCamera pointer
-        m_selectedCamera->GetOrthographic()->ControlWindow();
+    if (m_selectedCamera) {
+        const char* items[] = { "Perspective", "Orthographic" };
+        static int currentItem = m_selectedCamera->isPerspectiveCamera() ? 0 : 1;
+
+        if (ImGui::BeginCombo("Type", items[currentItem])) {
+            for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
+                bool isSelected = (currentItem == n);
+                if (ImGui::Selectable(items[n], isSelected)) {
+                    currentItem = n;
+                    if (m_selectedCamera) {
+                        if (n == 0)
+                            m_selectedCamera->SetPerspectiveCamera(new PerspectiveCamera());
+                        else
+                            m_selectedCamera->SetOrthographicCamera(new OrthographicCamera());
+                    }
+                }
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        if (m_selectedCamera->isPerspectiveCamera()) {
+            m_selectedCamera->GetPerspective()->ControlWindow();
+        }
+        else {
+            m_selectedCamera->GetOrthographic()->ControlWindow();
+        }
     }
 
-    ImGui::End();
+ 
 }

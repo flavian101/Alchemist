@@ -10,8 +10,6 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	input(nullptr),
 	defaultShader(nullptr),
 	texturedShader(nullptr),
-	perspectiveCamera(nullptr),	
-	orthographicCamera(nullptr), 
 	cube(nullptr),			
 	plane(nullptr),
 	m_selectedModel(nullptr)
@@ -43,17 +41,10 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	UINT t_numElements = ARRAYSIZE(TextureLayout);
 	texturedShader->SetShaderLayout(TextureLayout, t_numElements);
 
-	//cameras
-	perspectiveCamera = new PerspectiveCamera();
-	perspectiveCamera->SetCamera(45.0f, m_graphics.getAspectRatio(), 1.0f, 1000.0f);
-
-
-	orthographicCamera = new OrthographicCamera();
-	orthographicCamera->SetCamera(m_graphics.getWidth(), m_graphics.getHeight(), 1.0f, 5.0f);
 	
+	//cameras
+	sceneCamera = new SceneCamera("main",m_graphics,true                   );
 
-	sceneCamera = new SceneCamera("main", perspectiveCamera);
-	sceneCamera->SetPerspectiveCamera(perspectiveCamera);
 
 	//model loading 
 	cube = new Cube("player", m_graphics, *texturedShader);
@@ -69,9 +60,6 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 Scene::~Scene()
 {
 	delete sceneCamera;
-	//delete pespectiveCamera;
-	//delete orthographicCamera;
-	//delete controller;
 	delete defaultShader;
 	delete texturedShader;
 	delete cube;
@@ -97,21 +85,9 @@ void Scene::RemoveObject(Model* object)
 
 void Scene::Update(float deltaTime)
 {
-	selectedCamera = sceneCamera->GetSelectedCamera();
-	if (selectedCamera)
-	{
-		if (selectedCamera->isPerspectiveCamera())
-		{
-			SwitchToPerspective();
-			input->DetectInput(deltaTime, *selectedCamera->GetPerspective(), *cube);
-		}
-		else
-		{
-			SwitchToOrthographic();
-		}
+	sceneCamera->Update(deltaTime);
+	input->DetectInput(deltaTime, *sceneCamera->GetSelectedCamera()->GetPerspective(), *cube);
 
-	}
-	sceneCamera->getActiveCamera()->Update(deltaTime);
 	for (auto obj : m_models)
 	{
 		obj->Update(deltaTime);
@@ -122,129 +98,124 @@ void Scene::Update(float deltaTime)
 void Scene::Render()
 {
 	m_graphics.controlWindow();
-	sceneCamera->ControlWindow();
 	this->controlWindow();
 
-	selectedCamera = sceneCamera->GetSelectedCamera();
-	if (selectedCamera)
-	{
-		m_graphics.SetViewMatrix(selectedCamera->getActiveCamera()->GetView());
-		m_graphics.SetProjectionMatrix(selectedCamera->getActiveCamera()->GetProjectionMatrix());
-	}	
+	sceneCamera->Render();
 	for (auto obj : m_models)
 	{
 		obj->Render();
 	}
 
-	
-}
-
-void Scene::SwitchToPerspective()
-{
-	sceneCamera->SetPerspectiveCamera(perspectiveCamera);
-}
-
-void Scene::SwitchToOrthographic()
-{
-	sceneCamera->SetOrthographicCamera(orthographicCamera);
 }
 void Scene::controlWindow()
 {
+    ImGui::Begin("Scene Hierarchy",nullptr, ImGuiWindowFlags_NoMove);
 
-	ImGui::Begin("Scene Hyrechi");
+    // Display a list of models in a child window
+    if (ImGui::BeginChild("models", ImVec2(0, 200), true))
+    {
+        ImGui::Text("Scene Models");
+        for (auto& model : m_models)
+        {
+            // Display model names as selectable items
+            if (ImGui::Selectable(model->getName().c_str()))
+            {
+                // Update the selected model
+                m_selectedModel = model;
+                sceneCamera->m_selectedCamera = nullptr; // Deselect the camera
+            }
+            // Open a context menu when right-clicked on a model
+            if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
+            {
+                // Add option to rename the model
+                if (ImGui::MenuItem("Rename"))
+                {
+                    // Set the flag to show the rename input field
+                    m_renameModel = true;
+                }
 
+                // Add option to delete the model
+                if (ImGui::MenuItem("Delete"))
+                {
+                    // Remove the model from the scene
+                    RemoveObject(model);
+                }
 
-	// Display a list of models in a child window
-	if (ImGui::BeginChild("models", ImVec2(0, 200), true))
-	{
-		for (auto& model : m_models)
-		{
-			// Display model names as selectable items
-			if (ImGui::Selectable(model->getName().c_str()))
-			{
-				// Update the selected model
-				m_selectedModel = model;
-			}
-			// Open a context menu when right-clicked on a model
-			if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
-			{
-				// Add option to rename the model
-				if (ImGui::MenuItem("Rename"))
-				{
-					// Set the flag to show the rename input field
-					m_renameModel = true;
-				}
+                ImGui::EndPopup();
+            }
+        }
+        //scene Cameras
+        ImGui::Text("Scene Cameras");
+        for (const auto& [name, camera] : sceneCamera->m_cameras)
+        {
+            bool isSelected = (sceneCamera->m_selectedCamera == camera);
+            if (ImGui::Selectable(name.c_str(), isSelected))
+            {
+                sceneCamera->m_selectedCamera = isSelected ? nullptr : camera;
+                m_selectedModel = nullptr; // Deselect the model
+            }
+        }
+        ImGui::EndChild();
+    }
 
-				// Add option to delete the model
-				if (ImGui::MenuItem("Delete"))
-				{
-					// Remove the model from the scene
-					RemoveObject(model);
-				}
+    static char modelName[128] = ""; // Buffer to store new name
+    // Button to add the object
+    if (ImGui::Button("Add object", ImVec2(100, 0)))
+    {
+        // Only create and add the model if modelName is not empty
+        if (modelName[0] != '\0')
+        {
+            model = new Model(modelName, m_graphics, *defaultShader);
 
-				ImGui::EndPopup();
-			}
-		}
-		ImGui::EndChild();
-	}
+            model->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
 
-	static char modelName[128] = ""; // Buffer to store new name
+            m_models.push_back(model);
 
-	// Button to add the object
-	if (ImGui::Button("Add object", ImVec2(100, 0)))
-	{
-		
-		// Only create and add the model if modelName is not empty
-		if (modelName[0] != '\0')
-		{
-			model = new Model(modelName, m_graphics, *defaultShader);
+            // Optionally, clear the modelName buffer after adding the model
+            modelName[0] = '\0';
+        }
+    }
+    // Input text field to name the new model
+    ImGui::InputText("New Name", modelName, IM_ARRAYSIZE(modelName));
 
-			model->CreateMesh(cube->getMesh()->getVertices(),cube->getMesh()->getIndices());
+    // Display properties of the selected model
+    if (m_selectedModel)
+    {
+        m_selectedModel->controlWindow();
+    }
+    else if (sceneCamera->m_selectedCamera)
+    {
+        sceneCamera->ControlWindow();
+    }
 
-			m_models.push_back(model);
+    // Show input field for renaming the model
+    if (m_renameModel)
+    {
+        ImGui::OpenPopup("Rename Model");
+        if (ImGui::BeginPopup("Rename Model", NULL))
+        {
+            static char newName[128] = ""; // Buffer to store new name
+            ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
 
-			// Optionally, clear the modelName buffer after adding the model
-			modelName[0] = '\0';
-		}
-	}
-	// Input text field to name the new model
-	ImGui::InputText("New Name", modelName, IM_ARRAYSIZE(modelName));
-	
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                // Set the new name for the selected model
+                m_selectedModel->setName(newName);
+                ImGui::CloseCurrentPopup();
+                m_renameModel = false; // Reset the flag
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+                m_renameModel = false; // Reset the flag
+            }
 
-	// Display properties of the selected model
-	if (m_selectedModel)
-	{
-		m_selectedModel->controlWindow();
-	}
+            ImGui::EndPopup();
+        }
+    }
 
-	// Show input field for renaming the model
-	if (m_renameModel)
-	{
-		ImGui::OpenPopup("Rename Model");
-		if (ImGui::BeginPopup("Rename Model", NULL))
-		{
-			static char newName[128] = ""; // Buffer to store new name
-			ImGui::InputText("New Name", newName, IM_ARRAYSIZE(newName));
-
-			if (ImGui::Button("OK", ImVec2(120, 0)))
-			{
-				// Set the new name for the selected model
-				m_selectedModel->setName(newName);
-				ImGui::CloseCurrentPopup();
-				m_renameModel = false; // Reset the flag
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0)))
-			{
-				ImGui::CloseCurrentPopup();
-				m_renameModel = false; // Reset the flag
-			}
-
-			ImGui::EndPopup();
-		}
-	}
-
-	ImGui::End();
+    ImGui::End();
 }
 
 

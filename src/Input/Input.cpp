@@ -43,7 +43,7 @@ void Input::DetectInput(float time, PerspectiveCamera& cam, Cube& character)
 	}
 
     // Update camera position and target based on the current camera mode
-    if (cam.GetCameraMode() == PerspectiveCamera::FreeLook)
+    if (cam.GetCameraMode() == FreeLook)
     {
         // Define movement speed
         float speed = cam.GetCameraSpeed();
@@ -88,7 +88,7 @@ void Input::DetectInput(float time, PerspectiveCamera& cam, Cube& character)
         }
         cam.FreeLookCamera(time);
     }
-    else if (cam.GetCameraMode() == PerspectiveCamera::ThirdPerson)
+    else if (cam.GetCameraMode() == ThirdPerson)
     {
         // Define movement speed and rotation sensitivity (adjust these as needed)
         float moveSpeed = cam.GetCameraSpeed();
@@ -101,11 +101,11 @@ void Input::DetectInput(float time, PerspectiveCamera& cam, Cube& character)
         // Camera movement based on keyboard input
         if (keyboardState[DIK_W] & 0x80)
         {
-            character.Move(forwardDirection, moveSpeed, time);
+            character.Move(-forwardDirection, moveSpeed, time);
         }
         else if (keyboardState[DIK_S] & 0x80)
         {
-            character.Move(-forwardDirection, moveSpeed, time);
+            character.Move(forwardDirection, moveSpeed, time);
         }
         if (keyboardState[DIK_A] & 0x80)
         {
