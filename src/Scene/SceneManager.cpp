@@ -91,16 +91,16 @@ void SceneManager::ControlWindow()
     }
     ImGui::EndMainMenuBar();
 
-    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove))
+    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
-        ImGui::BeginChild("Scene List", ImVec2(600, 100), true);
+        ImGui::BeginChild("Scene List", ImVec2(600, 80), true);
         for (const auto& scene : scenes)
         {
             ImGui::PushID(scene->GetName().c_str()); // Ensure unique ID for ImGui elements
             ImGui::BeginGroup(); // Group thumbnail and label together
 
             ImTextureID tex_id = thumbnail->GetSRV();
-            if (ImGui::ImageButton(tex_id, ImVec2(50, 50)))
+            if (ImGui::ImageButton(tex_id, ImVec2(40, 40)))
             {
                 activeScene = scene;
             }

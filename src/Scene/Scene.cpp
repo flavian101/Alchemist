@@ -86,6 +86,8 @@ void Scene::RemoveObject(Model* object)
 void Scene::Update(float deltaTime)
 {
 	sceneCamera->Update(deltaTime);
+
+    
 	input->DetectInput(deltaTime, *sceneCamera->GetSelectedCamera()->GetPerspective(), *cube);
 
 	for (auto obj : m_models)
@@ -109,7 +111,7 @@ void Scene::Render()
 }
 void Scene::controlWindow()
 {
-    ImGui::Begin("Scene Hierarchy",nullptr, ImGuiWindowFlags_NoMove);
+    ImGui::Begin("Scene Hierarchy",nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Display a list of models in a child window
     if (ImGui::BeginChild("models", ImVec2(0, 200), true))
@@ -122,7 +124,6 @@ void Scene::controlWindow()
             {
                 // Update the selected model
                 m_selectedModel = model;
-                sceneCamera->m_selectedCamera = nullptr; // Deselect the camera
             }
             // Open a context menu when right-clicked on a model
             if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
@@ -145,7 +146,7 @@ void Scene::controlWindow()
             }
         }
         //scene Cameras
-        ImGui::Text("Scene Cameras");
+        ImGui::Text("Scene Cameras: ");
         for (const auto& [name, camera] : sceneCamera->m_cameras)
         {
             bool isSelected = (sceneCamera->m_selectedCamera == camera);

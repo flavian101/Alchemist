@@ -12,7 +12,7 @@ class PerspectiveCamera :public Camera
 {
 public:
 
-	PerspectiveCamera(float aspectRatio = static_cast<float>(16.0f)/static_cast<float>(9.0f), float nearPlane = 1.0f, float farPlane = 1000.0f,
+	PerspectiveCamera(float aspectRatio = static_cast<float>(4.0) / static_cast<float>(3.0), float nearPlane = 1.0f, float farPlane = 1000.0f,
 		const DirectX::XMVECTOR& position = DirectX::XMVectorSet(0.0f, 6.0f, -16.0f, 1.0f),
 		const DirectX::XMVECTOR& target =   DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		const DirectX::XMVECTOR& up =       DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));

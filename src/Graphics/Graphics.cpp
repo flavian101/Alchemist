@@ -141,7 +141,7 @@ void Graphics::controlWindow()
 
 	
 
-	if (ImGui::Begin("Graphics Settings"))
+	if (ImGui::Begin("Graphics Settings",nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 	{
 		//ImGui::SliderFloat("Speed Factor", &speedfactor, 0.0f, 6.0f, "%.4f", 3.2f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
@@ -253,6 +253,7 @@ bool Graphics::DepthStencil()
 {
 	//depth stencil
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
 	dsDesc.DepthEnable = TRUE;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
@@ -342,19 +343,32 @@ void Graphics::Resize(UINT width, UINT height)
 
 
 	// configure viewport
-	vp.Width = (float)width;
-	vp.Height = (float)height;
+	vp.Width  = (float)width/2.0f;
+	vp.Height = (float)height/1.5f;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
+	vp.TopLeftX = (float)width / 4.20f;
+	vp.TopLeftY = (float)height / 15.0f;
 	pContext->RSSetViewports(1u, &vp);
 
 	D3D11_RASTERIZER_DESC rDesc;
-	ZeroMemory(&rDesc, sizeof(D3D11_RASTERIZER_DESC));
+	ZeroMemory(&rDesc, sizeof(rDesc));
 	rDesc.FillMode = D3D11_FILL_SOLID;
 	rDesc.CullMode = D3D11_CULL_BACK;
 	rDesc.FrontCounterClockwise = false;
+	rDesc.DepthClipEnable= true;
+	if (enableMsaa)
+	{
+		rDesc.MultisampleEnable = true;
+	}
+	else
+	{
+		rDesc.MultisampleEnable = false;
+	}
+	rDesc.DepthBias = 0;
+	rDesc.DepthBiasClamp = 0.0f;
+
+
 	CHECK_RESULT(pDevice->CreateRasterizerState(&rDesc, CCWcullMode.GetAddressOf()));
 
 	
@@ -424,7 +438,7 @@ DirectX::XMMATRIX Graphics::GetViewMatrix() const
 
 float Graphics::getAspectRatio()
 {
-	return static_cast<float>(m_width) / static_cast<float>(m_height);
+	return static_cast<float>(4.0) / static_cast<float>(3.0);
 }
 
 float Graphics::getWidth()
