@@ -12,13 +12,12 @@ void ShaderManager::LoadShaders(LPCWSTR vertexShader, LPCWSTR pixelShader)
 {
 
 	this->m_vertexShader.LoadVertexShader(vertexShader);
-	
 	this->m_pixelShader.LoadPixelShader(pixelShader);
 }
 
-void ShaderManager::SetShaderLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements)
+void ShaderManager::SetShaderLayout(const std::string& layout)
 {
-	this->m_layout.CreateLayout(layoutDesc, numElements,m_vertexShader.GetByteCode());
+	this->m_layout.CreateLayout(layout,m_vertexShader.GetByteCode());
 }
 
 void ShaderManager::BindShaders()

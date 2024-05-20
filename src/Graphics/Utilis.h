@@ -33,11 +33,12 @@ namespace Utils
 	{
 	public:
 		InputLayout(Graphics& g);
-		void CreateLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
+		void CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		void Bind();
 	private:
 		Graphics& m_graphics;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
+		std::vector< D3D11_INPUT_ELEMENT_DESC> layouts;
 	};
 	class VertexShader
 	{

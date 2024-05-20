@@ -82,11 +82,38 @@ Utils::InputLayout::InputLayout(Graphics& g)
 {
    
 }
-void Utils::InputLayout::CreateLayout(const D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
+void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
-    CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layoutDesc, numElements, pVsByteCode->GetBufferPointer(),
-        pVsByteCode->GetBufferSize(), pInputLayout.GetAddressOf()));
+    if (keyword == "POSITION|COLOR")
+    {
+        layouts.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+    }
+    else if (keyword == "POSITION|TEXCOORD")
+    {
+        layouts.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+    }
+    else if (keyword == "POSITION|TEXCOORD|NORMAL")
+    {
 
+        layouts.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+    }
+    else
+    {
+        MessageBox(nullptr, L"input layout error", L"error", MB_OK);
+    }
+    {
+        D3D11_INPUT_ELEMENT_DESC* layout = layouts.data();
+        UINT numElements = static_cast<UINT>(layouts.size());
+
+        CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
+            pVsByteCode->GetBufferSize(), pInputLayout.GetAddressOf()));
+       
+    }
+    layouts.clear();
 }
 
 void Utils::InputLayout::Bind()
