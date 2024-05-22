@@ -154,6 +154,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <ClCompile Include="src\environment\Light.cpp" />
     <ClCompile Include="src\models\MeshParts.cpp" />
     <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Sample\Plane.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\environment\Light.h" />
     <ClInclude Include="src\models\MeshParts.h" />
     <ClInclude Include="src\MathUtils\MathUtils.h" />
     <ClInclude Include="src\Sample\Plane.h" />

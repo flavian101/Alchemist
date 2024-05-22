@@ -12,7 +12,8 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	texturedShader(nullptr),
 	cube(nullptr),			
 	plane(nullptr),
-	m_selectedModel(nullptr)
+	m_selectedModel(nullptr),
+    light(nullptr)
 
 {
 	input = new Input(win);
@@ -24,18 +25,19 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	texturedShader = new ShaderManager(m_graphics);
 	texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.cso",
 		L"Assets/shader/T_pixelShader.cso");
-	texturedShader->SetShaderLayout("POSITION|TEXCOORD");
+	texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL");
 
 	//cameras
-	sceneCamera = new SceneCamera("main",m_graphics,true                   );
-
+	sceneCamera = new SceneCamera("main",m_graphics,true);
+    //light
+    light = new EnvironmentLight("main1", m_graphics, *texturedShader);
 
 	//model loading 
 	cube = new Cube("player", m_graphics, *texturedShader);
 	cube->CreateCube();
 	AddObject(cube);
 
-	plane = new Plane("ground", m_graphics, *defaultShader);
+	plane = new Plane("ground", m_graphics, *texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
 	AddObject(plane);
 
@@ -70,7 +72,7 @@ void Scene::RemoveObject(Model* object)
 void Scene::Update(float deltaTime)
 {
 	sceneCamera->Update(deltaTime);
-
+    light->Update(deltaTime);
     
 	input->DetectInput(deltaTime, *sceneCamera->GetSelectedCamera()->GetPerspective(), *cube);
 
@@ -85,7 +87,7 @@ void Scene::Render()
 {
 	m_graphics.controlWindow();
 	this->controlWindow();
-
+    light->Render();
 	sceneCamera->Render();
 	for (auto obj : m_models)
 	{

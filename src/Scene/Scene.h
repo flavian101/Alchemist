@@ -6,6 +6,7 @@
 #include "Input\Input.h"
 #include "models\Model.h"
 #include <memory>
+#include "environment/Light.h"
 
 class Scene
 {
@@ -42,5 +43,6 @@ private:
 	ShaderManager* texturedShader;
 	Model* m_selectedModel;
 	bool m_renameModel = false;
+	EnvironmentLight* light;
 };
 

@@ -22,8 +22,8 @@ void ShaderManager::SetShaderLayout(const std::string& layout)
 
 void ShaderManager::BindShaders()
 {
-	this->m_vertexShader.Bind();
-	this->m_layout.Bind();
-	this->m_pixelShader.Bind();
+	m_vertexShader.Bind();
+	m_layout.Bind();
+	m_pixelShader.Bind();
 	
 }

@@ -6,6 +6,7 @@ using namespace DirectX;
 enum class VertexType {
     Pos3Col,
     Pos3Tex,
+    Pos3TexNorm,
     // Add more types as needed
 };
 class Vertex
@@ -22,12 +23,17 @@ public:
            // float padding1; // Add padding to ensure consistent size
         } pos3Col;
 
-        struct Pos2TexCol
+        struct Pos3TexCol
         {
             XMFLOAT3 pos;
             XMFLOAT2 tex;
         } pos3Tex;
-
+        struct Pos3TexNorm
+        {
+            XMFLOAT3 pos;
+            XMFLOAT2 tex;
+            XMFLOAT3 norm;
+        }pos3TexNorm;
         //more
     };
 
@@ -42,6 +48,12 @@ public:
     {
         pos3Tex.pos = XMFLOAT3(x, y, z);
         pos3Tex.tex = XMFLOAT2(u, v);
+    }
+    Vertex(float x, float y, float z, float u, float v,float xn, float yn, float zn) :type(VertexType::Pos3TexNorm)
+    {
+        pos3TexNorm.pos = XMFLOAT3(x, y, z);
+        pos3TexNorm.tex = XMFLOAT2(u, v);
+        pos3TexNorm.norm = XMFLOAT3(xn, yn, zn);
     }
 
     // Ensure proper destruction of union members
