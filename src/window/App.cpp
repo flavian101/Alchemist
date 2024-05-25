@@ -1,5 +1,4 @@
 #include "App.h"
-#include "Sample\SampleScene.h"
 
 
 

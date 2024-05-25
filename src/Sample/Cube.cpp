@@ -3,8 +3,8 @@
 
 
 
-Cube::Cube(const std::string& name,Graphics& g, ShaderManager manager)
-    :Model(name,g,manager),
+Cube::Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager)
+    :Model(name,g,std::move(manager)),
     m_graphic(g)   
 {
     m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
@@ -107,7 +107,7 @@ void Cube::CreateCube()
 
 
     //CreateMesh(vertices, indices);
-    TexturedMesh(vertices, indices, "Assets/textures/metalpanel.jpg", 0);
+    TexturedMesh(vertices, indices, "Assets/textures/metalpanel.jpg", 0u);
 }
 
 void Cube::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)

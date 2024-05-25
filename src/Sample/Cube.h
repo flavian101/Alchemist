@@ -5,7 +5,7 @@ class Cube : public Model
 {
 
 public:
-	Cube(const std::string& name,Graphics& g, ShaderManager manager);
+	Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager);
 	void CreateCube();
 	
 	void Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime);

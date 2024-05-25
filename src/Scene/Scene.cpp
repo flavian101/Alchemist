@@ -8,8 +8,6 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	model(nullptr),
 	sceneCamera(nullptr),
 	input(nullptr),
-	defaultShader(nullptr),
-	texturedShader(nullptr),
 	cube(nullptr),			
 	plane(nullptr),
 	m_selectedModel(nullptr),
@@ -18,11 +16,11 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 {
 	input = new Input(win);
 	//initialize shadermanager
-	defaultShader = new ShaderManager(m_graphics);
+    defaultShader =  std::make_shared<ShaderManager>(m_graphics);
 	defaultShader->LoadShaders(L"Assets/shader/VertexShader.cso",
 		L"Assets/shader/PixelShader.cso");
     defaultShader->SetShaderLayout("POSITION|COLOR");
-	texturedShader = new ShaderManager(m_graphics);
+	texturedShader = std::make_shared<ShaderManager>(m_graphics);
 	texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.cso",
 		L"Assets/shader/T_pixelShader.cso");
 	texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL");
@@ -30,14 +28,14 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	//cameras
 	sceneCamera = new SceneCamera("main",m_graphics,true);
     //light
-    light = new EnvironmentLight("main1", m_graphics, *texturedShader);
+    light = new EnvironmentLight("main1", m_graphics, texturedShader);
 
 	//model loading 
-	cube = new Cube("player", m_graphics, *texturedShader);
+	cube = new Cube("player", m_graphics, texturedShader);
 	cube->CreateCube();
 	AddObject(cube);
 
-	plane = new Plane("ground", m_graphics, *texturedShader);
+	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
 	AddObject(plane);
 
@@ -46,8 +44,6 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 Scene::~Scene()
 {
 	delete sceneCamera;
-	delete defaultShader;
-	delete texturedShader;
 	delete cube;
 	delete plane;
 }
@@ -152,9 +148,9 @@ void Scene::controlWindow()
         // Only create and add the model if modelName is not empty
         if (modelName[0] != '\0')
         {
-            model = new Model(modelName, m_graphics, *defaultShader);
+            model = new Model(modelName, m_graphics, defaultShader);
 
-            model->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
+            model->CreateMesh(cube->getMesh()->getVertices( ), cube->getMesh()->getIndices());
 
             m_models.push_back(model);
 

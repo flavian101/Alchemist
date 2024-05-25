@@ -18,8 +18,8 @@ public:
 	Utils::InputLayout GetLayout() { return m_layout; }
 private:
 	Graphics& m_graphics;
-	Utils::VertexShader m_vertexShader; 
-	Utils::PixelShader m_pixelShader;   
+	Utils::VertexShader m_vertexShader;
+	Utils::PixelShader m_pixelShader;
 	Utils::InputLayout m_layout;
 
 };

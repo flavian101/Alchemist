@@ -39,8 +39,8 @@ private:
 	Cube* cube;
 	Plane* plane;
 	Input* input;
-	ShaderManager* defaultShader;
-	ShaderManager* texturedShader;
+	std::shared_ptr<ShaderManager> defaultShader;
+	std::shared_ptr<ShaderManager> texturedShader;
 	Model* m_selectedModel;
 	bool m_renameModel = false;
 	EnvironmentLight* light;

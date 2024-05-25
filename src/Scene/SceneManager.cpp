@@ -1,6 +1,4 @@
 #include "SceneManager.h"
-#include "Sample\SampleScene.h" // Include SampleScene or other scene classes here
-
 
 SceneManager::SceneManager(Graphics& g, Window& win)
     :

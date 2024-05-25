@@ -1,8 +1,8 @@
 #include "Light.h"
 
-EnvironmentLight::EnvironmentLight(const std::string& name,Graphics& g,ShaderManager manager)
+EnvironmentLight::EnvironmentLight(const std::string& name,Graphics& g,std::shared_ptr<ShaderManager> manager)
 	:
-	RenderableObject(name,g, manager ),
+	RenderableObject(name,g,std::move( manager )),
 	m_name(name),
 	m_graphics(g)
 {
@@ -15,7 +15,7 @@ EnvironmentLight::EnvironmentLight(const std::string& name,Graphics& g,ShaderMan
 	PS_Buffer.data.light.cone = 20.0f;
 	PS_Buffer.data.light.att = XMFLOAT3(0.4f, 0.02f, 0.0f);
 	PS_Buffer.data.light.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	PS_Buffer.data.light.diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	PS_Buffer.data.light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 
 }
 

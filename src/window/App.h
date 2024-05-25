@@ -4,8 +4,6 @@
 #include "Graphics/FrameTime.h"
 #include <vector>
 #include "Scene\SceneManager.h"
-#include "Sample\SampleScene.h"
-
 class App
 {
 public:

@@ -5,7 +5,7 @@
 class EnvironmentLight: public RenderableObject
 {
 public:
-	EnvironmentLight(const std::string& name, Graphics& g, ShaderManager manager);
+	EnvironmentLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
 	void SetLight(DirectX::XMFLOAT4& color, DirectX::XMFLOAT3& postition);
 	void Update(float deltaTime)override;
 	void Render()override;

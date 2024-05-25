@@ -1,10 +1,10 @@
 #include "Model.h"
 
-Model::Model(const std::string& name,Graphics& g, ShaderManager shaderManager)
+Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:
-	RenderableObject(name,g,shaderManager),
+	RenderableObject(name,g,std::move(shaderManager)),
 	m_graphics(g),
-	m_manager(shaderManager),
+	m_manager(std::move(shaderManager)),
 	m_mesh(g),
 	part(nullptr),
 	samp(nullptr),

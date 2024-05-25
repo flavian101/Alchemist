@@ -1,8 +1,8 @@
 #include "Plane.h"
 
-Plane::Plane(const std::string& name,Graphics& g, ShaderManager maneger)
+Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> maneger)
 	:
-	Model(name,g,maneger),
+	Model(name,g,std::move(maneger)),
 	m_graphic(g)
 {
 	m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -40,7 +40,6 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
         }
     }
 
-    // Generate indices with reversed winding order
     for (UINT i = 0; i < m - 1; ++i)
     {
         for (UINT j = 0; j < n - 1; ++j)
@@ -123,7 +122,7 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
     }
 
     // Create the mesh with the generated vertices and indices
-    TexturedMesh(vertices, indices, "Assets/textures/hay.jpg", 0);
+    TexturedMesh(vertices, indices, "Assets/textures/hay.jpg", 0u);
 }
 
 

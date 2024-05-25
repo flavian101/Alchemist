@@ -5,7 +5,7 @@
 class Plane :public Model
 {
 public:
-	Plane(const std::string& name,Graphics& g, ShaderManager maneger);
+	Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> maneger);
 
 	void CreatePlane(float width, float depth,
 		UINT m, UINT n);

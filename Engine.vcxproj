@@ -166,7 +166,6 @@
     <ClCompile Include="dependencies\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_tables.cpp" />
     <ClCompile Include="dependencies\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Sample\SampleScene.cpp" />
     <ClCompile Include="src\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Graphics\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Graphics\Camera\PerspectiveCamera.cpp" />
@@ -201,7 +200,6 @@
     <ClInclude Include="dependencies\imgui\imstb_rectpack.h" />
     <ClInclude Include="dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="dependencies\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Sample\SampleScene.h" />
     <ClInclude Include="src\Scene\SceneCamera.h" />
     <ClInclude Include="src\Graphics\Camera\OrthographicCamera.h" />
     <ClInclude Include="src\Graphics\Camera\PerspectiveCamera.h" />

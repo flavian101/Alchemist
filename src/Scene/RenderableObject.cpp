@@ -1,13 +1,13 @@
 #include "RenderableObject.h"
 
-RenderableObject::RenderableObject(const std::string& name,Graphics& g,ShaderManager shaderManager)
+RenderableObject::RenderableObject(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:
 	m_name(name),
 	m_graphics(g),
-	m_shaderManager(shaderManager),
+	m_shaderManager(std::move(shaderManager)),
 	m_transform(g)
-{}
-
+{
+}
 RenderableObject::~RenderableObject()
 {
 }
@@ -21,7 +21,7 @@ void RenderableObject::Update(float time)
 void RenderableObject::Render()
 {
 	m_transform.BindConstantBuffer();
-	m_shaderManager.BindShaders();
+	m_shaderManager->BindShaders();
 	
 
 }
@@ -71,9 +71,9 @@ void RenderableObject::setName(const std::string& name)
 	this->m_name = name;
 }
 
-ShaderManager RenderableObject::GetShadermanager() const
+ShaderManager* RenderableObject::GetShadermanager() const
 {
-	return m_shaderManager;
+	return m_shaderManager.get();
 }
 
 void RenderableObject::controlWindow()
