@@ -18,6 +18,8 @@ public:
 	void controlWindow()override ;
 
 	
+private:
+	friend class SceneSerializer;
 
 protected:
 	Graphics& m_graphics;

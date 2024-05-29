@@ -36,4 +36,5 @@ private:
     static std::map<std::string, SceneCamera*> m_cameras;
     static std::vector<std::string> m_cameraNames;
     friend class Scene;
+    friend class SceneSerializer;
 };

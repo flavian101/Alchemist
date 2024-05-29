@@ -9,6 +9,7 @@ namespace Utils
 	{
 	public:
 		VertexBuffer(Graphics& g);
+		~VertexBuffer();
 		void InitializeVertexBuffer(std::vector<Vertex>& vertices);
 		void Bind();
 	private:
@@ -23,6 +24,7 @@ namespace Utils
 	{
 	public:
 		IndexBuffer(Graphics& g);
+		~IndexBuffer();
 		void InitializeIndexBuffer(std::vector<unsigned short>& i);
 		void Bind();
 	private:
@@ -33,6 +35,7 @@ namespace Utils
 	{
 	public:
 		InputLayout(Graphics& g);
+		~InputLayout();
 		void CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		void Bind();
 	private:
@@ -44,6 +47,7 @@ namespace Utils
 	{
 	public:
 		VertexShader(Graphics& g);
+		~VertexShader();
 		void LoadVertexShader(LPCWSTR path);
 		ID3D10Blob* GetByteCode();
 		void Bind();
@@ -57,6 +61,7 @@ namespace Utils
 	{
 	public:
 		PixelShader(Graphics& g);
+		~PixelShader();
 		void LoadPixelShader(LPCWSTR path);
 		void Bind();
 	private:
@@ -79,12 +84,13 @@ namespace Utils
 	{
 	public:
 		Texture(Graphics& g);
+		~Texture();
 		void LoadTexture(const char* path, UINT slot = 0);
 		void Bind();
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
 	private:
 		Graphics& m_graphics;
-		UINT m_slot;
+		UINT m_slot = 0u;
 		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView> textureView;
 		Microsoft::WRL::ComPtr < ID3D11Texture2D> pTex = nullptr;
 	};
@@ -92,7 +98,7 @@ namespace Utils
 	{
 	public:
 		Sampler(Graphics& g);
-
+		~Sampler();
 		void Bind();
 	private:
 		Graphics& m_graphics;

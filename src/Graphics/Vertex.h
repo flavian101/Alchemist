@@ -1,5 +1,4 @@
 #pragma once
-
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -7,20 +6,19 @@ enum class VertexType {
     Pos3Col,
     Pos3Tex,
     Pos3TexNorm,
-    // Add more types as needed
 };
+
 class Vertex
 {
 public:
-   
     union
     {
-        VertexType type;
         struct Pos3Col
         {
+            
             XMFLOAT3 pos;
             XMFLOAT4 col;
-           // float padding1; // Add padding to ensure consistent size
+            
         } pos3Col;
 
         struct Pos3TexCol
@@ -58,4 +56,9 @@ public:
 
     // Ensure proper destruction of union members
     ~Vertex() {}
+
+    VertexType type;
 };
+
+
+

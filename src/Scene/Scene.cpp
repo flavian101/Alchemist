@@ -37,7 +37,7 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
-	AddObject(plane);
+	//AddObject(plane);
 
 }
 

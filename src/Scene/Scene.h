@@ -44,5 +44,7 @@ private:
 	Model* m_selectedModel;
 	bool m_renameModel = false;
 	EnvironmentLight* light;
+	friend class SceneSerializer;
+
 };
 

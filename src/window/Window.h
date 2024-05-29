@@ -7,6 +7,7 @@
 class Window
 {
 	friend class Graphics;
+	friend class SceneSerializer;
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;

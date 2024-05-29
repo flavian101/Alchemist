@@ -12,6 +12,10 @@ SceneManager::SceneManager(Graphics& g, Window& win)
     showSceneWindow = true; 
     thumbnail = new Utils::Texture(g);
     thumbnail->LoadTexture("Assets/textures/thumbnail/thumbnail.png", 1u);
+    serializer = new SceneSerializer(*activeScene);
+
+    
+
 }
 
 SceneManager::~SceneManager() {
@@ -73,7 +77,7 @@ void SceneManager::ControlWindow()
         }
         if (ImGui::MenuItem("Save Scene"))
         {
-            
+            serializer->Serialize("flavian.json");
         }
         ImGui::Separator();
         if (ImGui::MenuItem("Exit"))

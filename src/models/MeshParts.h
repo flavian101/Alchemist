@@ -22,6 +22,7 @@ private:
 	std::vector<unsigned short> m_indices;
 	std::vector<Vertex> m_vertices;
 	UINT indexCount = 0u;
+	friend class SceneSerializer;
 
 };
 

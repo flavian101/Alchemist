@@ -86,7 +86,14 @@ Graphics::~Graphics()
 	device.Reset();
 	adapter.Reset();
 	factory.Reset();
-	
+	adapterOutput.Reset();
+	pDevice.Reset();
+	pContext.Reset();
+	pRenderTarget.Reset();
+	pDepthStencil.Reset();
+	DSLessEqual.Reset();
+	pDSV.Reset();
+	CCWcullMode.Reset();
 }
 
 void Graphics::ClearDepthColor(float red, float green, float blue)

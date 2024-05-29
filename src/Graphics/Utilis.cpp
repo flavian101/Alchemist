@@ -11,6 +11,11 @@ Utils::VertexBuffer::VertexBuffer(Graphics& g)
     pVertexBuffer(nullptr)
 {}
 
+Utils::VertexBuffer::~VertexBuffer()
+{
+    pVertexBuffer.Reset();
+}
+
 void Utils::VertexBuffer::InitializeVertexBuffer(std::vector<Vertex>& vertices)
 {
     stride = sizeof(Vertex);
@@ -47,6 +52,11 @@ Utils::IndexBuffer::IndexBuffer(Graphics& g)
     
 }
 
+Utils::IndexBuffer::~IndexBuffer()
+{
+    pIndexBuffer.Reset();
+}
+
 void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indices)
 {
     D3D11_BUFFER_DESC idDesc;
@@ -81,6 +91,10 @@ Utils::InputLayout::InputLayout(Graphics& g)
     m_graphics(g)
 {
    
+}
+Utils::InputLayout::~InputLayout()
+{
+    pInputLayout.Reset();
 }
 void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
@@ -126,6 +140,12 @@ Utils::VertexShader::VertexShader(Graphics& g)
     m_graphics(g)
 {}
 
+Utils::VertexShader::~VertexShader()
+{
+    pVertexShader.Reset();
+    pShaderBlob.Reset();
+}
+
 void Utils::VertexShader::LoadVertexShader(LPCWSTR path)
 {
     D3DReadFileToBlob(path, pShaderBlob.GetAddressOf());
@@ -151,6 +171,12 @@ Utils::PixelShader::PixelShader(Graphics& g)
     :
     m_graphics(g)
 {
+}
+
+Utils::PixelShader::~PixelShader()
+{
+    pShaderBlob.Reset();
+    pPixelShader.Reset();
 }
 
 void Utils::PixelShader::LoadPixelShader(LPCWSTR path)
@@ -179,6 +205,12 @@ Utils::Texture::Texture(Graphics& g)
     :
     m_graphics(g)
 {}
+
+Utils::Texture::~Texture()
+{
+    pTex.Reset();
+    textureView.Reset();
+}
 
 void Utils::Texture::LoadTexture(const char* path, UINT slot)
 {
@@ -253,6 +285,10 @@ Utils::Sampler::Sampler(Graphics& g)
     CHECK_RESULT(g.GetDevice()->CreateSamplerState(&sp, pSampler.GetAddressOf()));
 
 
+}
+Utils::Sampler::~Sampler()
+{
+    pSampler.Reset();
 }
 void Utils::Sampler::Bind()
 {

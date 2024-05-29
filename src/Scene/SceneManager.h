@@ -2,8 +2,8 @@
 #include "Graphics\Graphics.h"
 #include <unordered_map>
 #include "Scene\Scene.h"
-//#include "dataPack/SceneSerializer.h"
-//
+#include "dataPack/SceneSerializer.h"
+
 
 class SceneManager
 {
@@ -39,7 +39,7 @@ private:
     Utils::Texture* thumbnail;
     bool showSceneWindow = true;
     bool createScenePopup = false;
-    //friend class SceneSerializer;
+    SceneSerializer* serializer;
 
 
 

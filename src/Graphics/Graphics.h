@@ -70,7 +70,7 @@ private:
 	//raster states
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode;
 	//save
-
+	friend class SceneSerializer;
 
 
 };

@@ -87,14 +87,11 @@ public:
 	float camRoll = 0.0f;
 
 private:
+	friend class SceneSerializer;
 	float m_FOV;
-
 	float moveLeftRight = 0.0f;
 	float moveBackForward = 0.0f;
 	float moveUpDown = 0.0f;
-	
-
-
 	float cameraSpeed;
 	float distance;
 
