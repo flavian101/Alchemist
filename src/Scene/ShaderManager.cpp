@@ -3,8 +3,8 @@
 ShaderManager::ShaderManager(Graphics& g)
 	:
 	m_graphics(g),
-	m_vertexShader(Utils::VertexShader(g)),
-	m_pixelShader(Utils::PixelShader(g)),
+	m_vertexShader(g),
+	m_pixelShader(g),
 	m_layout(g)
 {}
 

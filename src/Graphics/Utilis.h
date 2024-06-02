@@ -2,6 +2,8 @@
 #include "Graphics.h"
 #include <vector>
 #include "Vertex.h"
+#include <codecvt>
+#include <stdafx.h>
 
 namespace Utils
 {

@@ -70,6 +70,7 @@ void Scene::Update(float deltaTime)
 	sceneCamera->Update(deltaTime);
     light->Update(deltaTime);
     
+   
 	input->DetectInput(deltaTime, *sceneCamera->GetSelectedCamera()->GetPerspective(), *cube);
 
 	for (auto obj : m_models)
@@ -81,7 +82,7 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-	m_graphics.controlWindow();
+	m_graphics.ControlWindow();
 	this->controlWindow();
     light->Render();
 	sceneCamera->Render();
@@ -90,6 +91,10 @@ void Scene::Render()
 		obj->Render();
 	}
 
+}
+void Scene::SetName(const std::string& name)
+{
+    m_name = name;
 }
 void Scene::controlWindow()
 {
@@ -134,7 +139,7 @@ void Scene::controlWindow()
             bool isSelected = (sceneCamera->m_selectedCamera == camera);
             if (ImGui::Selectable(name.c_str(), isSelected))
             {
-                sceneCamera->m_selectedCamera = isSelected ? nullptr : camera;
+                sceneCamera->m_selectedCamera = isSelected ? sceneCamera->GetSelectedCamera() : camera;
                 m_selectedModel = nullptr; // Deselect the model
             }
         }

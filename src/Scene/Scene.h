@@ -22,10 +22,12 @@ public:
 	void Render();
 
 	std::string GetName()const { return m_name; }
+	void SetName(const std::string& name);
+
 
 	void controlWindow();
 	
-
+private:
 
 
 

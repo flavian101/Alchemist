@@ -1,4 +1,5 @@
 #include "SceneCamera.h"
+#include <iostream>
 
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
 std::vector<std::string> SceneCamera::m_cameraNames;
@@ -13,11 +14,11 @@ SceneCamera::SceneCamera(const std::string& name, Graphics& g, bool perspective)
 {
     if (isPerspective) {
         m_perspectiveCamera = new PerspectiveCamera();
-        m_perspectiveCamera->SetCamera(45.0f, m_graphics.getAspectRatio(), 1.0f, 1000.0f);
+        m_perspectiveCamera->SetCamera(45.0f, m_graphics.GetAspectRatio(), 1.0f, 1000.0f);
     }
     else {
         m_orthographicCamera = new OrthographicCamera();
-        m_orthographicCamera->SetCamera(m_graphics.getWidth(), m_graphics.getHeight(), 1.0f, 5.0f);
+        m_orthographicCamera->SetCamera(m_graphics.GetWidth(), m_graphics.GetHeight(), 1.0f, 5.0f);
     }
 
     m_cameras[name] = this;

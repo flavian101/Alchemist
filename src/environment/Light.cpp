@@ -33,7 +33,7 @@ void EnvironmentLight::Update(float deltaTime)
 
 void EnvironmentLight::Render()
 {
-	m_graphics.GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
+	m_graphics.GetDeviceResources()->GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
 	RenderableObject::Render();
 }
 

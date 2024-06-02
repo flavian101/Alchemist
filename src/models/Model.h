@@ -30,6 +30,7 @@ protected:
 	Utils::Texture* texture;
 	UINT m_slot;
 	bool isTextured;
+	const char* m_path;
 	DirectX::XMVECTOR m_position;
 	DirectX::XMVECTOR m_orientation;
 	DirectX::XMVECTOR m_scale;

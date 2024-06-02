@@ -76,6 +76,8 @@ ShaderManager* RenderableObject::GetShadermanager() const
 	return m_shaderManager.get();
 }
 
+
+
 void RenderableObject::controlWindow()
 {
 	ImGui::Text("Properties");

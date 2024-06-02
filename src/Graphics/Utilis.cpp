@@ -1,7 +1,7 @@
 #include "Utilis.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb image.h"
-#include <codecvt>
+
 
 
 Utils::VertexBuffer::VertexBuffer(Graphics& g)
@@ -34,13 +34,13 @@ void Utils::VertexBuffer::InitializeVertexBuffer(std::vector<Vertex>& vertices)
     vbData.pSysMem = vertices.data();
     vbData.SysMemPitch = 0;
     vbData.SysMemSlicePitch = 0;
-    CHECK_RESULT(m_graphics.GetDevice()->CreateBuffer(&vbDesc, &vbData, pVertexBuffer.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateBuffer(&vbDesc, &vbData, pVertexBuffer.GetAddressOf()));
 
 }
 
 void Utils::VertexBuffer::Bind()
 {
-    m_graphics.GetContext()->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
+    m_graphics.GetDeviceResources()->GetContext()->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
 }
 
 Utils::IndexBuffer::IndexBuffer(Graphics& g)
@@ -73,7 +73,7 @@ void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indi
     D3D11_SUBRESOURCE_DATA idData{};
     idData.pSysMem = indices.data();
 
-    CHECK_RESULT(m_graphics.GetDevice()->CreateBuffer(&idDesc, &idData, pIndexBuffer.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateBuffer(&idDesc, &idData, pIndexBuffer.GetAddressOf()));
     // Ensure pIndexBuffer ComPtr is valid
     if (pIndexBuffer == nullptr) {
         // Output error message if pIndexBuffer is null
@@ -84,7 +84,7 @@ void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indi
 
 void Utils::IndexBuffer::Bind()
 {
-    m_graphics.GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+    m_graphics.GetDeviceResources()->GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 }
 Utils::InputLayout::InputLayout(Graphics& g)
     :
@@ -95,6 +95,8 @@ Utils::InputLayout::InputLayout(Graphics& g)
 Utils::InputLayout::~InputLayout()
 {
     pInputLayout.Reset();
+    layouts.clear();
+
 }
 void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
@@ -123,7 +125,7 @@ void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL
         D3D11_INPUT_ELEMENT_DESC* layout = layouts.data();
         UINT numElements = static_cast<UINT>(layouts.size());
 
-        CHECK_RESULT(m_graphics.GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
+        CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateInputLayout(layout, numElements, pVsByteCode->GetBufferPointer(),
             pVsByteCode->GetBufferSize(), pInputLayout.GetAddressOf()));
        
     }
@@ -132,7 +134,7 @@ void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL
 
 void Utils::InputLayout::Bind()
 {
-    m_graphics.GetContext()->IASetInputLayout(pInputLayout.Get());
+    m_graphics.GetDeviceResources()->GetContext()->IASetInputLayout(pInputLayout.Get());
 }
 
 Utils::VertexShader::VertexShader(Graphics& g)
@@ -153,7 +155,7 @@ void Utils::VertexShader::LoadVertexShader(LPCWSTR path)
     {
         MessageBox(NULL, L"empty vertex shader", L"ERROR", MB_OK | MB_ICONEXCLAMATION);
     }
-    CHECK_RESULT(m_graphics.GetDevice()->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateVertexShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf()));
 
 }
 
@@ -164,7 +166,7 @@ ID3D10Blob* Utils::VertexShader::GetByteCode()
 
 void Utils::VertexShader::Bind()
 {
-    m_graphics.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
+    m_graphics.GetDeviceResources()->GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
 }
 
 Utils::PixelShader::PixelShader(Graphics& g)
@@ -182,13 +184,13 @@ Utils::PixelShader::~PixelShader()
 void Utils::PixelShader::LoadPixelShader(LPCWSTR path)
 {
     D3DReadFileToBlob(path, &pShaderBlob);
-    m_graphics.GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
+    m_graphics.GetDeviceResources()->GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
 
 }
 
 void Utils::PixelShader::Bind()
 {
-    m_graphics.GetContext()->PSSetShader(pPixelShader.Get(), nullptr,0);
+    m_graphics.GetDeviceResources()->GetContext()->PSSetShader(pPixelShader.Get(), nullptr,0);
 }
 Utils::Topology::Topology(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
     :
@@ -198,7 +200,7 @@ Utils::Topology::Topology(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
 
 void Utils::Topology::Bind()
 {
-    m_graphics.GetContext()->IASetPrimitiveTopology(type);
+    m_graphics.GetDeviceResources()->GetContext()->IASetPrimitiveTopology(type);
 }
 
 Utils::Texture::Texture(Graphics& g)
@@ -246,7 +248,7 @@ void Utils::Texture::LoadTexture(const char* path, UINT slot)
     sts.pSysMem = data;
     sts.SysMemPitch = image_pitch;
 
-    CHECK_RESULT(m_graphics.GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
     // create the resource view on the texture
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Format = ts.Format;
@@ -254,14 +256,14 @@ void Utils::Texture::LoadTexture(const char* path, UINT slot)
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
 
-    CHECK_RESULT(m_graphics.GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
+    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
 
     stbi_image_free(data);
 }
 
 void Utils::Texture::Bind()
 {
-    m_graphics.GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
+    m_graphics.GetDeviceResources()->GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
 
 }
 
@@ -282,7 +284,7 @@ Utils::Sampler::Sampler(Graphics& g)
     sp.MinLOD = 0;
     sp.MaxLOD = D3D11_FLOAT32_MAX;
 
-    CHECK_RESULT(g.GetDevice()->CreateSamplerState(&sp, pSampler.GetAddressOf()));
+    CHECK_RESULT(g.GetDeviceResources()->GetDevice()->CreateSamplerState(&sp, pSampler.GetAddressOf()));
 
 
 }
@@ -292,7 +294,7 @@ Utils::Sampler::~Sampler()
 }
 void Utils::Sampler::Bind()
 {
-    m_graphics.GetContext()->PSSetSamplers(0, 1, pSampler.GetAddressOf());
+    m_graphics.GetDeviceResources()->GetContext()->PSSetSamplers(0, 1, pSampler.GetAddressOf());
 
 }
 

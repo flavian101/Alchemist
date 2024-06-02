@@ -34,7 +34,8 @@ public:
         }pos3TexNorm;
         //more
     };
-
+    Vertex()
+    {}
     Vertex(float x, float y, float z, float r, float g, float b):type(VertexType::Pos3Col)
     {
         pos3Col.pos = XMFLOAT3(x, y, z);

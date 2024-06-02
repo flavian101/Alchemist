@@ -36,7 +36,7 @@ public:
 		desc.ByteWidth = sizeof(T);
 		desc.StructureByteStride = 0;
 
-		g.GetDevice()->CreateBuffer(&desc, 0, buffer.GetAddressOf());
+		g.GetDeviceResources()->GetDevice()->CreateBuffer(&desc, 0, buffer.GetAddressOf());
 
 	}
 	
@@ -45,11 +45,11 @@ public:
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 		
-		 g.GetContext()->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD,
+		 g.GetDeviceResources()->GetContext()->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD,
 			0, &mappedResource);
 		
 		CopyMemory(mappedResource.pData, &data, sizeof(T));
-		g.GetContext()->Unmap(buffer.Get(), 0);
+		g.GetDeviceResources()->GetContext()->Unmap(buffer.Get(), 0);
 		return true;
 	}
 	

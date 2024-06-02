@@ -4,7 +4,7 @@ Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 	:
 	RenderableObject(name,g,std::move(shaderManager)),
 	m_graphics(g),
-	m_manager(std::move(shaderManager)),
+	m_manager(std:: move(shaderManager)),
 	m_mesh(g),
 	part(nullptr),
 	samp(nullptr),
@@ -24,13 +24,14 @@ Model::~Model()
 
 void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, const char* path, UINT slot)
 {
+	m_path = path;
 	m_slot = slot;
 	isTextured = true;
 	samp = new Utils::Sampler(m_graphics);
 	samp->Bind();
 	texture = new Utils::Texture(m_graphics);
 
-	texture->LoadTexture(path, slot);
+	texture->LoadTexture(m_path, slot);
 	CreateMesh(vertices, indices);
 
 }

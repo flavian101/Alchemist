@@ -201,18 +201,18 @@ DirectX::XMVECTOR PerspectiveCamera::GetUp() const
     return camUp;
 }
 
-void PerspectiveCamera::SetPosition(DirectX::XMVECTOR& position)
+void PerspectiveCamera::SetPosition(const DirectX::XMVECTOR& position)
 {
     camPosition = position;
 
 }
 
-void PerspectiveCamera::SetTarget(DirectX::XMVECTOR& target)
+void PerspectiveCamera::SetTarget(const DirectX::XMVECTOR& target)
 {
     camTarget = target;
 }
 
-void PerspectiveCamera::SetUP(DirectX::XMVECTOR& up)
+void PerspectiveCamera::SetUP(const DirectX::XMVECTOR& up)
 {
     camUp = up;
 }

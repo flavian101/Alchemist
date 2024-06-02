@@ -44,7 +44,7 @@ void Transform::Update(float time)
 
 void Transform::BindConstantBuffer()
 {
-	m_graphics.GetContext()->VSSetConstantBuffers(0, 1, CB_Buffer.GetAddressOf());
+	m_graphics.GetDeviceResources()->GetContext()->VSSetConstantBuffers(0, 1, CB_Buffer.GetAddressOf());
 }
 
 void Transform::controlWindow()

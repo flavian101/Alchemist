@@ -35,9 +35,9 @@ public:
 	DirectX::XMVECTOR GetPos() const;
 	DirectX::XMVECTOR GetTarget() const;
 	DirectX::XMVECTOR GetUp() const;
-	void SetPosition(DirectX::XMVECTOR& position);
-	void SetTarget(DirectX::XMVECTOR& target);
-	void SetUP(DirectX::XMVECTOR& up);
+	void SetPosition(const DirectX::XMVECTOR& position);
+	void SetTarget(const DirectX::XMVECTOR& target);
+	void SetUP(const DirectX::XMVECTOR& up);
 	// Move the camera in the specified direction
 	void Move(float leftRight, float backForward, float upDown, float speed, float time);
 
@@ -51,6 +51,7 @@ public:
 	void SetPitch(float pitch);
 	float GetPitch() { return camPitch; }
 	float GetCamRoll() { return camRoll; }
+	void SetRoll(float roll) { camRoll = roll; }
 	float GetCameraSpeed() { return cameraSpeed; }
 
 	// Getter methods for movement variables

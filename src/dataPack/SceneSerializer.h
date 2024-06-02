@@ -5,10 +5,13 @@
 class SceneSerializer
 {
 public:
-	SceneSerializer(const Scene& scene);
+	SceneSerializer( Scene& scene,Graphics& g);
 	void Serialize(const char* filepath);
 	void Deserialize(const char* filepath);
 private:
+	//Serialize
+	nlohmann::json SerializeDevice(const DeviceResources& device);
+	
 	nlohmann::json SerializeGraphics(Graphics& graphics);
 
 	nlohmann::json SerializeWindow(Window& win);
@@ -19,20 +22,42 @@ private:
 
 	nlohmann::json SerializeSceneCamera(SceneCamera* camera);
 
-	nlohmann::json SerializeDefaultShader(std::shared_ptr<ShaderManager> shader);
-
-	nlohmann::json SerializeTexturedShader(std::shared_ptr<ShaderManager> shader);
+	nlohmann::json SerializeSceneShader(std::shared_ptr<ShaderManager> shader);
 
 	nlohmann::json SerializeSceneModels(Model* model);
 
 	nlohmann::json SerializeMeshParts(MeshParts* part);
 
 	nlohmann::json SerializeVertex(Vertex* v);
+
+
+	//Deserialize 
+	void DeserializeGraphics(Graphics& graphics, const nlohmann::json& j);
+
+	void DeserializeDevice(DeviceResources& device, const nlohmann::json& j);
+
+	void DeserializeWindow(Window& win, const nlohmann::json& j);
+
+	void DeserializePerspectiveCamera(PerspectiveCamera* camera, const nlohmann::json& j);
+
+	void DeserializeOrthographicCamera(OrthographicCamera* camera, const nlohmann::json& j);
+
+	void DeserializeSceneCamera(SceneCamera* camera, const nlohmann::json& j);
+
+	void DeserializeSceneShader(std::shared_ptr<ShaderManager> shader, const nlohmann::json& j);
+
+	void DeserializeSceneModels(Model* model, const nlohmann::json& j);
+
+	void DeserializeMeshParts(MeshParts* part, const nlohmann::json& j);
+
+	void DeserializeVertex(Vertex* v, const nlohmann::json& j);
+	
 	
 
 
 private:
-	const Scene& m_scene;
+	Scene& m_scene;
+	Graphics& m_graphics;
 	//friend Scene;
 };
 

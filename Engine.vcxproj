@@ -156,6 +156,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <ClCompile Include="src\Graphics\DeviceResources.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\environment\Light.cpp" />
     <ClCompile Include="src\models\MeshParts.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\DeviceResources.h" />
     <ClInclude Include="src\dataPack\Json.hpp" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\environment\Light.h" />
