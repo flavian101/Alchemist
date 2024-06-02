@@ -1,0 +1,3 @@
+Error in function CreateSwapChain at line 87: The GPU device instance has been suspended. Use GetDeviceRemovedReason to determine the appropriate action.
+
+

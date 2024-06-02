@@ -173,10 +173,11 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_SIZE:
 		m_width = LOWORD(lParam);
 		m_height = HIWORD(lParam);
-		//if (pGfx) // Check if pGfx is initialized
-		//{
-		//	pGfx->Resize(m_width, m_height);
-		//}
+		if (pGfx) // Check if pGfx is initialized
+		{
+			//this->Gfx()->GetDeviceResources().Resize(m_width, m_height);
+			this->Gfx().GetDeviceResources()->Resize(m_width, m_height);
+		}
 		return 0;
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
