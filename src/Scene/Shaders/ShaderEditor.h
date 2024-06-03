@@ -1,0 +1,20 @@
+#pragma once
+#include "ShaderManager.h"
+#include <string>
+
+class ShaderEditor
+{
+public:
+	ShaderEditor(std::shared_ptr<ShaderManager> shaderManager);
+
+	void Render();
+
+
+private:
+	std::shared_ptr<ShaderManager> m_shaderManager;
+	std::string m_vertexShaderCode;
+	std::string m_pixelShaderCode;
+	bool m_needsReload;
+	bool m_needsSaving;
+};
+

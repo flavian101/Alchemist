@@ -1,3 +1,21 @@
 Error in function CreateSwapChain at line 87: The GPU device instance has been suspended. Use GetDeviceRemovedReason to determine the appropriate action.
 
 
+Error in function LoadVertexShader at line 158: The parameter is incorrect.
+
+
+Error in function LoadStreamPixelShader at line 194: Unspecified error
+
+
+Error in function LoadStreamPixelShader at line 194: Unspecified error
+
+
+Error in function LoadStreamPixelShader at line 194: Unspecified error
+
+
+Error in function CreateDepthStencil at line 102: The parameter is incorrect.
+
+
+Error in function CreateDepthStencil at line 102: The parameter is incorrect.
+
+

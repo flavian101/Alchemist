@@ -29,6 +29,7 @@ struct Light
     float pad2;
     XMFLOAT4 ambient;
     XMFLOAT4 diffuse;
+    XMFLOAT4 specular;
 };
 struct cb_psConstantBuffer
 {

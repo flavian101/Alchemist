@@ -148,9 +148,17 @@ Utils::VertexShader::~VertexShader()
     pShaderBlob.Reset();
 }
 
-void Utils::VertexShader::LoadVertexShader(LPCWSTR path)
+void Utils::VertexShader::LoadStreamVertexShader(std::string stream)
 {
-    D3DReadFileToBlob(path, pShaderBlob.GetAddressOf());
+    CHECK_RESULT(D3DCompile(stream.c_str(), stream.size(), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, pShaderBlob.GetAddressOf(), nullptr));
+    m_graphics.GetDeviceResources()->GetDevice()->CreateVertexShader(
+        pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf());
+
+}
+
+void Utils::VertexShader::LoadCompiledVertexShader(std::wstring path)
+{
+    D3DReadFileToBlob(path.c_str(), pShaderBlob.GetAddressOf());
     if (pShaderBlob == NULL)
     {
         MessageBox(NULL, L"empty vertex shader", L"ERROR", MB_OK | MB_ICONEXCLAMATION);
@@ -181,11 +189,23 @@ Utils::PixelShader::~PixelShader()
     pPixelShader.Reset();
 }
 
-void Utils::PixelShader::LoadPixelShader(LPCWSTR path)
+void Utils::PixelShader::LoadStreamPixelShader(std::string stream)
 {
-    D3DReadFileToBlob(path, &pShaderBlob);
+    CHECK_RESULT(D3DCompile(stream.c_str(), stream.size(), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, pShaderBlob.GetAddressOf(), nullptr));
+    m_graphics.GetDeviceResources()->GetDevice()->CreatePixelShader(
+        pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
+}
+
+void Utils::PixelShader::LoadCompiledPixelShader(std::wstring path)
+{
+    D3DReadFileToBlob(path.c_str(), &pShaderBlob);
     m_graphics.GetDeviceResources()->GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
 
+}
+
+ID3DBlob* Utils::PixelShader::GetByteCode()
+{
+    return pShaderBlob.Get();
 }
 
 void Utils::PixelShader::Bind()

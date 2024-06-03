@@ -1,6 +1,6 @@
 #pragma once
 #include "Graphics\Utilis.h"
-#include "ShaderManager.h"
+#include "Shaders/ShaderManager.h"
 #include "models\Transform.h"
 #include "MathUtils\MathUtils.h"
 #include <string>

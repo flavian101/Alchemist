@@ -50,8 +50,9 @@ namespace Utils
 	public:
 		VertexShader(Graphics& g);
 		~VertexShader();
-		void LoadVertexShader(LPCWSTR path);
-		ID3D10Blob* GetByteCode();
+		void LoadStreamVertexShader(std::string stream);
+		void LoadCompiledVertexShader(std::wstring path);
+		ID3DBlob* GetByteCode();
 		void Bind();
 	private:
 		Graphics& m_graphics;
@@ -64,7 +65,9 @@ namespace Utils
 	public:
 		PixelShader(Graphics& g);
 		~PixelShader();
-		void LoadPixelShader(LPCWSTR path);
+		void LoadStreamPixelShader(std::string stream);
+		void LoadCompiledPixelShader(std::wstring path);
+		ID3DBlob* GetByteCode();
 		void Bind();
 	private:
 		Graphics& m_graphics;

@@ -156,6 +156,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <ClCompile Include="src\Scene\Shaders\ShaderEditor.cpp" />
     <ClCompile Include="src\Graphics\DeviceResources.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\environment\Light.cpp" />
@@ -174,7 +175,7 @@
     <ClCompile Include="src\Graphics\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Graphics\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="src\models\Model.cpp" />
-    <ClCompile Include="src\Scene\ShaderManager.cpp" />
+    <ClCompile Include="src\Scene\Shaders\ShaderManager.cpp" />
     <ClCompile Include="src\models\Transform.cpp" />
     <ClCompile Include="src\Scene\RenderableObject.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\Shaders\ShaderEditor.h" />
     <ClInclude Include="src\Graphics\DeviceResources.h" />
     <ClInclude Include="src\dataPack\Json.hpp" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
@@ -211,7 +213,7 @@
     <ClInclude Include="src\Graphics\Camera\OrthographicCamera.h" />
     <ClInclude Include="src\Graphics\Camera\PerspectiveCamera.h" />
     <ClInclude Include="src\models\Model.h" />
-    <ClInclude Include="src\Scene\ShaderManager.h" />
+    <ClInclude Include="src\Scene\Shaders\ShaderManager.h" />
     <ClInclude Include="src\models\Transform.h" />
     <ClInclude Include="src\Scene\RenderableObject.h" />
     <ClInclude Include="src\Scene\Scene.h" />

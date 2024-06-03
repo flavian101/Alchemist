@@ -51,5 +51,5 @@ float4 main(VertexOut input) :SV_Target
     finalColor = diffuse * light.ambient;
     finalColor += saturate(dot(light.dir, input.normal) * light.diffuse * diffuse);
 	
-    return float4(finalColor, diffuse.a);
+    return float4(finalColor*1.3, diffuse.a);
 }

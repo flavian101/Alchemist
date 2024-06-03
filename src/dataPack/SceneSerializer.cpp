@@ -276,8 +276,8 @@ void SceneSerializer::DeserializeGraphics(Graphics& graphics, const nlohmann::js
 
 void  SceneSerializer::DeserializeWindow(Window& win, const nlohmann::json& j)
 {
-	//win.m_windowTitle = j["Window Title"].get<LPCWSTR>();
-	//win.m_windowClass = j["Window Class Name"].get<LPCWSTR>();
+	//win.m_windowTitle = j["Window Title"].get<std::wstring>().c_str();
+	//win.m_windowClass = j["Window Class Name"].get<std::wstring>().c_str();
 	win.m_width = j["width"];
 	win.m_height = j["height"];
 }
@@ -367,7 +367,7 @@ void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json&
 
 		if (model->isTextured)
 		{
-			//model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"], j["textureSlot"]);
+			model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"].get<std::string>().c_str(), j["textureSlot"]);
 		}
 		model->CreateMesh(model->part->getVertices(), model->part->getIndices());
 		

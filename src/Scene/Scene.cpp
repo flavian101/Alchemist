@@ -17,13 +17,18 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	input = new Input(win);
 	//initialize shadermanager
     defaultShader =  std::make_shared<ShaderManager>(m_graphics);
-	defaultShader->LoadShaders(L"Assets/shader/VertexShader.cso",
-		L"Assets/shader/PixelShader.cso");
+	//defaultShader->loadCompiledShader(L"Assets/shader/VertexShader.cso",
+	//	L"Assets/shader/PixelShader.cso");
+    defaultShader->LoadShaders(L"Assets/shader/VertexShader.hlsl",
+        L"Assets/shader/PixelShader.hlsl");
     defaultShader->SetShaderLayout("POSITION|COLOR");
 	texturedShader = std::make_shared<ShaderManager>(m_graphics);
-	texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.cso",
-		L"Assets/shader/T_pixelShader.cso");
+	//texturedShader->loadCompiledShader(L"Assets/shader/T_vertexShader.cso",
+	//	L"Assets/shader/T_pixelShader.cso");
+    texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.hlsl",
+        L"Assets/shader/T_pixelShader.hlsl");
 	texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL");
+    //shaderEditor
 
 	//cameras
 	sceneCamera = new SceneCamera("main",m_graphics,true);
@@ -38,6 +43,8 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
 	//AddObject(plane);
+
+    editor = std::make_unique<ShaderEditor>(texturedShader);
 
 }
 
@@ -202,6 +209,8 @@ void Scene::controlWindow()
             ImGui::EndPopup();
         }
     }
+    ImGui::Text("Shader Editor");
+    editor->Render();
 
     ImGui::End();
 }

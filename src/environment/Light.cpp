@@ -16,7 +16,7 @@ EnvironmentLight::EnvironmentLight(const std::string& name,Graphics& g,std::shar
 	PS_Buffer.data.light.att = XMFLOAT3(0.4f, 0.02f, 0.0f);
 	PS_Buffer.data.light.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	PS_Buffer.data.light.diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-
+	PS_Buffer.data.light.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void EnvironmentLight::SetLight(DirectX::XMFLOAT4& color, DirectX::XMFLOAT3& postition)
