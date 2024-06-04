@@ -22,7 +22,7 @@ private:
 
 	nlohmann::json SerializeSceneCamera(SceneCamera* camera);
 
-	nlohmann::json SerializeSceneShader(std::shared_ptr<ShaderManager> shader);
+	nlohmann::json SerializeSceneShader(std::vector<std::shared_ptr<ShaderManager>> shader);
 
 	nlohmann::json SerializeSceneModels(Model* model);
 

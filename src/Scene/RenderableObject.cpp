@@ -71,11 +71,15 @@ void RenderableObject::setName(const std::string& name)
 	this->m_name = name;
 }
 
-ShaderManager* RenderableObject::GetShadermanager() const
+std::shared_ptr<ShaderManager> RenderableObject::GetShadermanager() const
 {
-	return m_shaderManager.get();
+	return m_shaderManager;
 }
 
+void RenderableObject::SetShaderManager(std::shared_ptr<ShaderManager> manager)
+{
+	m_shaderManager = manager;
+}
 
 
 void RenderableObject::controlWindow()

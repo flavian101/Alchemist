@@ -26,7 +26,8 @@ public:
 	void setScale(const XMFLOAT3& scale);
 
 
-	ShaderManager* GetShadermanager()const;
+	std::shared_ptr<ShaderManager> GetShadermanager()const;
+	void SetShaderManager(std::shared_ptr<ShaderManager> manager);
 	std::string getName()const;
 	void setName(const std::string& name);
 	virtual void controlWindow();

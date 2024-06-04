@@ -12,23 +12,23 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	plane(nullptr),
 	m_selectedModel(nullptr),
     light(nullptr)
-
 {
 	input = new Input(win);
+
 	//initialize shadermanager
-    defaultShader =  std::make_shared<ShaderManager>(m_graphics);
-	//defaultShader->loadCompiledShader(L"Assets/shader/VertexShader.cso",
-	//	L"Assets/shader/PixelShader.cso");
-    defaultShader->LoadShaders(L"Assets/shader/VertexShader.hlsl",
-        L"Assets/shader/PixelShader.hlsl");
+    auto defaultShader = std::make_shared<ShaderManager>(m_graphics);
+    defaultShader->LoadShaders(L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
     defaultShader->SetShaderLayout("POSITION|COLOR");
-	texturedShader = std::make_shared<ShaderManager>(m_graphics);
-	//texturedShader->loadCompiledShader(L"Assets/shader/T_vertexShader.cso",
-	//	L"Assets/shader/T_pixelShader.cso");
-    texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.hlsl",
-        L"Assets/shader/T_pixelShader.hlsl");
-	texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL");
+
+    auto texturedShader = std::make_shared<ShaderManager>(m_graphics);
+    texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
+    texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL");
+
+    shaders.push_back(defaultShader);
+    shaders.push_back(texturedShader);
+
     //shaderEditor
+    editor = std::make_unique<ShaderEditor>(texturedShader);
 
 	//cameras
 	sceneCamera = new SceneCamera("main",m_graphics,true);
@@ -42,9 +42,8 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
-	//AddObject(plane);
+	AddObject(plane);
 
-    editor = std::make_unique<ShaderEditor>(texturedShader);
 
 }
 
@@ -122,6 +121,7 @@ void Scene::controlWindow()
             // Open a context menu when right-clicked on a model
             if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
             {
+                
                 // Add option to rename the model
                 if (ImGui::MenuItem("Rename"))
                 {
@@ -135,7 +135,16 @@ void Scene::controlWindow()
                     // Remove the model from the scene
                     RemoveObject(model);
                 }
-
+                if (ImGui::BeginMenu("Change Shader"))
+                {
+                    for (size_t i = 0; i < shaders.size(); ++i)
+                    {
+                        if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str())) {
+                            model->SetShaderManager(shaders[i]);
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
                 ImGui::EndPopup();
             }
         }
@@ -160,7 +169,7 @@ void Scene::controlWindow()
         // Only create and add the model if modelName is not empty
         if (modelName[0] != '\0')
         {
-            model = new Model(modelName, m_graphics, defaultShader);
+            model = new Model(modelName, m_graphics, shaders[0]);
 
             model->CreateMesh(cube->getMesh()->getVertices( ), cube->getMesh()->getIndices());
 

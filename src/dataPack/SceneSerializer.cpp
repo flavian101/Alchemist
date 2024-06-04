@@ -16,7 +16,7 @@ void SceneSerializer::Serialize(const char* filepath)
 	j["graphics"] = SerializeGraphics(m_scene.m_graphics);
 	j["window"] = SerializeWindow( m_scene.m_win);
 	j["SceneCamera"] = SerializeSceneCamera( m_scene.sceneCamera);
-	j["SceneShader"] = SerializeSceneShader( m_scene.defaultShader);
+	j["SceneShader"] = SerializeSceneShader( m_scene.shaders);
 
 	
 	j["model"] = nlohmann::json::array();
@@ -58,7 +58,7 @@ void SceneSerializer::Deserialize(const char* filepath)
 	// Deserialize models
 	for (const auto& model_json : j["model"])
 	{
-		Model* model = new Model("", m_graphics, m_scene.defaultShader);
+		Model* model = new Model("", m_graphics, m_scene.shaders[1]);
 		DeserializeSceneModels(model, model_json);
 		m_scene.m_models.push_back(model);
 	}
@@ -172,7 +172,7 @@ nlohmann::json SceneSerializer::SerializeSceneCamera(SceneCamera* camera)
 	return j;
 }
 
-nlohmann::json SceneSerializer::SerializeSceneShader(std::shared_ptr<ShaderManager> shader)
+nlohmann::json SceneSerializer::SerializeSceneShader(std::vector<std::shared_ptr<ShaderManager>> shader)
 {
 	nlohmann::json j;
 	return nlohmann::json();

@@ -8,6 +8,7 @@
 #include <memory>
 #include "environment/Light.h"
 #include "Shaders/ShaderEditor.h"
+#include <map>
 
 class Scene
 {
@@ -42,8 +43,7 @@ private:
 	Cube* cube;
 	Plane* plane;
 	Input* input;
-	std::shared_ptr<ShaderManager> defaultShader;
-	std::shared_ptr<ShaderManager> texturedShader;
+	std::vector< std::shared_ptr<ShaderManager>> shaders;
 	std::unique_ptr<ShaderEditor> editor;
 	Model* m_selectedModel;
 	bool m_renameModel = false;

@@ -91,7 +91,7 @@ void SceneManager::ControlWindow()
     }
     ImGui::EndMainMenuBar();
 
-    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::BeginChild("Scene List", ImVec2(600, 80), true);
         for (const auto& scene : scenes)
@@ -134,14 +134,7 @@ void SceneManager::ControlWindow()
             RemoveScene(activeScene);
             activeScene = nullptr;
         }
-        ImGui::End();
+      
     }
-
-  
-      
-          
-         
-            
-      
-    
+    ImGui::End();
 }
