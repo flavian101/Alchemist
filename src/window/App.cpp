@@ -4,7 +4,7 @@
 
 App::App(HINSTANCE hInstance, int showWnd)
     :
-    window(hInstance, showWnd, L"engine", L"DirectX", 1270, 720),
+    window(hInstance, showWnd, L"engine", L"DirectX", 1366, 768),
     sceneManager(window.Gfx(),window),
     timer()
 {}

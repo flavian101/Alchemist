@@ -5,6 +5,7 @@
 #include "dataPack/SceneSerializer.h"
 
 
+
 class SceneManager
 {
 public:
@@ -40,6 +41,9 @@ private:
     bool showSceneWindow = true;
     bool createScenePopup = false;
     SceneSerializer* serializer;
+    bool g_isDragging = false;
+    POINT g_dragStartPoint = { 0, 0 };
+    POINT g_windowStartPoint = { 0, 0 };
 
 
 

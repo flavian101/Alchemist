@@ -100,7 +100,7 @@ void Scene::SetName(const std::string& name)
 }
 void Scene::controlWindow()
 {
-    ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize);
 
     // Display a list of models in a child window
     if (ImGui::BeginChild("models", ImVec2(0, 200), true))
@@ -221,7 +221,7 @@ void Scene::controlWindow()
    
     ImGui::End();
 
-    if (ImGui::Begin("Graphics Settings", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize)) 
+    if (ImGui::Begin("Graphics Settings", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
             ImGui::BeginTabBar("Settings");
             if (ImGui::BeginTabItem("General")) {

@@ -36,7 +36,7 @@ void ShaderEditor::Render() {
         m_needsReload = true;
         m_needsSaving = true;
     }
-    if (m_needsReload && ImGui::Button("Apply")) {
+    if (m_needsReload && ImGui::Button("compile")) {
         m_shaderManager->SetVertexShaderCode(m_vertexShaderCode);
         m_shaderManager->SetPixelShaderCode(m_pixelShaderCode);
         m_shaderManager->ReloadShaders();

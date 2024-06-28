@@ -62,36 +62,94 @@ void SceneManager::Render()
 }
 void SceneManager::ControlWindow()
 {
-    ImGui::BeginMainMenuBar();
-    if (ImGui::BeginMenu("File"))
+
+    if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::MenuItem("New Scene"))
+        if (ImGui::BeginMenu("File"))
         {
-            createScenePopup = true;
+            if (ImGui::MenuItem("New Scene"))
+            {
+                createScenePopup = true;
+            }
+            if (ImGui::MenuItem("Load Scene"))
+            {
+                serializer->Deserialize("flavian.json");
+            }
+            if (ImGui::MenuItem("Save Scene"))
+            {
+                serializer->Serialize("flavian.json");
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Exit"))
+            {
+                PostMessage(get<0>(m_graphics.getWin()), WM_CLOSE, 0, 0);
+
+            }
+            ImGui::EndMenu();
         }
-        if (ImGui::MenuItem("Load Scene"))
+        if (ImGui::BeginMenu("Edit"))
         {
-            serializer->Deserialize("flavian.json");
-        }
-        if (ImGui::MenuItem("Save Scene"))
-        {
-            serializer->Serialize("flavian.json");
+
+            ImGui::EndMenu();
         }
         ImGui::Separator();
-        if (ImGui::MenuItem("Exit"))
+        ImGui::SameLine(ImGui::GetWindowWidth() - 230);
+        if (ImGui::Button("Minimize"))
         {
-           
+            ShowWindow(get<0>(m_graphics.getWin()), SW_MINIMIZE);
         }
-        ImGui::EndMenu();
-    }
-    if (ImGui::BeginMenu("Edit"))
-    {
-       
-        ImGui::EndMenu();
-    }
-    ImGui::EndMainMenuBar();
+        ImGui::SameLine();
+        if (ImGui::Button("Maximize"))
+        {
+            ShowWindow(get<0>(m_graphics.getWin()), IsZoomed(get<0>(m_graphics.getWin())) ? SW_RESTORE : SW_MAXIMIZE);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+        {
+            PostMessage(get<0>(m_graphics.getWin()), WM_CLOSE, 0, 0);
+        }
+        // Handle dragging
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
+        {
+            if (!g_isDragging)
+            {
+                g_isDragging = true;
+                GetCursorPos(&g_dragStartPoint);
+                RECT windowRect;
+                GetWindowRect(get<0>(m_graphics.getWin()), &windowRect);
+                g_windowStartPoint.x = windowRect.left;
+                g_windowStartPoint.y = windowRect.top;
+            }
+        }
+        else if (!ImGui::IsMouseDown(0))
+        {
+            g_isDragging = false;
+        }
 
-    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
+        if (g_isDragging)
+        {
+            POINT currentPos;
+            GetCursorPos(&currentPos);
+            int dx = currentPos.x - g_dragStartPoint.x;
+            int dy = currentPos.y - g_dragStartPoint.y;
+
+            SetWindowPos(get<0>(m_graphics.getWin()), NULL, g_windowStartPoint.x + dx, g_windowStartPoint.y + dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        }
+
+
+        ImGui::EndMainMenuBar();
+    }
+
+    RECT rect;
+    GetClientRect(get<0>(m_graphics.getWin()), &rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+
+    // Set the main ImGui window to match the size of the main window
+   // ImGui::SetNextWindowPos(ImVec2(500.0f, ImGui::GetFrameHeight()));
+    //ImGui::SetNextWindowSize(ImVec2(static_cast<float>(width), static_cast<float>(height - ImGui::GetFrameHeight())));
+
+    if (ImGui::Begin("Scenes", &showSceneWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
         ImGui::BeginChild("Scene List", ImVec2(600, 80), true);
         for (const auto& scene : scenes)

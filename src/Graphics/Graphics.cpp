@@ -40,6 +40,7 @@ void Graphics::End() {
 void Graphics::ControlWindow()
 {
     ImGui::Text("Graphics Settings");
+    ImGui::Text("Resolution:%.2f X %.2f ", GetWidth(), GetHeight());
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Checkbox("Vsync", &deviceResources->isVsyncEnabled);
     bool msaaChanged = ImGui::Checkbox("MSAA", &deviceResources->enableMsaa);

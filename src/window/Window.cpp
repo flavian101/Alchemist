@@ -84,7 +84,7 @@ bool Window::Initialize()
 		NULL,
 		m_windowClass,
 		m_windowTitle,
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		WS_POPUP | WS_VISIBLE,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		initialWidth, initialHeight,
 		NULL,
@@ -176,7 +176,6 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		m_height = HIWORD(lParam);
 		if (pGfx) // Check if pGfx is initialized
 		{
-			//this->Gfx()->GetDeviceResources().Resize(m_width, m_height);
 			this->Gfx().GetDeviceResources()->Resize(m_width, m_height);
 		}
 		return 0;
