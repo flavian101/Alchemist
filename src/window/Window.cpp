@@ -105,6 +105,7 @@ bool Window::Initialize()
 	//SetFocus(m_hwnd);
 	ImGui_ImplWin32_Init(m_hwnd);
 	pGfx = std::make_unique<Graphics>(m_hwnd,m_width, m_height);
+	pGfx->SetWin(std::make_tuple(m_hwnd, m_hInstance));
     return true;
 }
 

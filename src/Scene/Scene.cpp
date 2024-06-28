@@ -7,13 +7,11 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	m_win(win),
 	model(nullptr),
 	sceneCamera(nullptr),
-	input(nullptr),
 	cube(nullptr),			
 	plane(nullptr),
 	m_selectedModel(nullptr),
     light(nullptr)
 {
-	input = new Input(win);
 
 	//initialize shadermanager
     auto defaultShader = std::make_shared<ShaderManager>(m_graphics);
@@ -31,12 +29,15 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
     editor = std::make_unique<ShaderEditor>(texturedShader);
 
 	//cameras
-	sceneCamera = new SceneCamera("main",m_graphics,true);
+	sceneCamera = new SceneCamera("main",m_graphics);
     //light
     light = new EnvironmentLight("main1", m_graphics, texturedShader);
 
 	//model loading 
-	cube = new Cube("player", m_graphics, texturedShader);
+    //player
+    player = std::make_unique<Player>("player", m_graphics, texturedShader);
+    AddObject(player.get());
+	cube = new Cube("cube", m_graphics, texturedShader);
 	cube->CreateCube();
 	AddObject(cube);
 
@@ -73,12 +74,8 @@ void Scene::RemoveObject(Model* object)
 
 void Scene::Update(float deltaTime)
 {
-	sceneCamera->Update(deltaTime);
+	sceneCamera->Update(deltaTime,*player.get());
     light->Update(deltaTime);
-    
-   
-	input->DetectInput(deltaTime, *sceneCamera->GetSelectedCamera()->GetPerspective(), *cube);
-
 	for (auto obj : m_models)
 	{
 		obj->Update(deltaTime);
@@ -88,7 +85,6 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-	m_graphics.ControlWindow();
 	this->controlWindow();
     light->Render();
 	sceneCamera->Render();
@@ -104,7 +100,7 @@ void Scene::SetName(const std::string& name)
 }
 void Scene::controlWindow()
 {
-    ImGui::Begin("Scene Hierarchy",nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Display a list of models in a child window
     if (ImGui::BeginChild("models", ImVec2(0, 200), true))
@@ -121,7 +117,7 @@ void Scene::controlWindow()
             // Open a context menu when right-clicked on a model
             if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
             {
-                
+
                 // Add option to rename the model
                 if (ImGui::MenuItem("Rename"))
                 {
@@ -155,8 +151,12 @@ void Scene::controlWindow()
             bool isSelected = (sceneCamera->m_selectedCamera == camera);
             if (ImGui::Selectable(name.c_str(), isSelected))
             {
-                sceneCamera->m_selectedCamera = isSelected ? sceneCamera->GetSelectedCamera() : camera;
-                m_selectedModel = nullptr; // Deselect the model
+                if (isSelected) {
+                    sceneCamera->m_selectedCamera = sceneCamera->GetSelectedCamera();
+                }
+                else {
+                    sceneCamera->m_selectedCamera = camera;
+                }                m_selectedModel = nullptr; // Deselect the model
             }
         }
         ImGui::EndChild();
@@ -171,7 +171,7 @@ void Scene::controlWindow()
         {
             model = new Model(modelName, m_graphics, shaders[0]);
 
-            model->CreateMesh(cube->getMesh()->getVertices( ), cube->getMesh()->getIndices());
+            model->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
 
             m_models.push_back(model);
 
@@ -218,10 +218,23 @@ void Scene::controlWindow()
             ImGui::EndPopup();
         }
     }
-    ImGui::Text("Shader Editor");
-    editor->Render();
+   
+    ImGui::End();
 
+    if (ImGui::Begin("Graphics Settings", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize)) 
+    {
+            ImGui::BeginTabBar("Settings");
+            if (ImGui::BeginTabItem("General")) {
+                m_graphics.ControlWindow();
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Shader Editor")) {
+                editor->Render();
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+    }
     ImGui::End();
 }
-
 

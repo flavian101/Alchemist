@@ -3,6 +3,7 @@
 #include <optional>
 #include <memory>
 #include "Graphics/Graphics.h"
+#include <tuple>
 
 class Window
 {

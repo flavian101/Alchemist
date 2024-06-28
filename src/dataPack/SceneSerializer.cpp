@@ -128,16 +128,16 @@ nlohmann::json SceneSerializer::SerializePerspectiveCamera(PerspectiveCamera* ca
 	DirectX::XMStoreFloat3(&up, camera->GetUp());
 	j["up"] = { up.x, up.y, up.z };
 
-	j["camYaw"] = camera->GetYaw();
-	j["camPitch"] = camera->GetPitch();
-	j["camRoll"] = camera->GetCamRoll();
-
-	j["moveLeftRight"] = camera->GetMoveLeftRight();
-	j["moveBackForward"] = camera->GetMoveBackForward();
-	j["moveUpDown"] = camera->GetMoveUpDown();
-
-	j["cameraSpeed"] = camera->GetCameraSpeed();
-	j["distance"] = camera->distance;
+	//j["camYaw"] = camera->GetYaw();
+	//j["camPitch"] = camera->GetPitch();
+	//j["camRoll"] = camera->GetCamRoll();
+	//
+	//j["moveLeftRight"] = camera->GetMoveLeftRight();
+	//j["moveBackForward"] = camera->GetMoveBackForward();
+	//j["moveUpDown"] = camera->GetMoveUpDown();
+	//
+	//j["cameraSpeed"] = camera->GetCameraSpeed();
+	//j["distance"] = camera->distance;
 
 	return j;
 }
@@ -285,7 +285,7 @@ void  SceneSerializer::DeserializeWindow(Window& win, const nlohmann::json& j)
 void SceneSerializer::DeserializePerspectiveCamera(PerspectiveCamera* camera, const nlohmann::json& j)
 {
 
-	camera->SetCamera(j["FOV"], j["aspectRatio"],j["nearPlane"], j["farPlane"]);
+	//camera->SetCamera(j["FOV"], j["aspectRatio"],j["nearPlane"], j["farPlane"]);
 
 	DirectX::XMFLOAT3 position(j["position"][0], j["position"][1], j["position"][2]);
 	camera->SetPosition(DirectX::XMLoadFloat3(&position));
@@ -296,16 +296,16 @@ void SceneSerializer::DeserializePerspectiveCamera(PerspectiveCamera* camera, co
 	DirectX::XMFLOAT3 up(j["up"][0], j["up"][1], j["up"][2]);
 	camera->SetUP(DirectX::XMLoadFloat3(&up));
 
-	camera->setYaw(j["camYaw"]);
-	camera->SetPitch(j["camPitch"]);
-	camera->SetRoll(j["camRoll"]);
-
-	camera->SetMoveLeftRight(j["moveLeftRight"]);
-	camera->SetMoveBackForward(j["moveBackForward"]);
-	camera->SetMoveUpDown(j["moveUpDown"]);
-
-	camera->cameraSpeed = (j["cameraSpeed"]);
-	camera->distance = j["distance"];
+	//camera->setYaw(j["camYaw"]);
+	//camera->SetPitch(j["camPitch"]);
+	//camera->SetRoll(j["camRoll"]);
+	//
+	//camera->SetMoveLeftRight(j["moveLeftRight"]);
+	//camera->SetMoveBackForward(j["moveBackForward"]);
+	//camera->SetMoveUpDown(j["moveUpDown"]);
+	//
+	//camera->cameraSpeed = (j["cameraSpeed"]);
+	//camera->distance = j["distance"];
 
 }
 
@@ -319,20 +319,20 @@ void SceneSerializer::DeserializeSceneCamera(SceneCamera* camera, const nlohmann
 	{
 		std::string name = cameraObj["Camera Name"];
 		bool isPerspective = cameraObj["IsPerspective"];
-		SceneCamera* cam = new SceneCamera(name, m_graphics, isPerspective);
+		SceneCamera* cam = new SceneCamera(name, m_graphics);
 		cam->isPerspective = isPerspective;
 	
 		if (isPerspective)
 		{
 			PerspectiveCamera* perspectiveCamera = new PerspectiveCamera();
 			DeserializePerspectiveCamera(perspectiveCamera, cameraObj["Perspective Camera"]);
-			cam->SetPerspectiveCamera(perspectiveCamera);
+			//cam->SetPerspectiveCamera(perspectiveCamera);
 		}
 		else
 		{
 			OrthographicCamera* orthographicCamera = new OrthographicCamera();
 			DeserializeOrthographicCamera(orthographicCamera, cameraObj["Orthographic Camera"]);
-			cam->SetOrthographicCamera(orthographicCamera);
+			//cam->SetOrthographicCamera(orthographicCamera);
 		}
 	
 		cam->showCreateWindow = cameraObj["showCreateWindow"];

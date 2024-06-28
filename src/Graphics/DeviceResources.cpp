@@ -22,6 +22,11 @@ DeviceResources::~DeviceResources() {
     CCWcullMode.Reset();
 }
 
+HWND DeviceResources::getHwnd()
+{
+    return hWnd;
+}
+
 void DeviceResources::Initialize() {
     EnumerateAdaptersAndOutputs();
     if (!CreateDevice()) {

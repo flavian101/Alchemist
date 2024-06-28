@@ -32,7 +32,7 @@ public:
 
     UINT GetWidth() const { return m_width; }
     UINT GetHeight() const { return m_height; }
-
+    HWND getHwnd();
     bool isVsyncEnabled;
     bool enableMsaa;
 

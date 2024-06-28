@@ -1,5 +1,4 @@
 #pragma once
-
 #include <DirectXMath.h>
 #include "window\ImguiManager.h"
 
@@ -15,13 +14,6 @@ public:
 
 	virtual void Update(float delta) = 0;
 	virtual void ControlWindow() = 0;
-
-public: ///reset
-	
-
-	
-
-
 protected:
 
 	XMVECTOR camPosition;

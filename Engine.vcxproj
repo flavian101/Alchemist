@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalIncludeDirectories>$(SolutionDir)dependencies\imgui;$(SolutionDir)src;$(SolutionDir)dependencies\stb;$(SolutionDir)dependencies\imgui$(SolutionDir)dependencies\imgui</AdditionalIncludeDirectories>
@@ -148,6 +148,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\Player.cpp" />
+    <ClCompile Include="src\Graphics\Camera\FirstPerson.cpp" />
+    <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
+    <ClCompile Include="src\Graphics\Camera\ThirdPerson.cpp" />
     <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
       <FileType>CppCode</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -192,6 +196,9 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\Player.h" />
+    <ClInclude Include="src\Graphics\Camera\FirstPerson.h" />
+    <ClInclude Include="src\Graphics\Camera\FreeLook.h" />
     <ClInclude Include="src\Scene\Shaders\ShaderEditor.h" />
     <ClInclude Include="src\Graphics\DeviceResources.h" />
     <ClInclude Include="src\dataPack\Json.hpp" />
@@ -234,6 +241,7 @@
     <ClInclude Include="src\window\Window.h" />
     <ClInclude Include="src\Graphics\Utilis.h" />
     <ClInclude Include="src\Sample\Cube.h" />
+    <ClInclude Include="src\Graphics\Camera\ThirdPerson.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

@@ -1,28 +1,19 @@
-#include "Cube.h"
+#include "Player.h"
 
-
-
-
-Cube::Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager)
-    :Model(name,g,std::move(manager)),
-    m_graphic(g)   
+Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
+	:
+	Model(name, g, shaderManager)
 {
-    m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
+    m_position = XMVectorSet(1.0f, 2.0f, 0.0f, 0.0f);
     this->setTranslation(Math::XMVectorToFloat3(m_position));
     m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
     this->setRotation(Math::XMVectorToFloat4(m_orientation));
 
-
-}
-
-void Cube::CreateCube()
-{
-    // Define vertices for the cube with positions, texture coordinates, and normals
     // Front face
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f)); // bottom-left-back
-    vertices.push_back(Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f)); // top-left-back
-    vertices.push_back(Vertex( 1.0f,  1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f)); // top-right-back
-    vertices.push_back(Vertex( 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f)); // bottom-right-back
+    vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f)); // top-left-back
+    vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f)); // top-right-back
+    vertices.push_back(Vertex(1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f)); // bottom-right-back
 
     // Back face
     vertices.push_back(Vertex(-1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f)); // bottom-left-front
@@ -106,12 +97,14 @@ void Cube::CreateCube()
 
 
     //CreateMesh(vertices, indices);
-    TexturedMesh(vertices, indices, "Assets/textures/metalpanel.jpg", 0u);
+    TexturedMesh(vertices, indices, "Assets/textures/stone wall.jpg", 0u);
 }
-
-
-
-
-
-
-
+//
+//void Player::Update(float deltaTime)
+//{
+//}
+//
+//void Player::Render()
+//{
+//}
+//

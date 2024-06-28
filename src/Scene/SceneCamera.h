@@ -3,21 +3,25 @@
 #include <map>
 #include <vector>
 #include <imgui.h>
-#include <Graphics/Camera/PerspectiveCamera.h>
+#include "Graphics/Camera/FreeLook.h"
+#include "Graphics/Camera/FirstPerson.h"
+#include "Graphics/Camera/ThirdPerson.h"
 #include <Graphics/Camera/OrthographicCamera.h>
 #include <Graphics/Graphics.h>
+#include "Input\Input.h"
+
 
 class SceneCamera {
 public:
-    SceneCamera(const std::string& name, Graphics& g, bool perspective = true);
+    SceneCamera(const std::string& name, Graphics& g);
     ~SceneCamera();
 
-    void SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera);
-    void SetOrthographicCamera(OrthographicCamera* newOrthographicCamera);
-    void Update(float delta);
+    void SetPerspectiveCamera(std::unique_ptr<PerspectiveCamera> newPerspectiveCamera);
+    void SetOrthographicCamera(std::unique_ptr < OrthographicCamera> newOrthographicCamera);
+    void Update(float delta,Player& player);
     void Render();
     Camera* getActiveCamera() const;
-    SceneCamera* GetSelectedCamera() const;
+    SceneCamera* GetSelectedCamera();
     bool isPerspectiveCamera() const;
     PerspectiveCamera* GetPerspective();
     OrthographicCamera* GetOrthographic();
@@ -28,9 +32,10 @@ public:
 private:
     std::string m_name;
     Graphics& m_graphics;
-    PerspectiveCamera* m_perspectiveCamera;
-    OrthographicCamera* m_orthographicCamera;
+    std::unique_ptr<PerspectiveCamera > m_perspectiveCamera;
+    std::unique_ptr<OrthographicCamera> m_orthographicCamera;
     SceneCamera* m_selectedCamera;
+    std::unique_ptr<Input> input;
     bool isPerspective;
     bool showCreateWindow = false;
     static std::map<std::string, SceneCamera*> m_cameras;

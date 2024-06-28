@@ -3,8 +3,6 @@
 #include "Sample\Plane.h"
 #include "Scene\SceneCamera.h"
 #include "window\Window.h"
-#include "Input\Input.h"
-#include "models\Model.h"
 #include <memory>
 #include "environment/Light.h"
 #include "Shaders/ShaderEditor.h"
@@ -40,9 +38,9 @@ private:
 	Model* model;
 	std::string m_name;
 	SceneCamera* sceneCamera;
+	std::unique_ptr<Player> player;
 	Cube* cube;
 	Plane* plane;
-	Input* input;
 	std::vector< std::shared_ptr<ShaderManager>> shaders;
 	std::unique_ptr<ShaderEditor> editor;
 	Model* m_selectedModel;

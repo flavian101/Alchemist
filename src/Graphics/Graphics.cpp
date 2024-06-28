@@ -37,16 +37,15 @@ void Graphics::End() {
     deviceResources->GetSwapChain()->Present(deviceResources->isVsyncEnabled ? 1 : 0, 0);
 }
 
-void Graphics::ControlWindow() {
-    if (ImGui::Begin("Graphics Settings", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize)) {
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::Checkbox("Vsync", &deviceResources->isVsyncEnabled);
-        bool msaaChanged = ImGui::Checkbox("MSAA", &deviceResources->enableMsaa);
-        if (msaaChanged) {
-            deviceResources->ToggleMsaa(deviceResources->enableMsaa);
-        }
+void Graphics::ControlWindow()
+{
+    ImGui::Text("Graphics Settings");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Checkbox("Vsync", &deviceResources->isVsyncEnabled);
+    bool msaaChanged = ImGui::Checkbox("MSAA", &deviceResources->enableMsaa);
+    if (msaaChanged) {
+       deviceResources->ToggleMsaa(deviceResources->enableMsaa);
     }
-    ImGui::End();
 }
 
 void Graphics::EnableImgui() {
@@ -88,3 +87,16 @@ float Graphics::GetWidth() const {
 float Graphics::GetHeight() const {
     return deviceResources->GetHeight();
 }
+
+void Graphics::SetWin(const std::tuple<HWND, HINSTANCE>& win)
+{
+    m_hwnd = std::get<0>(win);
+    m_hinstance = std::get<1>(win);
+}
+
+std::tuple<HWND, HINSTANCE> Graphics::getWin()
+{
+    return std::make_tuple(m_hwnd,m_hinstance);
+}
+
+

@@ -1,5 +1,6 @@
 #pragma once
 #include "DeviceResources.h"
+#include <tuple>
 
 
 class Graphics {
@@ -29,10 +30,14 @@ public:
     float GetAspectRatio() const;
     float GetWidth() const;
     float GetHeight() const;
+    //
+    void SetWin(const std::tuple<HWND, HINSTANCE>& win);
+    std::tuple<HWND, HINSTANCE> getWin();
 
 private:
     std::unique_ptr<DeviceResources> deviceResources;
-
+    HWND m_hwnd;
+    HINSTANCE m_hinstance;
     DirectX::XMMATRIX projection;
     DirectX::XMMATRIX view;
 

@@ -1,7 +1,8 @@
 #pragma once
 #include "Scene\RenderableObject.h"
 #include "Mesh.h"
-
+#include "Graphics/Camera/ThirdPerson.h"
+#include <algorithm>
 
 class Model : public RenderableObject
 {
@@ -16,6 +17,9 @@ public:
 
 	virtual void Render() override;
 	void controlWindow()override ;
+
+	void Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime);
+	void Rotate(float yawAmount, float pitchAmount);
 
 	
 private:
@@ -34,5 +38,7 @@ protected:
 	DirectX::XMVECTOR m_position;
 	DirectX::XMVECTOR m_orientation;
 	DirectX::XMVECTOR m_scale;
+	float yaw;
+	float pitch;
 };
 

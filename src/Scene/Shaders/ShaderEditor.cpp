@@ -13,7 +13,7 @@ ShaderEditor::ShaderEditor(std::shared_ptr<ShaderManager> shaderManager)
 
 
 void ShaderEditor::Render() {
-    ImGui::Begin("Shader Editor");
+    ImGui::Text("Shader Editor");
 
     static char vertexShaderBuffer[1024 * 16];
     static char pixelShaderBuffer[1024 * 16];
@@ -58,5 +58,5 @@ void ShaderEditor::Render() {
         m_needsSaving = false;
     }
 
-    ImGui::End();
+  
 }

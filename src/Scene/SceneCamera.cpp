@@ -4,53 +4,73 @@
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
 std::vector<std::string> SceneCamera::m_cameraNames;
 
-SceneCamera::SceneCamera(const std::string& name, Graphics& g, bool perspective)
+SceneCamera::SceneCamera(const std::string& name, Graphics& g)
     : m_name(name),
     m_graphics(g),
     m_perspectiveCamera(nullptr),
     m_orthographicCamera(nullptr),
-    isPerspective(perspective),
+    isPerspective(true),
     m_selectedCamera(this)
 {
     if (isPerspective) {
-        m_perspectiveCamera = new PerspectiveCamera();
-        m_perspectiveCamera->SetCamera(45.0f, m_graphics.GetAspectRatio(), 1.0f, 1000.0f);
+        m_perspectiveCamera = std::make_unique<FreeLook>();
+        //m_perspectiveCamera->SetCamera(45.0f, m_graphics.GetAspectRatio(), 1.0f, 1000.0f);
     }
     else {
-        m_orthographicCamera = new OrthographicCamera();
+        m_orthographicCamera = std::make_unique<OrthographicCamera>();
         m_orthographicCamera->SetCamera(m_graphics.GetWidth(), m_graphics.GetHeight(), 1.0f, 5.0f);
     }
 
     m_cameras[name] = this;
     m_cameraNames.push_back(name);
+    input = std::make_unique<Input>(g.getWin());
 }
 
 SceneCamera::~SceneCamera() {
-    delete m_perspectiveCamera;
-    delete m_orthographicCamera;
+
 }
 
-void SceneCamera::SetPerspectiveCamera(PerspectiveCamera* newPerspectiveCamera) {
-    delete m_perspectiveCamera;  // Clean up the old camera
-    m_perspectiveCamera = newPerspectiveCamera;
+void SceneCamera::SetPerspectiveCamera(std::unique_ptr < PerspectiveCamera> newPerspectiveCamera) {
+    m_perspectiveCamera.reset();  // Clean up the old camera
+    m_perspectiveCamera = std::move(newPerspectiveCamera);
     isPerspective = true;
 }
 
-void SceneCamera::SetOrthographicCamera(OrthographicCamera* newOrthographicCamera) {
-    delete m_orthographicCamera;  // Clean up the old camera
-    m_orthographicCamera = newOrthographicCamera;
+void SceneCamera::SetOrthographicCamera(std::unique_ptr<OrthographicCamera> newOrthographicCamera) {
+    m_orthographicCamera.reset();  // Clean up the old camera
+    m_orthographicCamera = std::move(newOrthographicCamera);
     isPerspective = false;
 }
 
-void SceneCamera::Update(float delta) {
-    m_selectedCamera = this->GetSelectedCamera();
+void SceneCamera::Update(float delta,Player& player) 
+{
+    if (isPerspective)
+    {
+        switch (this->GetPerspective()->GetCameraMode())
+        {
+            case CameraMode::freeLook:
+                input->DetectInputFree(delta,
+                    dynamic_cast<FreeLook*>(this->GetSelectedCamera()->GetPerspective()));
+                break;
+            case CameraMode::thirdPerson:
+                input->DetectInputThird(delta,
+                    dynamic_cast<ThirdPerson*>(this->GetSelectedCamera()->GetPerspective()), player);
+                break;
+            case CameraMode::firstPerson:
+                input->DetectInputFirst(delta,
+                    dynamic_cast<FirstPerson*>(this->GetSelectedCamera()->GetPerspective()));
+                break;
+        }
+     
+    }
+  // m_selectedCamera = GetSelectedCamera();
     if (m_selectedCamera) {
         m_selectedCamera->getActiveCamera()->Update(delta);
     }
 }
 
 void SceneCamera::Render() {
-    m_selectedCamera = this->GetSelectedCamera();
+   // m_selectedCamera = GetSelectedCamera();
     if (m_selectedCamera) {
         m_graphics.SetViewMatrix(m_selectedCamera->getActiveCamera()->GetView());
         m_graphics.SetProjectionMatrix(m_selectedCamera->getActiveCamera()->GetProjectionMatrix());
@@ -60,15 +80,16 @@ void SceneCamera::Render() {
 Camera* SceneCamera::getActiveCamera() const {
     if (isPerspective)
     {
-        return m_perspectiveCamera;
+        return m_perspectiveCamera.get();
     }
     else
     {
-        return m_orthographicCamera;
+        return m_orthographicCamera.get();
     }
 }
 
-SceneCamera* SceneCamera::GetSelectedCamera() const {
+SceneCamera* SceneCamera::GetSelectedCamera()
+{
     return m_selectedCamera;
 }
 
@@ -77,11 +98,11 @@ bool SceneCamera::isPerspectiveCamera() const {
 }
 
 PerspectiveCamera* SceneCamera::GetPerspective() {
-    return m_perspectiveCamera;
+    return m_perspectiveCamera.get();
 }
 
 OrthographicCamera* SceneCamera::GetOrthographic() {
-    return m_orthographicCamera;
+    return m_orthographicCamera.get();
 }
 
 void SceneCamera::CreateNewCamera(const std::string& name, bool perspective) {
@@ -90,7 +111,8 @@ void SceneCamera::CreateNewCamera(const std::string& name, bool perspective) {
         return;
     }
 
-    SceneCamera* newCamera = new SceneCamera(name, m_graphics, perspective);
+    SceneCamera* newCamera = new SceneCamera(name, m_graphics);
+   // input = std::make_unique<Input>(m_graphics.getWin());
     m_cameras[name] = newCamera;
     m_cameraNames.push_back(name);
 }
@@ -131,9 +153,9 @@ void SceneCamera::ControlWindow()
                     currentItem = n;
                     if (m_selectedCamera) {
                         if (n == 0)
-                            m_selectedCamera->SetPerspectiveCamera(new PerspectiveCamera());
+                            m_selectedCamera->SetPerspectiveCamera(std::make_unique<FreeLook>());
                         else
-                            m_selectedCamera->SetOrthographicCamera(new OrthographicCamera());
+                            m_selectedCamera->SetOrthographicCamera( std::make_unique<OrthographicCamera>());
                     }
                 }
                 if (isSelected)
@@ -142,8 +164,40 @@ void SceneCamera::ControlWindow()
             ImGui::EndCombo();
         }
 
-        if (m_selectedCamera->isPerspectiveCamera()) {
-            m_selectedCamera->GetPerspective()->ControlWindow();
+        static const char* cameraModeItems[] = { "Free Look", "Third Person", "First Person" };
+        static int selectedMode = static_cast<int>(GetPerspective()->GetCameraMode());
+
+        if (ImGui::Combo("Camera Mode", &selectedMode, cameraModeItems, IM_ARRAYSIZE(cameraModeItems)))
+        {
+            switch (selectedMode) {
+            case 0:
+                SetPerspectiveCamera(std::make_unique<FreeLook>());
+                break;
+            case 1:
+                SetPerspectiveCamera(std::make_unique<ThirdPerson>());
+                break;
+            case 2:
+                SetPerspectiveCamera(std::make_unique<FirstPerson>());
+                break;
+            default:
+                // Handle unexpected selection (optional)
+                break;
+            }
+        }
+        if (m_selectedCamera->isPerspectiveCamera()) 
+        {
+            switch (this->GetPerspective()->GetCameraMode())
+            {
+            case CameraMode::freeLook:
+               dynamic_cast<FreeLook*>(m_selectedCamera->GetPerspective())->ControlWindow();
+                break;
+            case CameraMode::thirdPerson:
+                dynamic_cast<ThirdPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
+                break;
+            case CameraMode::firstPerson:
+                dynamic_cast<FirstPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
+                break;
+            }
         }
         else {
             m_selectedCamera->GetOrthographic()->ControlWindow();
