@@ -10,14 +10,21 @@ SceneManager::SceneManager(Graphics& g, Window& win)
     activeScene = new Scene("begin", g, win);
     AddScene(activeScene);
     showSceneWindow = true; 
-    thumbnail = new Utils::Texture(g);
-    thumbnail->LoadTexture("Assets/textures/thumbnail/thumbnail.png", 1u);
+    thumbnail = std::make_unique<Utils::Texture>(g);
+    thumbnail->LoadTexture("Assets/textures/thumbnail/Alchemist.png", 1u);
+    Logo = std::make_unique<Utils::Texture>(g);
+    Logo->LoadTexture("Assets/textures/thumbnail/Alchemist.png", 1u);
+    minimize= std::make_unique<Utils::Texture>(g);
+    minimize->LoadTexture("Assets/textures/thumbnail/minimize.png", 1u); 
+    maximize = std::make_unique<Utils::Texture>(g);
+    maximize->LoadTexture("Assets/textures/thumbnail/maximize.png", 1u);
+    close = std::make_unique<Utils::Texture>(g);
+    close->LoadTexture("Assets/textures/thumbnail/close.png", 1u);
     serializer = new SceneSerializer(*activeScene,m_graphics);
 
 }
 
 SceneManager::~SceneManager() {
-    delete thumbnail;
     for (auto scene : scenes)
         delete scene;
 }
@@ -61,10 +68,14 @@ void SceneManager::Render()
         activeScene->Render();
 }
 void SceneManager::ControlWindow()
-{
-
+{ 
     if (ImGui::BeginMainMenuBar())
     {
+        ImTextureID tex_id_1 = Logo->GetSRV();
+        if (ImGui::ImageButton(tex_id_1, ImVec2(20, 20)))
+        {
+            
+        }
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("New Scene"))
@@ -93,18 +104,22 @@ void SceneManager::ControlWindow()
             ImGui::EndMenu();
         }
         ImGui::Separator();
-        ImGui::SameLine(ImGui::GetWindowWidth() - 230);
-        if (ImGui::Button("Minimize"))
+        ImGui::SameLine(ImGui::GetWindowWidth() - 140);
+        ImTextureID tex_id_2 = minimize->GetSRV();
+        if (ImGui::ImageButton(tex_id_2, ImVec2(20, 20)))
         {
             ShowWindow(get<0>(m_graphics.getWin()), SW_MINIMIZE);
         }
         ImGui::SameLine();
-        if (ImGui::Button("Maximize"))
+        ImTextureID tex_id_3 = maximize->GetSRV();
+
+        if (ImGui::ImageButton(tex_id_3, ImVec2(20, 20)))
         {
             ShowWindow(get<0>(m_graphics.getWin()), IsZoomed(get<0>(m_graphics.getWin())) ? SW_RESTORE : SW_MAXIMIZE);
         }
         ImGui::SameLine();
-        if (ImGui::Button("Close"))
+        ImTextureID tex_id_4 = close->GetSRV();
+        if (ImGui::ImageButton(tex_id_4, ImVec2(20, 20)))
         {
             PostMessage(get<0>(m_graphics.getWin()), WM_CLOSE, 0, 0);
         }
@@ -158,7 +173,7 @@ void SceneManager::ControlWindow()
             ImGui::BeginGroup(); // Group thumbnail and label together
 
             ImTextureID tex_id = thumbnail->GetSRV();
-            if (ImGui::ImageButton(tex_id, ImVec2(40, 40)))
+            if (ImGui::ImageButton(tex_id, ImVec2(60, 60)))
             {
                 activeScene = scene;
             }

@@ -81,6 +81,15 @@ ImguiManager::ImguiManager()
 
 }
 
+void ImguiManager::CustomTitleBarStyle()
+{
+
+}
+
+void ImguiManager::normalStyle()
+{
+}
+
 ImguiManager::~ImguiManager()
 {
     // Destroy ImGui context

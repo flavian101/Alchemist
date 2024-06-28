@@ -37,7 +37,11 @@ private:
     Window& m_window;
     std::vector<Scene*> scenes;
     Scene* activeScene;
-    Utils::Texture* thumbnail;
+    std::unique_ptr<Utils::Texture> thumbnail;
+    std::unique_ptr<Utils::Texture> Logo;
+    std::unique_ptr<Utils::Texture> close;
+    std::unique_ptr<Utils::Texture> minimize;
+    std::unique_ptr<Utils::Texture> maximize;
     bool showSceneWindow = true;
     bool createScenePopup = false;
     SceneSerializer* serializer;
