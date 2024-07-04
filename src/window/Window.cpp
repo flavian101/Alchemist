@@ -61,7 +61,10 @@ bool Window::Initialize()
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = m_hInstance;
-	wc.hIcon = nullptr;
+	wc.hIcon = wc.hIconSm = static_cast<HICON>(LoadImage(
+		m_hInstance, MAKEINTRESOURCE(IDI_ICON1),
+		IMAGE_ICON, 256, 201, 0
+	));
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);;
 	wc.lpszMenuName = NULL;

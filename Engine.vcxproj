@@ -201,6 +201,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\models\Material.h" />
     <ClInclude Include="src\environment\DirectionalLight.h" />
     <ClInclude Include="src\environment\PointLight.h" />
@@ -284,6 +285,13 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\Alchemist.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\textures\thumbnail\Alchemist.ico" />
+    <Image Include="assets\textures\thumbnail\icon2.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,8 @@
 #include <memory>
 #include "Graphics/Graphics.h"
 #include <tuple>
+#include "resource.h"
+
 
 class Window
 {

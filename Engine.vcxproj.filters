@@ -293,6 +293,9 @@
     <ClInclude Include="src\models\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />
@@ -304,5 +307,18 @@
     <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\Alchemist.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\textures\thumbnail\Alchemist.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\textures\thumbnail\icon2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
