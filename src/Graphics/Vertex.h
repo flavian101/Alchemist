@@ -6,6 +6,7 @@ enum class VertexType {
     Pos3Col,
     Pos3Tex,
     Pos3TexNorm,
+    pos3TexNormTan,
 };
 
 class Vertex
@@ -32,7 +33,13 @@ public:
             XMFLOAT2 tex;
             XMFLOAT3 norm;
         }pos3TexNorm;
-        //more
+        struct Pos3TexNormTan
+        {
+            XMFLOAT3 pos;
+            XMFLOAT2 tex;
+            XMFLOAT3 norm;
+            XMFLOAT3 tangent;
+        }pos3TexNormTan;
     };
     Vertex()
     {}
@@ -53,6 +60,15 @@ public:
         pos3TexNorm.pos = XMFLOAT3(x, y, z);
         pos3TexNorm.tex = XMFLOAT2(u, v);
         pos3TexNorm.norm = XMFLOAT3(xn, yn, zn);
+    }
+
+    Vertex(float x, float y, float z, float u, float v, float xn, float yn,
+        float zn, float tx, float ty, float tz) :type(VertexType::pos3TexNormTan)
+    {
+        pos3TexNorm.pos = XMFLOAT3(x, y, z);
+        pos3TexNorm.tex = XMFLOAT2(u, v);
+        pos3TexNorm.norm = XMFLOAT3(xn, yn, zn);
+        pos3TexNormTan.tangent = (XMFLOAT3(tx, ty, tz));
     }
 
     // Ensure proper destruction of union members

@@ -3,7 +3,7 @@
 FreeLook::FreeLook()
 {
 	mode = freeLook;
-	this->cameraSpeed = 2.0f;
+	this->cameraSpeed = 10.0f;
 
 }
 

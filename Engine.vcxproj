@@ -148,6 +148,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\models\Material.cpp" />
+    <ClCompile Include="src\environment\DirectionalLight.cpp" />
+    <ClCompile Include="src\environment\PointLight.cpp" />
+    <ClCompile Include="src\environment\SpotLight.cpp" />
     <ClCompile Include="src\Scene\Player.cpp" />
     <ClCompile Include="src\Graphics\Camera\FirstPerson.cpp" />
     <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
@@ -196,6 +200,10 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\models\Material.h" />
+    <ClInclude Include="src\environment\DirectionalLight.h" />
+    <ClInclude Include="src\environment\PointLight.h" />
+    <ClInclude Include="src\environment\SpotLight.h" />
     <ClInclude Include="src\Scene\Player.h" />
     <ClInclude Include="src\Graphics\Camera\FirstPerson.h" />
     <ClInclude Include="src\Graphics\Camera\FreeLook.h" />

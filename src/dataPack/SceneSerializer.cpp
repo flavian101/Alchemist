@@ -20,9 +20,9 @@ void SceneSerializer::Serialize(const char* filepath)
 
 	
 	j["model"] = nlohmann::json::array();
-	for (auto& model : m_scene.m_models)
+	for (auto& object : m_scene.objects)
 	{
-		j["model"].push_back(SerializeSceneModels(model));
+//		j["objects"].push_back(SerializeSceneModels(object));
 	}
 	
 	// Write to file
@@ -53,14 +53,14 @@ void SceneSerializer::Deserialize(const char* filepath)
 	//DeserializeSceneShader(m_scene.texturedShader, j["texturedShader"]);
 
 	// Clear existing models
-	m_scene.m_models.clear();
+//	m_scene.m_models.clear();
 
 	// Deserialize models
 	for (const auto& model_json : j["model"])
 	{
 		Model* model = new Model("", m_graphics, m_scene.shaders[1]);
 		DeserializeSceneModels(model, model_json);
-		m_scene.m_models.push_back(model);
+//		m_scene.m_models.push_back(model);
 	}
 }
 
@@ -191,11 +191,11 @@ nlohmann::json SceneSerializer::SerializeSceneModels(Model* model)
 	j["scale"] = { scale.x,scale.y,scale.z };
 	j["rotation"] = { rotation.x,rotation.y,rotation.z,rotation.w };
 
-	if (model->isTextured && model->texture)
-	{
-		j["texture path"] = model->m_path;
-		j["textureSlot"] = model->getSlot();
-	}
+	//if (model->isTextured && model->texture)
+	//{
+	//	j["texture path"] = model->m_path;
+	//	j["textureSlot"] = model->getSlot();
+	//}
 	//mesh
 	if (model->getMesh())
 	{
@@ -367,7 +367,7 @@ void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json&
 
 		if (model->isTextured)
 		{
-			model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"].get<std::string>().c_str(), j["textureSlot"]);
+			//model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"].get<std::string>().c_str(), j["textureSlot"]);
 		}
 		model->CreateMesh(model->part->getVertices(), model->part->getIndices());
 		

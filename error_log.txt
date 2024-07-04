@@ -28,3 +28,27 @@ Error in function CreateDepthStencil at line 107: The parameter is incorrect.
 
 Error in function CreateDepthStencil at line 107: The parameter is incorrect.
 
+Error in function CreateDepthStencil at line 107: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function LoadTexture at line 278: The parameter is incorrect.
+
+Error in function LoadTexture at line 278: The parameter is incorrect.
+
+Error in function LoadTexture at line 278: The parameter is incorrect.
+
+Error in function CreateLayout at line 136: The parameter is incorrect.
+

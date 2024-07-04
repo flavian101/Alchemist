@@ -13,7 +13,6 @@ Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 
 void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
 {
-   
     UINT vertexCount = m * n;
     UINT faceCount = (m - 1) * (n - 1) * 2;
 
@@ -35,11 +34,12 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
             float v = i * dv;
             float height = calculateHeight(x, z);
 
-            // Placeholder normal (will be computed later)
-            vertices.push_back(Vertex(x, height, z, u, v, 0.0f, 0.0f, 0.0f));
+            // Placeholder normal and tangent (will be computed later)
+            vertices.push_back(Vertex(x, height, z, u, v, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
         }
     }
 
+    // Generate indices
     for (UINT i = 0; i < m - 1; ++i)
     {
         for (UINT j = 0; j < n - 1; ++j)
@@ -61,7 +61,7 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
         }
     }
 
-    // Compute normals
+    // Compute normals and tangents
     for (UINT i = 0; i < m - 1; ++i)
     {
         for (UINT j = 0; j < n - 1; ++j)
@@ -71,10 +71,14 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
             UINT bottomLeft = (i + 1) * n + j;
             UINT bottomRight = bottomLeft + 1;
 
-            XMFLOAT3 v0 = vertices[topLeft].pos3TexNorm.pos;
-            XMFLOAT3 v1 = vertices[topRight].pos3TexNorm.pos;
-            XMFLOAT3 v2 = vertices[bottomLeft].pos3TexNorm.pos;
-            XMFLOAT3 v3 = vertices[bottomRight].pos3TexNorm.pos;
+            XMFLOAT3 v0 = vertices[topLeft].pos3TexNormTan.pos;
+            XMFLOAT3 v1 = vertices[topRight].pos3TexNormTan.pos;
+            XMFLOAT3 v2 = vertices[bottomLeft].pos3TexNormTan.pos;
+            XMFLOAT3 v3 = vertices[bottomRight].pos3TexNormTan.pos;
+
+            XMFLOAT2 uv0 = vertices[topLeft].pos3TexNormTan.tex;
+            XMFLOAT2 uv1 = vertices[topRight].pos3TexNormTan.tex;
+            XMFLOAT2 uv2 = vertices[bottomLeft].pos3TexNormTan.tex;
 
             XMVECTOR edge1 = XMVectorSubtract(XMLoadFloat3(&v1), XMLoadFloat3(&v0));
             XMVECTOR edge2 = XMVectorSubtract(XMLoadFloat3(&v2), XMLoadFloat3(&v0));
@@ -86,43 +90,64 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
             normal1 = XMVector3Normalize(normal1);
             normal2 = XMVector3Normalize(normal2);
 
-            // Accumulate normals for smooth shading
-            XMFLOAT3 n1, n2;
+            // Compute tangent
+            XMVECTOR dUV1 = XMVectorSet(uv1.x - uv0.x, uv1.y - uv0.y, 0.0f, 0.0f);
+            XMVECTOR dUV2 = XMVectorSet(uv2.x - uv0.x, uv2.y - uv0.y, 0.0f, 0.0f);
+
+            float r = 1.0f / (XMVectorGetX(dUV1) * XMVectorGetY(dUV2) - XMVectorGetY(dUV1) * XMVectorGetX(dUV2));
+
+            XMVECTOR tangent = XMVectorScale(
+                XMVectorSubtract(
+                    XMVectorScale(edge1, XMVectorGetY(dUV2)),
+                    XMVectorScale(edge2, XMVectorGetY(dUV1))
+                ),
+                r
+            );
+
+            tangent = XMVector3Normalize(tangent);
+
+            // Accumulate normals and tangents for smooth shading
+            XMFLOAT3 n1, n2, t;
             XMStoreFloat3(&n1, normal1);
             XMStoreFloat3(&n2, normal2);
+            XMStoreFloat3(&t, tangent);
 
-            vertices[topLeft].pos3TexNorm.norm.x += n1.x;
-            vertices[topLeft].pos3TexNorm.norm.y += n1.y;
-            vertices[topLeft].pos3TexNorm.norm.z += n1.z;
-            vertices[topRight].pos3TexNorm.norm.x += n1.x;
-            vertices[topRight].pos3TexNorm.norm.y += n1.y;
-            vertices[topRight].pos3TexNorm.norm.z += n1.z;
-            vertices[bottomLeft].pos3TexNorm.norm.x += n1.x;
-            vertices[bottomLeft].pos3TexNorm.norm.y += n1.y;
-            vertices[bottomLeft].pos3TexNorm.norm.z += n1.z;
+            // Accumulate normals
+            vertices[topLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topLeft].pos3TexNormTan.norm, n1);
+            vertices[topRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.norm, n1);
+            vertices[bottomLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.norm, n1);
+            vertices[topRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.norm, n2);
+            vertices[bottomLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.norm, n2);
+            vertices[bottomRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomRight].pos3TexNormTan.norm, n2);
 
-            vertices[topRight].pos3TexNorm.norm.x += n2.x;
-            vertices[topRight].pos3TexNorm.norm.y += n2.y;
-            vertices[topRight].pos3TexNorm.norm.z += n2.z;
-            vertices[bottomLeft].pos3TexNorm.norm.x += n2.x;
-            vertices[bottomLeft].pos3TexNorm.norm.y += n2.y;
-            vertices[bottomLeft].pos3TexNorm.norm.z += n2.z;
-            vertices[bottomRight].pos3TexNorm.norm.x += n2.x;
-            vertices[bottomRight].pos3TexNorm.norm.y += n2.y;
-            vertices[bottomRight].pos3TexNorm.norm.z += n2.z;
+            // Accumulate tangents
+            vertices[topLeft].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[topLeft].pos3TexNormTan.tangent, t);
+            vertices[topRight].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.tangent, t);
+            vertices[bottomLeft].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.tangent, t);
+            vertices[bottomRight].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[bottomRight].pos3TexNormTan.tangent, t);
         }
     }
 
-    // Normalize the accumulated normals
+    // Normalize the accumulated normals and tangents
     for (UINT i = 0; i < vertices.size(); ++i)
     {
-        XMVECTOR normal = XMLoadFloat3(&vertices[i].pos3TexNorm.norm);
+        XMVECTOR normal = XMLoadFloat3(&vertices[i].pos3TexNormTan.norm);
+        XMVECTOR tangent = XMLoadFloat3(&vertices[i].pos3TexNormTan.tangent);
+
         normal = XMVector3Normalize(normal);
-        XMStoreFloat3(&vertices[i].pos3TexNorm.norm, normal);
+        tangent = XMVector3Normalize(tangent);
+
+        XMStoreFloat3(&vertices[i].pos3TexNormTan.norm, normal);
+        XMStoreFloat3(&vertices[i].pos3TexNormTan.tangent, tangent);
     }
 
     // Create the mesh with the generated vertices and indices
-    TexturedMesh(vertices, indices, "Assets/textures/hay.jpg", 0u);
+    TexturedMesh(vertices, indices, 
+        "Assets/textures/hay.jpg",
+        "Assets/textures/N_hay.png",
+        "Assets/textures/M_hay.png",
+        "Assets/textures/S_hay.png",
+        "Assets/textures/AO_hay.png");
 }
 
 

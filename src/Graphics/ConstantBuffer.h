@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "ConstantBufferTypes.h" 
 #include <wrl.h>
+#include "ErrorEx.h"
 
 
 template<class T>
@@ -26,7 +27,7 @@ public:
 
 	void Initialize(Graphics& g)
 	{
-		D3D11_BUFFER_DESC desc;
+		D3D11_BUFFER_DESC desc = {};
 
 		desc.Usage = D3D11_USAGE_DYNAMIC;
 		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -36,21 +37,21 @@ public:
 		desc.ByteWidth = sizeof(T);
 		desc.StructureByteStride = 0;
 
-		g.GetDeviceResources()->GetDevice()->CreateBuffer(&desc, 0, buffer.GetAddressOf());
+		CHECK_RESULT(g.GetDeviceResources()->GetDevice()->CreateBuffer(&desc, 0, buffer.GetAddressOf()));
 
 	}
 	
-	bool Update(Graphics& g)
+	HRESULT Update(Graphics& g)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 		
-		 g.GetDeviceResources()->GetContext()->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD,
-			0, &mappedResource);
+		CHECK_RESULT( g.GetDeviceResources()->GetContext()->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD,
+			0, &mappedResource));
 		
 		CopyMemory(mappedResource.pData, &data, sizeof(T));
 		g.GetDeviceResources()->GetContext()->Unmap(buffer.Get(), 0);
-		return true;
+		return S_OK;
 	}
 	
 

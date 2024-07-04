@@ -38,6 +38,7 @@ void Transform::Update(float time)
 	CB_Buffer.data.WVP = XMMatrixTranspose(XMMatrixMultiply(transform, 
 		XMMatrixMultiply(
 		m_graphics.GetViewMatrix(), m_graphics.GetProjectionMatrix())));
+	CB_Buffer.data.View = XMMatrixTranspose(m_graphics.GetViewMatrix());
 	CB_Buffer.data.Model = XMMatrixTranspose(transform);
 	CB_Buffer.Update(m_graphics);
 }

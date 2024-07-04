@@ -117,6 +117,13 @@ void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL
         layouts.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 });
         layouts.push_back({ "NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 });
     }
+    else if (keyword == "POSITION|TEXCOORD|NORMAL|TANGENT")
+    {
+        layouts.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+        layouts.push_back({ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT ,0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+    }
     else
     {
         MessageBox(nullptr, L"input layout error", L"error", MB_OK);

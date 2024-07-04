@@ -7,32 +7,37 @@ Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 	m_mesh(g),
 	part(nullptr),
 	samp(nullptr),
-	texture(nullptr),
 	isTextured(false),
 	yaw(0.0f),
 	pitch(0.0f)
 {
-	
+	material =std::make_unique< Material>(m_graphics);
 }
 
 Model::~Model()
 {
 	delete part;
 	delete samp;
-	delete texture;
 }
 
 
-void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, const char* path, UINT slot)
+void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, 
+	const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
 {
-	m_path = path;
-	m_slot = slot;
 	isTextured = true;
 	samp = new Utils::Sampler(m_graphics);
 	samp->Bind();
-	texture = new Utils::Texture(m_graphics);
+	albedoTexture = std::make_unique<Utils::Texture>(m_graphics);
+	normalTexture = std::make_unique<Utils::Texture>(m_graphics);
+	metallicTexture = std::make_unique<Utils::Texture>(m_graphics);
+	roughnessTexture = std::make_unique<Utils::Texture>(m_graphics);
+	aoTexture = std::make_unique<Utils::Texture>(m_graphics);
 
-	texture->LoadTexture(m_path, slot);
+	albedoTexture->LoadTexture(albedoPath, 0);
+	normalTexture->LoadTexture(normalPath, 1);
+	metallicTexture->LoadTexture(metallicPath, 2);
+	roughnessTexture->LoadTexture(roughnessPath, 3);
+	aoTexture->LoadTexture(aoPath, 4);
 	CreateMesh(vertices, indices);
 
 }
@@ -49,11 +54,22 @@ MeshParts* Model::getMesh()
 	return part;
 }
 
+void Model::Update(float deltaTime)
+{
+	material->Update();
+	RenderableObject::Update(deltaTime);
+}
+
 void Model::Render()
 {
+	material->Bind();
 	if (isTextured)
 	{
-		texture->Bind();
+		albedoTexture->Bind();
+		normalTexture->Bind();
+		metallicTexture->Bind();
+		roughnessTexture->Bind();
+		aoTexture->Bind();
 	}
 	RenderableObject::Render();
 	m_mesh.Bind();
@@ -64,6 +80,7 @@ void Model::controlWindow()
 {
 	RenderableObject::controlWindow();
 	ImGui::Separator();
+	material->controlWindow();
 	ImGui::Text("Information");
 	ImGui::Text("name: %s",m_name.c_str());
 	ImGui::Text("index count: %d", part->getIndices().size());

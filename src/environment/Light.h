@@ -2,14 +2,19 @@
 #include "Scene/RenderableObject.h"
 
 
-class EnvironmentLight: public RenderableObject
+class Light: public RenderableObject
 {
 public:
-	EnvironmentLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
-	void SetLight(DirectX::XMFLOAT4& color, DirectX::XMFLOAT3& postition);
-	void Update(float deltaTime)override;
-	void Render()override;
-	void controlWindow() override;
+	Light(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	virtual void SetPosition(const XMFLOAT3& position);
+	virtual void SetColor(const XMFLOAT4& color);
+	virtual void SetIntensity(float intensity);
+	virtual void SetDiffuse(XMFLOAT4 diffuse);
+	virtual void SetAmbient(XMFLOAT4 ambient);
+	virtual void SetSpecular(XMFLOAT4 specular);
+	virtual void Update(float deltaTime)override;
+	virtual void Render()override;
+	virtual void controlWindow() override;
 
 
 private:

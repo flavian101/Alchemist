@@ -29,5 +29,9 @@ namespace Math {
         XMStoreFloat4(&result, quaternion);
         return result;
     }
+    inline XMFLOAT3 XMFloat3Add(const XMFLOAT3& a, const XMFLOAT3& b)
+    {
+        return XMFLOAT3(a.x + b.x, a.y + b.y, a.z + b.z);
+    }
 
 }
