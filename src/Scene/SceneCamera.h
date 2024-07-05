@@ -2,7 +2,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <imgui.h>
 #include "Graphics/Camera/FreeLook.h"
 #include "Graphics/Camera/FirstPerson.h"
 #include "Graphics/Camera/ThirdPerson.h"

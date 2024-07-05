@@ -1,6 +1,6 @@
 #include "Utilis.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb image.h"
+#include "stb/stb image.h"
 
 
 

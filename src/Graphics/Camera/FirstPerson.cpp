@@ -7,8 +7,8 @@ FirstPerson::FirstPerson()
 {
 	mode = firstPerson;
 	XMVECTOR direction = XMVector3Normalize(camTarget - camPosition);
-	camYaw = atan2(XMVectorGetX(direction), XMVectorGetZ(direction));
-	camPitch = asin(XMVectorGetY(direction));
+	camYaw =(float) atan2(XMVectorGetX(direction), XMVectorGetZ(direction));
+	camPitch =(float) asin(XMVectorGetY(direction));
 }
 
 void FirstPerson::Update(float deltaTime)
