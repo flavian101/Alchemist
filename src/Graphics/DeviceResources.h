@@ -27,9 +27,10 @@ public:
     ID3D11RenderTargetView* GetRenderTargetView() const { return pRenderTarget.Get(); }
     ID3D11DepthStencilView* GetDepthStencilView() const { return pDSV.Get(); }
     ID3D11RasterizerState* GetRasterizerState() const { return CCWcullMode.Get(); }
-
+    ID3D11BlendState* GetBlendState()const { return blendState.Get(); }
     ID3D11RenderTargetView** GetRenderTargetViewAddress() { return pRenderTarget.GetAddressOf(); }
 
+    void BindBlendState();
     UINT GetWidth() const { return m_width; }
     UINT GetHeight() const { return m_height; }
     HWND getHwnd();
@@ -43,6 +44,7 @@ private:
     void CreateDepthStencil(UINT width, UINT height);
     void CreateRenderTarget();
     void CreateRasterizerState();
+    void CreateBlendState();
     void InitializeImGui();
     void EnumerateAdaptersAndOutputs();
 
@@ -61,6 +63,8 @@ private:
     Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
     Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
     Microsoft::WRL::ComPtr<IDXGIOutput> adapterOutput;
+    Microsoft::WRL::ComPtr <ID3D11DepthStencilState> depthStencilState;
+    Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
 
     DXGI_MODE_DESC* displayModeList;
     UINT numerator;

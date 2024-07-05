@@ -3,6 +3,7 @@
 
 using namespace DirectX;
 enum class VertexType {
+    pos3,
     Pos3Col,
     Pos3Tex,
     Pos3TexNorm,
@@ -14,9 +15,13 @@ class Vertex
 public:
     union
     {
+        struct pos3
+        {
+            XMFLOAT3 pos;
+        }pos3;
         struct Pos3Col
         {
-            
+         
             XMFLOAT3 pos;
             XMFLOAT4 col;
             
@@ -43,11 +48,14 @@ public:
     };
     Vertex()
     {}
-    Vertex(float x, float y, float z, float r, float g, float b):type(VertexType::Pos3Col)
+    Vertex(float x, float y, float z):type(VertexType::pos3)
+    {
+        pos3.pos = XMFLOAT3(x, y, z);
+    }
+    Vertex(float x, float y, float z, float r, float g, float b, float a):type(VertexType::Pos3Col)
     {
         pos3Col.pos = XMFLOAT3(x, y, z);
-       // pos3Col.padding1 = 0.0f; // Initialize padding
-        pos3Col.col = XMFLOAT4(r, g, b, 1.0f);
+        pos3Col.col = XMFLOAT4(r, g, b, a);
     }
 
     Vertex(float x, float y,float z, float u, float v):type(VertexType::Pos3Tex)

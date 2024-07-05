@@ -7,7 +7,7 @@
 class ShaderManager
 {
 public:
-	ShaderManager(Graphics& g);
+	ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	void LoadShaders(std::wstring vertexShader, std::wstring pixelShader);
 	void loadCompiledShader(std::wstring vertexShader, std::wstring pixelShader);
@@ -17,9 +17,10 @@ public:
 	void SetPixelShaderCode(const std::string& P_code);
 	void BindShaders();
 	// Getter methods for shaders
-	Utils::VertexShader GetVertexShader() { return m_vertexShader; }
-	Utils::PixelShader GetPixelShader() { return m_pixelShader; }
-	Utils::InputLayout GetLayout() { return m_layout; }
+	Utils::VertexShader* GetVertexShader() { return m_vertexShader.get(); }
+	Utils::PixelShader* GetPixelShader() { return m_pixelShader.get(); }
+	Utils::InputLayout* GetLayout() { return m_layout.get(); }
+	void SetTopology(Utils::Topology* topology);
 	std::wstring getVertexShaderPath();
 	std::wstring getPixelShaderPath();
 	//Getters for the shader codes
@@ -29,11 +30,12 @@ private:
 	void ComplieAndSetShaders();
 private:
 	Graphics& m_graphics;
-	Utils::VertexShader m_vertexShader;
-	Utils::PixelShader m_pixelShader;
-	Utils::InputLayout m_layout;
+	std::shared_ptr<Utils::VertexShader> m_vertexShader;
+	std::shared_ptr<Utils::PixelShader> m_pixelShader;
+	std::shared_ptr<Utils::InputLayout> m_layout;
 	std::string m_vertexShaderCode;
 	std::string m_pixelShaderCode;
+	std::shared_ptr<Utils::Topology> m_topology;
 
 	std::wstring vertexShaderPath;
 	std::wstring pixelShaderPath;

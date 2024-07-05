@@ -17,11 +17,16 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
     defaultShader->LoadShaders(L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
     defaultShader->SetShaderLayout("POSITION|COLOR");
 
-    auto texturedShader = std::make_shared<ShaderManager>(m_graphics);
+    auto texturedShader = std::make_shared<ShaderManager>(m_graphics );
     texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
     texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL|TANGENT");
 
+    auto gridShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
+    gridShader->LoadShaders(L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
+    gridShader->SetShaderLayout("POSITION|COLOR");
+    
     shaders.push_back(defaultShader);
+    shaders.push_back(gridShader);
     shaders.push_back(texturedShader);
 
     //shaderEditor
@@ -34,9 +39,13 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
     light = new DirectionalLight("Directional", m_graphics, texturedShader);
     AddRederableObjects(dynamic_cast<Light*>(light));
 	//model loading 
+    grid = std::make_unique<Grid>("grid", m_graphics, gridShader);
+    AddRederableObjects(grid.get());
     //player
     player = std::make_unique<Player>("player", m_graphics, texturedShader);
     AddRederableObjects(player.get());
+
+
 	cube = new Cube("cube", m_graphics, texturedShader);
 	cube->CreateCube();
     AddRederableObjects(cube);

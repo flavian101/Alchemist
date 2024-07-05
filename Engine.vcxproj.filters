@@ -141,6 +141,9 @@
     <ClCompile Include="src\models\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -296,6 +299,9 @@
     <ClInclude Include="src\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />
@@ -307,6 +313,8 @@
     <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
+    <FxCompile Include="Assets\shader\GridVertex.hlsl" />
+    <FxCompile Include="Assets\shader\GridPixel.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\Alchemist.rc">

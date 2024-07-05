@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\Grid.cpp" />
     <ClCompile Include="src\models\Material.cpp" />
     <ClCompile Include="src\environment\DirectionalLight.cpp" />
     <ClCompile Include="src\environment\PointLight.cpp" />
@@ -157,6 +158,18 @@
     <ClCompile Include="src\Graphics\Camera\FirstPerson.cpp" />
     <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
     <ClCompile Include="src\Graphics\Camera\ThirdPerson.cpp" />
+    <FxCompile Include="Assets\shader\GridPixel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\GridVertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
       <FileType>CppCode</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -201,6 +214,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\Grid.h" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\models\Material.h" />
     <ClInclude Include="src\environment\DirectionalLight.h" />

@@ -1,11 +1,12 @@
 #include "ShaderManager.h"
 
-ShaderManager::ShaderManager(Graphics& g)
+ShaderManager::ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
 	:
 	m_graphics(g),
-	m_vertexShader(g),
-	m_pixelShader(g),
-	m_layout(g)
+	m_topology(std::make_unique < Utils::Topology>(g,type)),
+	m_vertexShader(std::make_unique<Utils::VertexShader>(g)),
+	m_pixelShader(std::make_unique < Utils::PixelShader>(g)),
+	m_layout(std::make_unique < Utils::InputLayout>(g))
 {}
 
 void ShaderManager::LoadShaders(std::wstring vertexShader, std::wstring pixelShader)
@@ -23,32 +24,32 @@ void ShaderManager::LoadShaders(std::wstring vertexShader, std::wstring pixelSha
 	m_vertexShaderCode = vertexShaderStream.str();
 	m_pixelShaderCode = pixelShaderStream.str();
 	
-	m_vertexShader.LoadStreamVertexShader(m_vertexShaderCode);
-	m_pixelShader.LoadStreamPixelShader(m_pixelShaderCode);
+	m_vertexShader->LoadStreamVertexShader(m_vertexShaderCode);
+	m_pixelShader->LoadStreamPixelShader(m_pixelShaderCode);
 
 }
 
 void ShaderManager::loadCompiledShader(std::wstring vertexShader, std::wstring pixelShader)
 {
-	this->m_vertexShader.LoadCompiledVertexShader(vertexShader);
-	this->m_pixelShader.LoadCompiledPixelShader(pixelShader);
+	this->m_vertexShader->LoadCompiledVertexShader(vertexShader);
+	this->m_pixelShader->LoadCompiledPixelShader(pixelShader);
 
-	m_vertexShaderCode = std::string(static_cast<const char*>(m_vertexShader.GetByteCode()->GetBufferPointer()),
-		m_vertexShader.GetByteCode()->GetBufferSize());
-	m_pixelShaderCode = std::string(static_cast<const char*>(m_pixelShader.GetByteCode()->GetBufferPointer()),
-		m_pixelShader.GetByteCode()->GetBufferSize());
+	m_vertexShaderCode = std::string(static_cast<const char*>(m_vertexShader->GetByteCode()->GetBufferPointer()),
+		m_vertexShader->GetByteCode()->GetBufferSize());
+	m_pixelShaderCode = std::string(static_cast<const char*>(m_pixelShader->GetByteCode()->GetBufferPointer()),
+		m_pixelShader->GetByteCode()->GetBufferSize());
 }
 
 void ShaderManager::ReloadShaders()
 {
-	m_vertexShader.LoadStreamVertexShader(m_vertexShaderCode);
-	m_pixelShader.LoadStreamPixelShader(m_pixelShaderCode);
+	m_vertexShader->LoadStreamVertexShader(m_vertexShaderCode);
+	m_pixelShader->LoadStreamPixelShader(m_pixelShaderCode);
 	
 }
 
 void ShaderManager::SetShaderLayout(const std::string& layout)
 {
-	this->m_layout.CreateLayout(layout,m_vertexShader.GetByteCode());
+	m_layout->CreateLayout(layout,m_vertexShader->GetByteCode());
 }
 
 void ShaderManager::SetVertexShaderCode(const std::string& V_code)
@@ -63,11 +64,16 @@ void ShaderManager::SetPixelShaderCode(const std::string& P_code)
 
 void ShaderManager::BindShaders()
 {
-	this->m_vertexShader.Bind();
-	this->m_layout.Bind();
-	this->m_pixelShader.Bind();
+	m_topology->Bind();
+	m_vertexShader->Bind();
+	m_layout->Bind();
+	m_pixelShader->Bind();
 	
 	
+}
+void ShaderManager::SetTopology(Utils::Topology* topology)
+{
+	m_topology.reset(topology);
 }
 std::wstring ShaderManager::getVertexShaderPath()
 {

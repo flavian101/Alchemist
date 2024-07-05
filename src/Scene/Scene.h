@@ -7,6 +7,7 @@
 #include "environment/DirectionalLight.h"
 #include "Shaders/ShaderEditor.h"
 #include <map>
+#include "Grid.h"
 
 class Scene
 {
@@ -32,6 +33,7 @@ private:
 	std::string m_name;
 	SceneCamera* sceneCamera;
 	std::unique_ptr<Player> player;
+	std::unique_ptr<Grid> grid;
 	Cube* cube;
 	Plane* plane;
 	std::vector< std::shared_ptr<ShaderManager>> shaders;

@@ -25,6 +25,7 @@ void Graphics::ClearDepthColor(float red, float green, float blue) {
 }
 
 void Graphics::Render(UINT indexCount) {
+    deviceResources->BindBlendState();
     deviceResources->GetContext()->RSSetState(deviceResources->GetRasterizerState());
     deviceResources->GetContext()->DrawIndexed(indexCount, 0, 0);
 }

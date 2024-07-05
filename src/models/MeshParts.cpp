@@ -4,8 +4,7 @@ MeshParts::MeshParts(Graphics& g)
 	:
 	m_graphics(g),
 	vertexBuffer(g),
-	indexBuffer(g),
-	topology(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
+	indexBuffer(g)
 {}
 
 void MeshParts::Initialize(const std::vector<unsigned short>& indices,const  std::vector<Vertex>& vertices)
@@ -36,7 +35,6 @@ UINT MeshParts::IndexCount()
 
 void MeshParts::Bind()
 {
-	topology.Bind();
 	vertexBuffer.Bind();
 	indexBuffer.Bind();
 }

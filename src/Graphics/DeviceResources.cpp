@@ -22,6 +22,11 @@ DeviceResources::~DeviceResources() {
     CCWcullMode.Reset();
 }
 
+void DeviceResources::BindBlendState()
+{
+    pContext->OMSetBlendState(blendState.Get(), nullptr, 0xffffffff);
+}
+
 HWND DeviceResources::getHwnd()
 {
     return hWnd;
@@ -40,6 +45,7 @@ void DeviceResources::Initialize() {
     CreateDepthStencil(m_width, m_height);
     CreateRenderTarget();
     CreateRasterizerState();
+    CreateBlendState();
 
 }
 
@@ -94,6 +100,17 @@ bool DeviceResources::CreateSwapChain() {
 }
 
 void DeviceResources::CreateDepthStencil(UINT width, UINT height) {
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+    depthStencilDesc.DepthEnable = true;
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    depthStencilDesc.StencilEnable = false;
+
+    pDevice->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+
+    pContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+
+
     D3D11_TEXTURE2D_DESC descDepth = {};
     descDepth.Width = width;
     descDepth.Height = height;
@@ -145,6 +162,22 @@ void DeviceResources::CreateRasterizerState() {
     rasterDesc.MultisampleEnable = enableMsaa;
     CHECK_RESULT(pDevice->CreateRasterizerState(&rasterDesc, CCWcullMode.GetAddressOf()));
     pContext->RSSetState(CCWcullMode.Get());
+}
+
+void DeviceResources::CreateBlendState()
+{
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = false;
+    blendDesc.IndependentBlendEnable = false;
+    blendDesc.RenderTarget[0].BlendEnable = true;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    pDevice->CreateBlendState(&blendDesc, blendState.GetAddressOf());
 }
 
 void DeviceResources::InitializeImGui() {
