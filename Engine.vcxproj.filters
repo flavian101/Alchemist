@@ -164,9 +164,6 @@
     <ClInclude Include="src\Graphics\Utilis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dependencies\stb\stb image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Sample\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
