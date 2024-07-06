@@ -8,6 +8,7 @@
 #include "Shaders/ShaderEditor.h"
 #include <map>
 #include "Grid.h"
+#include "models/ModelLoader.h"
 
 class Scene
 {
@@ -46,5 +47,6 @@ private:
 	std::vector<RenderableObject*> objects;
 	RenderableObject* m_selectedObject;
 	std::unique_ptr<RenderableObject> newobject;
+	ModelLoader* m_model;
 };
 

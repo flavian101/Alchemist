@@ -13,7 +13,7 @@
 class RenderableObject
 {
 public:
-	RenderableObject(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager);
+	RenderableObject(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager);
 	~RenderableObject();
 	virtual void Update(float time);
 	virtual void Render();
@@ -40,7 +40,7 @@ private:
 
 
 protected:
-	std::string m_name;
+	std::string m_name = "untitled";
 
 };
 

@@ -54,7 +54,9 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
     AddRederableObjects(plane);
 
-
+    m_model = new ModelLoader(m_graphics, texturedShader);
+    m_model->LoadModel("Assets/model/gobber/GoblinX.obj");
+    AddRederableObjects(m_model);
 }
 
 Scene::~Scene()
