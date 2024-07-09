@@ -28,6 +28,7 @@ void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<
 	if (metallicPath) material->LoadTexture(Material::TextureType::Metallic, metallicPath);
 	if (roughnessPath) material->LoadTexture(Material::TextureType::Roughness, roughnessPath);
 	if (aoPath) material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
+	m_mesh.SetMaterial(std::move(material));
 	CreateMesh(vertices, indices);
 
 }
@@ -46,21 +47,11 @@ MeshParts* Model::getMesh()
 
 void Model::Update(float deltaTime)
 {
-	material->Update();
 	RenderableObject::Update(deltaTime);
 }
 
 void Model::Render()
 {
-	material->Bind();
-	if (isTextured)
-	{
-		//albedoTexture->Bind();
-		//normalTexture->Bind();
-		//metallicTexture->Bind();
-		//roughnessTexture->Bind();
-		//aoTexture->Bind();
-	}
 	RenderableObject::Render();
 	m_mesh.Bind();
 	m_mesh.Render();
@@ -69,8 +60,8 @@ void Model::Render()
 void Model::controlWindow()
 {
 	RenderableObject::controlWindow();
+	m_mesh.controlWindow();
 	ImGui::Separator();
-	material->controlWindow();
 	ImGui::Text("Information");
 	ImGui::Text("name: %s",m_name.c_str());
 	ImGui::Text("index count: %d", part->getIndices().size());

@@ -5,7 +5,6 @@ ModelLoader::ModelLoader(Graphics& g, std::shared_ptr<ShaderManager> manager)
 	RenderableObject(m_name, g, manager),
     m_graphics(g)
 {
-    material = std::make_unique<Material>(m_graphics);
 }
 
 bool ModelLoader::LoadModel(const std::string& filepath)
@@ -29,8 +28,9 @@ void ModelLoader::ProcessNode(aiNode* node, const aiScene* scene)
 	for (UINT i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		m_meshes.push_back(this->ProcessMesh(mesh, scene));
-	}
+       // Mesh newMesh = this->ProcessMesh(mesh, scene);
+        m_meshes.push_back(&ProcessMesh(mesh, scene));
+    }
 	for (UINT i = 0; i < node->mNumChildren; i++)
 	{
 		this->ProcessNode(node->mChildren[i], scene);
@@ -38,7 +38,7 @@ void ModelLoader::ProcessNode(aiNode* node, const aiScene* scene)
 
 }
 
-Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh& ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<unsigned short> m_indices;
     std::vector<Vertex> m_vertices;
@@ -88,6 +88,7 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
         }
        
      }
+    auto material = std::make_unique<Material>(m_graphics);
 
     if (mesh->mMaterialIndex >= 0)
     {
@@ -104,6 +105,8 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     part->Initialize(m_indices, m_vertices);
     Mesh* mmesh = new Mesh(m_graphics);
     mmesh->AddMeshPart(*part);
+    mmesh->SetMaterial(std::move(material)); // Set the material for the mesh
+
     return *mmesh;
 
 }
@@ -119,25 +122,24 @@ void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Mate
     }
 }
 
+
 void ModelLoader::Update(float deltaTime)
 {
     RenderableObject::Update(deltaTime);
-    material->Update();
 
-    for (auto meshes : m_meshes)
+    for (auto& meshes : m_meshes)
     {
-        meshes.Bind();
-        meshes.Render();
+        meshes->Bind();
+        meshes->Render();
     }
 }
 
 void ModelLoader::Render()
 {
     RenderableObject::Render();
-    material->Bind();
-    for (auto meshes : m_meshes)
+    for (auto& meshes : m_meshes)
     {
-        meshes.Bind();
-        meshes.Render();
+        meshes->Bind();
+        meshes->Render();
     }
 }

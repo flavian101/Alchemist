@@ -15,15 +15,14 @@ public:
 	void Render()override;
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
-	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	Mesh& ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	void LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material);
-	
+
 	
 private:
 	Graphics& m_graphics;
 	std::string basePath;
-	std::vector<Mesh> m_meshes;
-	std::unique_ptr<Material> material;
+	std::vector<Mesh*> m_meshes;
 	MeshParts* part;
 
 };

@@ -52,10 +52,11 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
 
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
-    AddRederableObjects(plane);
+    //AddRederableObjects(plane);
 
     m_model = new ModelLoader(m_graphics, texturedShader);
-    m_model->LoadModel("Assets/model/gobber/GoblinX.obj");
+    m_model->LoadModel("Assets/model/muro/muro.obj");
+   // m_model->LoadModel("Assets/model/nano.gltf");
     AddRederableObjects(m_model);
 }
 

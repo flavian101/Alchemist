@@ -17,6 +17,11 @@ void Mesh::Bind()
 	{
 		meshPart.Bind();
 	}
+	if (m_material)
+	{
+		m_material->Update();
+		m_material->Bind(); // Bind the material
+	}
 }
 
 void Mesh::Render()
@@ -25,6 +30,19 @@ void Mesh::Render()
 	{
 		m_graphics.Render(meshPart.IndexCount());
 	}
+	
+}
+
+void Mesh::SetMaterial(std::unique_ptr<Material> material)
+{
+	m_material = std::move(material);
+}
+
+void Mesh::controlWindow()
+{
+	ImGui::Text("Mesh");
+	m_material->controlWindow();
+
 }
 
 
