@@ -23,7 +23,7 @@ private:
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> pMouse;
 	DIMOUSESTATE mouseLastState;
 	LPDIRECTINPUT8  DirectInput;
-	CameraController* controller;
+	std::unique_ptr<CameraController> controller;
 
 };
 

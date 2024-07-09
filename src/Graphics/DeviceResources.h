@@ -16,6 +16,8 @@
 class DeviceResources {
 public:
     DeviceResources(HWND hwnd, int width, int height);
+    DeviceResources(const DeviceResources&) = delete;
+    DeviceResources& operator=(const DeviceResources&) = delete;
     ~DeviceResources();
 
     void Resize(UINT width, UINT height);
@@ -53,18 +55,18 @@ private:
     UINT m_height;
     bool isFullscreenEnabled = true;
 
-    Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTarget;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode;
-    Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
-    Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
-    Microsoft::WRL::ComPtr<IDXGIOutput> adapterOutput;
-    Microsoft::WRL::ComPtr <ID3D11DepthStencilState> depthStencilState;
-    Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
+    Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext = nullptr;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTarget = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIFactory1> factory = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIOutput> adapterOutput = nullptr;
+    Microsoft::WRL::ComPtr <ID3D11DepthStencilState> depthStencilState = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11BlendState> blendState = nullptr;
 
     DXGI_MODE_DESC* displayModeList;
     UINT numerator;

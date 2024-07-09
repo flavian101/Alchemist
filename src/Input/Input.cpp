@@ -21,7 +21,7 @@ Input::Input(const std::tuple<HWND, HINSTANCE>& win)
 	pMouse->SetCooperativeLevel((HWND)m_hwnd, DISCL_NOWINKEY | DISCL_FOREGROUND);
 	//pMouse->SetCooperativeLevel(m_hwnd, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
 
-    controller = new CameraController();
+    controller = std::make_unique<CameraController>();
 
 }
 

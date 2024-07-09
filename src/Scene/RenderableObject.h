@@ -35,7 +35,7 @@ public:
 private:
 	Graphics& m_graphics;
 	std::shared_ptr<ShaderManager> m_shaderManager;
-	Transform m_transform;
+	std::unique_ptr<Transform> m_transform;
 
 
 

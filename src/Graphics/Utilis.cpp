@@ -245,55 +245,62 @@ Utils::Texture::~Texture()
     textureView.Reset();
 }
 
-void Utils::Texture::LoadTexture(const char* path, UINT slot)
+void Utils::Texture::LoadTexture(const char* path)
 {
-    m_slot = slot;
     int image_Width, image_height , image_Channels, image_Desired_channels = 4;
 
     unsigned char* data = stbi_load(path, &image_Width, &image_height,
         &image_Channels, image_Desired_channels);
 
-    if (data == NULL)
+    if (data == nullptr)
     {
-      //  std::wstring errorMsg = L"Failed to load the texture";
-        //errorMsg += std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(path);
-       // MessageBox(nullptr, errorMsg.c_str(), L"ERROR", MB_ICONWARNING | MB_OK);
-        MessageBox(nullptr, L"Failed to load the texture", L"ERROR", MB_ICONWARNING | MB_OK);
+       std::wstring errorMsg = L"Failed to load the texture.\nImage Path: ";
+       errorMsg += std::wstring(path, path + strlen(path));
+       MessageBox(nullptr, errorMsg.c_str(), L"ERROR", MB_ICONWARNING | MB_OK);
+       // MessageBox(nullptr, L"Failed to load the texture", L"ERROR", MB_ICONWARNING | MB_OK);
     }
-    int image_pitch = image_Width * 4;
+    try
+    {
+        int image_pitch = image_Width * 4;
 
-    D3D11_TEXTURE2D_DESC ts = {};
-    ts.Width = image_Width;
-    ts.Height = image_height;
-    ts.MipLevels = 1;
-    ts.ArraySize = 1;
-    ts.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    ts.SampleDesc.Count = 1;
-    ts.SampleDesc.Quality = 0;
-    ts.Usage = D3D11_USAGE_DEFAULT;
-    ts.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    ts.CPUAccessFlags = 0;
-    ts.MiscFlags = 0;
+        D3D11_TEXTURE2D_DESC ts = {};
+        ts.Width = image_Width;
+        ts.Height = image_height;
+        ts.MipLevels = 1;
+        ts.ArraySize = 1;
+        ts.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        ts.SampleDesc.Count = 1;
+        ts.SampleDesc.Quality = 0;
+        ts.Usage = D3D11_USAGE_DEFAULT;
+        ts.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        ts.CPUAccessFlags = 0;
+        ts.MiscFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA sts = {};
-    sts.pSysMem = data;
-    sts.SysMemPitch = image_pitch;
+        D3D11_SUBRESOURCE_DATA sts = {};
+        sts.pSysMem = data;
+        sts.SysMemPitch = static_cast<UINT>(image_pitch);
 
-    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
-    // create the resource view on the texture
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = ts.Format;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
+        CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateTexture2D(&ts, &sts, pTex.GetAddressOf()));
+        // create the resource view on the texture
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Format = ts.Format;
+        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Texture2D.MostDetailedMip = 0;
+        srvDesc.Texture2D.MipLevels = 1;
 
-    CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
-
+        CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateShaderResourceView(pTex.Get(), &srvDesc, textureView.GetAddressOf()));
+    }
+    catch (...)
+    {
+        stbi_image_free(data);
+        throw;
+    }
     stbi_image_free(data);
 }
 
-void Utils::Texture::Bind()
+void Utils::Texture::Bind(UINT slot)
 {
+    m_slot = slot;
     m_graphics.GetDeviceResources()->GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
 
 }

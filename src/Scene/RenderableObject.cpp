@@ -5,7 +5,7 @@ RenderableObject::RenderableObject(const std::string& name, Graphics& g, std::sh
 	m_name(name),
 	m_graphics(g),
 	m_shaderManager(std::move(shaderManager)),
-	m_transform(g)
+	m_transform(std::make_unique<Transform>(g))
 {
 }
 RenderableObject::~RenderableObject()
@@ -14,13 +14,13 @@ RenderableObject::~RenderableObject()
 
 void RenderableObject::Update(float time)
 {
-	m_transform.Update(time);
+	m_transform->Update(time);
 
 }
 
 void RenderableObject::Render()
 {
-	m_transform.BindConstantBuffer();
+	m_transform->BindConstantBuffer();
 	m_shaderManager->BindShaders();
 	
 
@@ -28,37 +28,37 @@ void RenderableObject::Render()
 
 XMMATRIX RenderableObject::GetTransform()const 
 {
-	return m_transform.GetTransform();
+	return m_transform->GetTransform();
 }
 
 XMVECTOR RenderableObject::GetTranslation() const
 {
-	return m_transform.GetPosition();
+	return m_transform->GetPosition();
 }
 
 XMVECTOR RenderableObject::GetRotation() const
 {
-	return m_transform.GetRotation();
+	return m_transform->GetRotation();
 }
 
 XMVECTOR RenderableObject::GetScale()const
 {
-	return m_transform.GetScale();;
+	return m_transform->GetScale();;
 }
 
 void RenderableObject::setTranslation(const XMFLOAT3& translation)
 {
-	m_transform.SetPosition(translation);
+	m_transform->SetPosition(translation);
 }
 
 void RenderableObject::setRotation(const XMFLOAT4& rotation)
 {
-	m_transform.SetRotation(rotation);
+	m_transform->SetRotation(rotation);
 }
 
 void RenderableObject::setScale(const XMFLOAT3& scale)
 {
-	m_transform.SetScale(scale);
+	m_transform->SetScale(scale);
 }
 
 std::string RenderableObject::getName() const
@@ -85,7 +85,7 @@ void RenderableObject::SetShaderManager(std::shared_ptr<ShaderManager> manager)
 void RenderableObject::controlWindow()
 {
 	ImGui::Text("Properties");
-	m_transform.controlWindow();
+	m_transform->controlWindow();
 }
 
 

@@ -90,8 +90,8 @@ namespace Utils
 	public:
 		Texture(Graphics& g);
 		~Texture();
-		void LoadTexture(const char* path, UINT slot = 0);
-		void Bind();
+		void LoadTexture(const char* path);
+		void Bind(UINT slot= 0);
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
 	private:
 		Graphics& m_graphics;

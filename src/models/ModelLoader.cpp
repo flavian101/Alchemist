@@ -5,13 +5,15 @@ ModelLoader::ModelLoader(Graphics& g, std::shared_ptr<ShaderManager> manager)
 	RenderableObject(m_name, g, manager),
     m_graphics(g)
 {
+    material = std::make_unique<Material>(m_graphics);
 }
 
 bool ModelLoader::LoadModel(const std::string& filepath)
 {
 	Assimp::Importer importer;
+    basePath = std::filesystem::path(filepath).parent_path().string();
 
-	const aiScene* pScene = importer.ReadFile(filepath,
+    const aiScene* pScene = importer.ReadFile(filepath,
 		aiProcess_Triangulate |
 		aiProcess_ConvertToLeftHanded);
 	if (pScene == nullptr)
@@ -86,6 +88,18 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
         }
        
      }
+
+    if (mesh->mMaterialIndex >= 0)
+    {
+        aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+        LoadMaterialTextures(mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material.get());
+        LoadMaterialTextures(mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material.get());
+        LoadMaterialTextures(mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material.get());
+        LoadMaterialTextures(mat, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::Roughness, *material.get());
+        LoadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material.get());
+    }
+
+
     part = new MeshParts(m_graphics);
     part->Initialize(m_indices, m_vertices);
     Mesh* mmesh = new Mesh(m_graphics);
@@ -94,14 +108,33 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 }
 
+void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material)
+{
+    for (UINT i = 0; i < mat->GetTextureCount(type); i++)
+    {
+        aiString str;
+        mat->GetTexture(type, i, &str);
+        std::string texturePath = basePath + "/" + str.C_Str();
+        material.LoadTexture(textureType, texturePath);
+    }
+}
+
 void ModelLoader::Update(float deltaTime)
 {
     RenderableObject::Update(deltaTime);
+    material->Update();
+
+    for (auto meshes : m_meshes)
+    {
+        meshes.Bind();
+        meshes.Render();
+    }
 }
 
 void ModelLoader::Render()
 {
     RenderableObject::Render();
+    material->Bind();
     for (auto meshes : m_meshes)
     {
         meshes.Bind();

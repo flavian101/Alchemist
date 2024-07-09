@@ -6,7 +6,6 @@ Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 	m_manager(std:: move(shaderManager)),
 	m_mesh(g),
 	part(nullptr),
-	samp(nullptr),
 	isTextured(false),
 	yaw(0.0f),
 	pitch(0.0f)
@@ -17,7 +16,6 @@ Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 Model::~Model()
 {
 	delete part;
-	delete samp;
 }
 
 
@@ -25,19 +23,11 @@ void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<
 	const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
 {
 	isTextured = true;
-	samp = new Utils::Sampler(m_graphics);
-	samp->Bind();
-	albedoTexture = std::make_unique<Utils::Texture>(m_graphics);
-	normalTexture = std::make_unique<Utils::Texture>(m_graphics);
-	metallicTexture = std::make_unique<Utils::Texture>(m_graphics);
-	roughnessTexture = std::make_unique<Utils::Texture>(m_graphics);
-	aoTexture = std::make_unique<Utils::Texture>(m_graphics);
-
-	albedoTexture->LoadTexture(albedoPath, 0);
-	normalTexture->LoadTexture(normalPath, 1);
-	metallicTexture->LoadTexture(metallicPath, 2);
-	roughnessTexture->LoadTexture(roughnessPath, 3);
-	aoTexture->LoadTexture(aoPath, 4);
+	if (albedoPath) material->LoadTexture(Material::TextureType::Albedo, albedoPath);
+	if (normalPath) material->LoadTexture(Material::TextureType::Normal, normalPath);
+	if (metallicPath) material->LoadTexture(Material::TextureType::Metallic, metallicPath);
+	if (roughnessPath) material->LoadTexture(Material::TextureType::Roughness, roughnessPath);
+	if (aoPath) material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
 	CreateMesh(vertices, indices);
 
 }
@@ -65,11 +55,11 @@ void Model::Render()
 	material->Bind();
 	if (isTextured)
 	{
-		albedoTexture->Bind();
-		normalTexture->Bind();
-		metallicTexture->Bind();
-		roughnessTexture->Bind();
-		aoTexture->Bind();
+		//albedoTexture->Bind();
+		//normalTexture->Bind();
+		//metallicTexture->Bind();
+		//roughnessTexture->Bind();
+		//aoTexture->Bind();
 	}
 	RenderableObject::Render();
 	m_mesh.Bind();

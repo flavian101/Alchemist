@@ -9,17 +9,29 @@ DeviceResources::DeviceResources(HWND hwnd, int width, int height)
 }
 
 DeviceResources::~DeviceResources() {
+
+#if defined(DEBUG) || defined(_DEBUG)
+    // Report live device objects before shutting down ImGui
+    Microsoft::WRL::ComPtr<ID3D11Debug> debugDevice;
+    if (SUCCEEDED(pDevice.As(&debugDevice)))
+    {
+        debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+    }
+#endif
+
+
     ImGui_ImplDX11_Shutdown();
     adapterOutput.Reset();
     adapter.Reset();
     factory.Reset();
+    pContext.Reset();
     pSwapChain.Reset();
     pDevice.Reset();
-    pContext.Reset();
     pRenderTarget.Reset();
     pDepthStencil.Reset();
     pDSV.Reset();
     CCWcullMode.Reset();
+    blendState.Reset();
 }
 
 void DeviceResources::BindBlendState()

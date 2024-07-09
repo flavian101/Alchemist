@@ -10,6 +10,7 @@ Material::Material(Graphics& g)
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
+	samp = std::make_unique<Utils::Sampler>(m_graphics);
 }
 
 void Material::Update()
@@ -20,6 +21,30 @@ void Material::Update()
 void Material::Bind()
 {
 	m_graphics.GetDeviceResources()->GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
+	samp->Bind();
+	this->BindTextures();
+}
+
+void Material::LoadTexture(TextureType type, const std::string& path)
+{
+	if (path.empty())
+	{
+		return;
+	}
+	auto texture = std::make_unique<Utils::Texture>(m_graphics);
+	texture->LoadTexture(path.c_str());
+	textures[type] = std::move(texture);
+}
+
+void Material::BindTextures()
+{
+	for (const auto& [type, texture] : textures)
+	{
+		if (texture)
+		{
+			texture->Bind(static_cast<UINT>(type)); // Binding each texture to its corresponding slot
+		}
+	}
 }
 
 void Material::SetAmbient(const XMFLOAT4& baseColor)

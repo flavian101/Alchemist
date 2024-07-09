@@ -64,6 +64,7 @@ Scene::~Scene()
 	delete sceneCamera;
 	delete cube;
 	delete plane;
+    delete light;
 }
 
 void Scene::RemoveRederableObjects(RenderableObject* object)

@@ -4,7 +4,8 @@ Graphics::Graphics(HWND hwnd, int width, int height)
     : deviceResources(std::make_unique<DeviceResources>(hwnd, width, height)),
     imguiEnabled(true) {}
 
-Graphics::~Graphics() {}
+Graphics::~Graphics() 
+{}
 
 DeviceResources* Graphics::GetDeviceResources() const
 {
@@ -35,7 +36,7 @@ void Graphics::End() {
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
-    deviceResources->GetSwapChain()->Present(deviceResources->isVsyncEnabled ? 1 : 0, 0);
+   CHECK_RESULT(deviceResources->GetSwapChain()->Present(deviceResources->isVsyncEnabled ? 1 : 0, 0));
 }
 
 void Graphics::ControlWindow()

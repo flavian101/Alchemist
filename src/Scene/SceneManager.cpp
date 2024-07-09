@@ -11,15 +11,15 @@ SceneManager::SceneManager(Graphics& g, Window& win)
     AddScene(activeScene);
     showSceneWindow = true; 
     thumbnail = std::make_unique<Utils::Texture>(g);
-    thumbnail->LoadTexture("Assets/textures/thumbnail/Alchemist.png", 1u);
+    thumbnail->LoadTexture("Assets/textures/thumbnail/Alchemist.png");
     Logo = std::make_unique<Utils::Texture>(g);
-    Logo->LoadTexture("Assets/textures/thumbnail/Alchemist.png", 1u);
+    Logo->LoadTexture("Assets/textures/thumbnail/Alchemist.png");
     minimize= std::make_unique<Utils::Texture>(g);
-    minimize->LoadTexture("Assets/textures/thumbnail/minimize.png", 1u); 
+    minimize->LoadTexture("Assets/textures/thumbnail/minimize.png"); 
     maximize = std::make_unique<Utils::Texture>(g);
-    maximize->LoadTexture("Assets/textures/thumbnail/maximize.png", 1u);
+    maximize->LoadTexture("Assets/textures/thumbnail/maximize.png");
     close = std::make_unique<Utils::Texture>(g);
-    close->LoadTexture("Assets/textures/thumbnail/close.png", 1u);
+    close->LoadTexture("Assets/textures/thumbnail/close.png");
     serializer = new SceneSerializer(*activeScene,m_graphics);
 
 }
