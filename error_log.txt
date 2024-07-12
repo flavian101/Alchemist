@@ -78,3 +78,9 @@ Error in function LoadTexture at line 283: The parameter is incorrect.
 
 Error in function LoadTexture at line 283: The parameter is incorrect.
 
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+
+Error in function Initialize at line 40: The parameter is incorrect.
+

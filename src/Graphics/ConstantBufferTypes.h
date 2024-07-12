@@ -44,10 +44,16 @@ struct MaterialStruct
     }
     XMFLOAT4 baseColor;
     XMFLOAT4 emissive;
+    BOOL hasAlbedoMap;
+    BOOL hasNormalMap;
+    BOOL hasMetallicMap;
+    BOOL hasRoughnessMap;
+    BOOL hasAOMap;
     float metallic;
     float roughness;
     float ao;
-    float pad1;
+    float pad1[4];
+   
 };
 
 struct cb_psMaterialBuffer

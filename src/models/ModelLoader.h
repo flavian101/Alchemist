@@ -16,7 +16,7 @@ public:
 private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh& ProcessMesh(aiMesh* mesh, const aiScene* scene);
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material);
+	bool LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material);
 
 	
 private:

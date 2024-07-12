@@ -13,15 +13,16 @@ void Mesh::AddMeshPart(MeshParts parts)
 }
 void Mesh::Bind()
 {
-	for (auto& meshPart : m_meshParts)
-	{
-		meshPart.Bind();
-	}
 	if (m_material)
 	{
 		m_material->Update();
 		m_material->Bind(); // Bind the material
 	}
+	for (auto& meshPart : m_meshParts)
+	{
+		meshPart.Bind();
+	}
+
 }
 
 void Mesh::Render()

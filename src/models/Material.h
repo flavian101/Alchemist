@@ -24,6 +24,11 @@ public:
 	void SetRoughness(float roughness);
 	void SetAO(float AO);
 	void controlWindow();
+	bool hasAlbedoMap    = false;
+	bool hasNormalMap    = false;
+	bool hasMetallicMap  = false;
+	bool hasRoughnessMap = false;
+	bool hasAOMap        = false;
 private:
 	void BindTextures();
 

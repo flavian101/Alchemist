@@ -93,11 +93,12 @@ Mesh& ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     if (mesh->mMaterialIndex >= 0)
     {
         aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-        LoadMaterialTextures(mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material.get());
-        LoadMaterialTextures(mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material.get());
-        LoadMaterialTextures(mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material.get());
-        LoadMaterialTextures(mat, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::Roughness, *material.get());
-        LoadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material.get());
+        material->hasAlbedoMap = LoadMaterialTextures(mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material);
+        material->hasNormalMap = LoadMaterialTextures(mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material);
+        material->hasMetallicMap = LoadMaterialTextures(mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material);
+        material->hasRoughnessMap = LoadMaterialTextures(mat, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::Roughness, *material);
+        material->hasAOMap = LoadMaterialTextures(mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material);
+
     }
 
 
@@ -111,27 +112,24 @@ Mesh& ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 }
 
-void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material)
+bool ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material)
 {
+    bool hasTexture = false;
     for (UINT i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
         std::string texturePath = basePath + "/" + str.C_Str();
         material.LoadTexture(textureType, texturePath);
+        hasTexture = true;
     }
+    return hasTexture;
 }
 
 
 void ModelLoader::Update(float deltaTime)
 {
     RenderableObject::Update(deltaTime);
-
-    for (auto& meshes : m_meshes)
-    {
-        meshes->Bind();
-        meshes->Render();
-    }
 }
 
 void ModelLoader::Render()

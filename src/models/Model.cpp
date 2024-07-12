@@ -19,15 +19,35 @@ Model::~Model()
 }
 
 
-void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, 
+void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices,
 	const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
 {
 	isTextured = true;
-	if (albedoPath) material->LoadTexture(Material::TextureType::Albedo, albedoPath);
-	if (normalPath) material->LoadTexture(Material::TextureType::Normal, normalPath);
-	if (metallicPath) material->LoadTexture(Material::TextureType::Metallic, metallicPath);
-	if (roughnessPath) material->LoadTexture(Material::TextureType::Roughness, roughnessPath);
-	if (aoPath) material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
+	if (albedoPath) 
+	{
+		material->LoadTexture(Material::TextureType::Albedo, albedoPath); 
+		material->hasAlbedoMap = true;
+	}
+	if(normalPath)
+	{
+		material->LoadTexture(Material::TextureType::Normal, normalPath);
+		material->hasNormalMap = true;
+	}
+	if (metallicPath)
+	{
+		material->LoadTexture(Material::TextureType::Metallic, metallicPath);
+		material->hasMetallicMap = true;
+	}
+	if (roughnessPath)
+	{
+		material->LoadTexture(Material::TextureType::Roughness, roughnessPath);
+		material->hasRoughnessMap = true;
+	}
+	if (aoPath)
+	{
+		material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
+		material->hasAOMap = true;
+	}
 	m_mesh.SetMaterial(std::move(material));
 	CreateMesh(vertices, indices);
 

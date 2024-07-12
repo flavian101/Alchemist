@@ -20,6 +20,6 @@ public:
 private:
     Graphics& m_graphics;
     std::vector<MeshParts> m_meshParts;
-    std::unique_ptr<Material> m_material; // New member
+    std::unique_ptr<Material> m_material; 
 
 };

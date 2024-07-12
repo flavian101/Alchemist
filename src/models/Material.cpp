@@ -10,11 +10,21 @@ Material::Material(Graphics& g)
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
+	hasAlbedoMap = false;
+	hasNormalMap = false;
+	hasMetallicMap = false;
+	hasRoughnessMap = false;
+	hasAOMap = false;
 	samp = std::make_unique<Utils::Sampler>(m_graphics);
 }
 
 void Material::Update()
 {
+	materialBuffer.data.materialStruct.hasAlbedoMap = hasAlbedoMap;
+	materialBuffer.data.materialStruct.hasNormalMap = hasNormalMap;
+	materialBuffer.data.materialStruct.hasMetallicMap = hasMetallicMap;
+	materialBuffer.data.materialStruct.hasRoughnessMap = hasRoughnessMap;
+	materialBuffer.data.materialStruct.hasAOMap = hasAOMap;
 	materialBuffer.Update(m_graphics);
 }
 
@@ -80,4 +90,13 @@ void Material::controlWindow()
 	ImGui::DragFloat("Metallic", &materialBuffer.data.materialStruct.metallic);
 	ImGui::DragFloat("Roughness", &materialBuffer.data.materialStruct.roughness);
 	ImGui::DragFloat("AO", &materialBuffer.data.materialStruct.ao, 0.2f);
+	ImGui::Text("Textures material activation");
+	bool albedomap = (bool)materialBuffer.data.materialStruct.hasAlbedoMap;
+	ImGui::Checkbox("albedo map", &albedomap);
+	bool normalmap = (bool)materialBuffer.data.materialStruct.hasNormalMap;
+	ImGui::Checkbox("normal map", &normalmap);
+	
+	//ImGui::Checkbox("metallic map", &materialBuffer.data.materialStruct.hasMetallicMap);
+	//ImGui::Checkbox("rougnes map", &materialBuffer.data.materialStruct.hasRoughnessMap);
+	//ImGui::Checkbox("AO map", &materialBuffer.data.materialStruct.hasAOMap);
 }

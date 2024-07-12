@@ -27,6 +27,11 @@ struct Material
     float metallic;
     float roughness; // This now represents smoothness in the material properties
     float ao;
+    bool hasAlbedoMap;
+    bool hasNormalMap;
+    bool hasMetallicMap;
+    bool hasRoughnessMap;
+    bool hasAOMap;
 };
 
 // Constant Buffers
@@ -103,11 +108,11 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 float4 main(VertexOut input) : SV_Target
 {
     // Sample textures
-    float4 albedo = albedoMap.Sample(samp, input.tex);
-    float3 normalMap = NormalMap.Sample(samp, input.tex).xyz;
-    float metallic = metallicMap.Sample(samp, input.tex).r;
-    float smoothness = smoothnessMap.Sample(samp, input.tex).r; // Changed from roughness
-    float ao = aoMap.Sample(samp, input.tex).r;
+    float4 albedo = material.hasAlbedoMap ? albedoMap.Sample(samp, input.tex) : float4(1.0, 1.0, 1.0, 1.0);
+    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz : float3(0.0, 0.0, 1.0);
+    float metallic = material.hasMetallicMap ? metallicMap.Sample(samp, input.tex).r : 0.0;
+    float smoothness = material.hasRoughnessMap ? smoothnessMap.Sample(samp, input.tex).r : 1.0;
+    float ao = material.hasAOMap ? aoMap.Sample(samp, input.tex).r : 1.0;
 
     // Convert smoothness to roughness
     float roughness = 1.0 - smoothness;
