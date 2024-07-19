@@ -21,13 +21,15 @@ Window::Window(LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height)
 
 void Window::OnDelete()
 {
-	Graphics::DestroyInstance();
-	ImGui_ImplWin32_Shutdown();
+	
 }
 
 Window::~Window()
 {
-	
+	Graphics::DestroyInstance();
+	ImGui_ImplWin32_Shutdown();
+	DestroyWindow(m_hwnd);
+
 }
 Graphics& Window::Gfx()
 {
@@ -172,6 +174,10 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	
 	switch (msg)
 	{
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		return 0;
+
 	case WM_SIZE:
 		m_width = LOWORD(lParam);
 		m_height = HIWORD(lParam);
@@ -181,15 +187,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		break;
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
-		{
-			OnDelete();
-			DestroyWindow(hWnd);
-		}
-		return 0;
-	case WM_DESTROY:
-		OnDelete();
-		PostQuitMessage(0);
+		{}
 		break;
+
 	
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
