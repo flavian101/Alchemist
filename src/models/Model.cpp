@@ -1,10 +1,17 @@
 #include "Model.h"
+#include "MeshParts.h"
+#include "Graphics/Camera/ThirdPerson.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "models/Vertex.h"
+
+
 Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:
 	RenderableObject(name,g,std::move(shaderManager)),
 	m_graphics(g),
 	m_manager(std:: move(shaderManager)),
-	m_mesh(g),
+	m_mesh(std::make_shared<Mesh>(g)),
 	part(nullptr),
 	isTextured(false),
 	yaw(0.0f),
@@ -15,7 +22,6 @@ Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 
 Model::~Model()
 {
-	delete part;
 }
 
 
@@ -48,21 +54,21 @@ void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<
 		material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
 		material->hasAOMap = true;
 	}
-	m_mesh.SetMaterial(std::move(material));
+	m_mesh->SetMaterial(std::move(material));
 	CreateMesh(vertices, indices);
 
 }
 
 void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<unsigned short>& indices )
 {
-	part = new MeshParts(m_graphics);
+	part = std::make_unique<MeshParts>(m_graphics);
 	part->Initialize(indices, vertices);
-	m_mesh.AddMeshPart(*part);
+	m_mesh->AddMeshPart(part.get());
 }
 
 MeshParts* Model::getMesh()
 {
-	return part;
+	return part.get();
 }
 
 void Model::Update(float deltaTime)
@@ -73,14 +79,14 @@ void Model::Update(float deltaTime)
 void Model::Render()
 {
 	RenderableObject::Render();
-	m_mesh.Bind();
-	m_mesh.Render();
+	m_mesh->Bind();
+	m_mesh->Render();
 }
 
 void Model::controlWindow()
 {
 	RenderableObject::controlWindow();
-	m_mesh.controlWindow();
+	m_mesh->controlWindow();
 	ImGui::Separator();
 	ImGui::Text("Information");
 	ImGui::Text("name: %s",m_name.c_str());

@@ -1,15 +1,14 @@
 #pragma once
-#include "PerspectiveCamera.h"
-#include "OrthographicCamera.h"
 #include <random>
+#include "MathUtils/MathUtils.h"
+#include "stdafx.h"
+class PerspectiveCamera;
 
 class CameraController
 {
 
 public:
 
-	void FreeLook(PerspectiveCamera& cam,float time , float moveSpeed);
-	void ThirdPersonCamera(PerspectiveCamera* cam, float distance, float height,float movespeed, float time);
 	
 	float RandomFloat(float min, float max);
 

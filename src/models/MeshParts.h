@@ -1,6 +1,13 @@
 #pragma once
-#include "DirectXMath.h"
+#include "stdafx.h"
+#include <vector>
+#include <memory>
 #include "Graphics/Utilis.h"
+
+class Graphics;
+#include "Vertex.h"
+class SceneSerializer;
+
 
 class MeshParts
 {
@@ -16,8 +23,8 @@ public:
 
 private:
 	Graphics& m_graphics;
-	Utils::VertexBuffer vertexBuffer;
-	Utils::IndexBuffer indexBuffer;
+	std::unique_ptr<Utils::VertexBuffer> vertexBuffer;
+	std::unique_ptr < Utils::IndexBuffer> indexBuffer;
 	std::vector<unsigned short> m_indices;
 	std::vector<Vertex> m_vertices;
 	UINT indexCount = 0u;

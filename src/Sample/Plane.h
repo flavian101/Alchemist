@@ -1,6 +1,8 @@
 #pragma once
 #include "models\Model.h"
-
+class ShaderManager;
+class Graphics;
+class Vertex;
 
 class Plane :public Model
 {

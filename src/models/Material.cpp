@@ -1,4 +1,9 @@
 #include "Material.h"
+#include "Graphics/Utilis.h"
+#include "Graphics/Graphics.h"
+#include <imgui/imgui.h>
+#include "Graphics/DeviceResources.h"
+
 
 Material::Material(Graphics& g)
 	:

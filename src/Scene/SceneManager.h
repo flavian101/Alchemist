@@ -1,10 +1,19 @@
 #pragma once
-#include "Graphics\Graphics.h"
 #include <unordered_map>
-#include "Scene\Scene.h"
 #include "dataPack/SceneSerializer.h"
+#include "stdafx.h"
+#include <string>
+#include <memory>
+#include <vector>
 
-
+class Graphics;
+class Scene;
+class Window;
+class SceneSerializer;
+namespace Utils
+{
+    class Texture;
+}
 
 class SceneManager
 {

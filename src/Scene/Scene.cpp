@@ -1,4 +1,18 @@
 #include "Scene.h"
+#include "Graphics/Graphics.h"
+#include "Scene/RenderableObject.h"
+#include "Sample\Cube.h"
+#include "Sample\Plane.h"
+#include "Scene\SceneCamera.h"
+#include "window\Window.h"
+#include "environment/DirectionalLight.h"
+#include "Shaders/ShaderEditor.h"
+#include "Grid.h"
+#include "models/ModelLoader.h"
+#include "Player.h"
+#include "Scene/Shaders/ShaderManager.h"
+#include "models/MeshParts.h"
+
 
 Scene::Scene(const std::string& name, Graphics& g, Window& win)
 	:
@@ -37,27 +51,27 @@ Scene::Scene(const std::string& name, Graphics& g, Window& win)
     //light
     //light = std::make_unique<DirectionalLight>("Directional", m_graphics, texturedShader);
     light = new DirectionalLight("Directional", m_graphics, texturedShader);
-    AddRederableObjects(dynamic_cast<Light*>(light));
+    AddRenderableObject(light);
 	//model loading 
     grid = std::make_unique<Grid>("grid", m_graphics, gridShader);
-    AddRederableObjects(grid.get());
+    AddRenderableObject(grid.get());
     //player
     player = std::make_unique<Player>("player", m_graphics, texturedShader);
-    AddRederableObjects(player.get());
+    AddRenderableObject(player.get());
 
 
 	cube = new Cube("cube", m_graphics, texturedShader);
 	cube->CreateCube();
-    AddRederableObjects(cube);
+    AddRenderableObject(cube);
 
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
-    AddRederableObjects(plane);
+    AddRenderableObject(plane);
 
     m_model = new ModelLoader(m_graphics, texturedShader);
     m_model->LoadModel("Assets/model/gobber/GoblinX.obj");
    // m_model->LoadModel("Assets/model/nano.gltf");
-    AddRederableObjects(m_model);
+    AddRenderableObject(m_model);
 }
 
 Scene::~Scene()
@@ -68,7 +82,7 @@ Scene::~Scene()
     delete light;
 }
 
-void Scene::RemoveRederableObjects(RenderableObject* object)
+void Scene::RemoveRenderableObject(RenderableObject* object)
 {
 	// Remove the object from the vector
 	auto it = std::find(objects.begin(), objects.end(), object);
@@ -78,7 +92,7 @@ void Scene::RemoveRederableObjects(RenderableObject* object)
 	}
 }
 
-void Scene::AddRederableObjects(RenderableObject* object)
+void Scene::AddRenderableObject(RenderableObject* object)
 {
     objects.push_back(object);
 }
@@ -112,14 +126,85 @@ void Scene::controlWindow()
 {
     ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize);
 
+    // Detect right-click in the empty space to open the Add Object dialog
+    if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        ImGui::OpenPopup("Add Object Context Menu");
+    }
+
+    // Add Object Context Menu
+    if (ImGui::BeginPopup("Add Object Context Menu"))
+    {
+        if (ImGui::MenuItem("Add Object"))
+        {
+            ImGui::OpenPopup("Add Object");
+        }
+        ImGui::EndPopup();
+    }
+
+    // Add Object Dialog
+    if (ImGui::BeginPopupModal("Add Object", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        static char objectName[128] = "";
+        static int objectType = 0; // 0 for Model, 1 for Light
+
+        ImGui::Combo("Object Type", &objectType, "Model\0Directional Light\0Point Light\0Spot Light\0");
+        ImGui::InputText("New Name", objectName, IM_ARRAYSIZE(objectName));
+
+        if (ImGui::Button("Add", ImVec2(100, 0)))
+        {
+            if (objectName[0] != '\0')
+            {
+                RenderableObject* newObject = nullptr;
+
+                if (objectType == 0) // Model
+                {
+                    newObject = new Model(objectName, m_graphics, shaders[0]);
+                    dynamic_cast<Model*>(newObject)->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
+                }
+                else if (objectType == 1) // Directional Light
+                {
+                    newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
+                }
+                else if (objectType == 2) // Point Light
+                {
+                    // newObject = new PointLight(objectName, m_graphics, shaders[0]);
+                }
+                else if (objectType == 3) // Spot Light
+                {
+                    // newObject = new SpotLight(objectName, m_graphics, shaders[0]);
+                }
+
+                if (newObject)
+                {
+                    AddRenderableObject(newObject);
+                    m_selectedObject = newObject; // Select the new object
+                    objectName[0] = '\0'; // Clear the name buffer
+                }
+            }
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(100, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     // Display a list of models in a child window
     if (ImGui::BeginChild("models", ImVec2(0, 200), true))
     {
-        ImGui::Text("               Scene Models");
+        ImGui::Text("Scene Models");
+        ImGui::Separator();
+
         for (auto& model : objects)
         {
             // Display model names as selectable items
-            if (ImGui::Selectable(model->getName().c_str()))
+            if (ImGui::Selectable(model->getName().c_str(), m_selectedObject == model))
             {
                 // Update the selected model
                 m_selectedObject = model;
@@ -127,7 +212,6 @@ void Scene::controlWindow()
             // Open a context menu when right-clicked on a model
             if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
             {
-
                 // Add option to rename the model
                 if (ImGui::MenuItem("Rename"))
                 {
@@ -139,13 +223,15 @@ void Scene::controlWindow()
                 if (ImGui::MenuItem("Delete"))
                 {
                     // Remove the model from the scene
-                    RemoveRederableObjects(model);
+                    RemoveRenderableObject(model);
                 }
+
                 if (ImGui::BeginMenu("Change Shader"))
                 {
                     for (size_t i = 0; i < shaders.size(); ++i)
                     {
-                        if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str())) {
+                        if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str()))
+                        {
                             model->SetShaderManager(shaders[i]);
                         }
                     }
@@ -154,79 +240,24 @@ void Scene::controlWindow()
                 ImGui::EndPopup();
             }
         }
-        //scene Cameras
-        ImGui::Text("               Scene Cameras: ");
+
+        ImGui::Text("Scene Cameras");
+        ImGui::Separator();
+
         for (const auto& [name, camera] : sceneCamera->m_cameras)
         {
             bool isSelected = (sceneCamera->m_selectedCamera == camera);
             if (ImGui::Selectable(name.c_str(), isSelected))
             {
-                if (isSelected) {
-                    sceneCamera->m_selectedCamera = sceneCamera->GetSelectedCamera();
-                }
-                else {
-                    sceneCamera->m_selectedCamera = camera;
-                }                
+                sceneCamera->m_selectedCamera = camera;
                 m_selectedObject = nullptr; // Deselect the model
             }
         }
         ImGui::EndChild();
     }
 
-    static char objectName[128] = "";
-    static int objectType = 0; // 0 for Model, 1 for Light
+    ImGui::Separator();
 
-    // Dropdown to select object type
-    ImGui::Combo("Object Type", &objectType, "Model\0Directional Light\0Point Light\0spot Light\0");
-
-    // Input text field to name the new object
-    ImGui::InputText("New Name", objectName, IM_ARRAYSIZE(objectName));
-
-    // Button to add the object
-    if (ImGui::Button("Add Object", ImVec2(100, 0)))
-    {
-        if (objectName[0] != '\0')
-        {
-            RenderableObject* newObject = nullptr;
-
-            if (objectType == 0) // Model
-            {
-                newObject = new Model(objectName, m_graphics, shaders[0]);
-                dynamic_cast<Model*>(newObject)->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
-            }
-            else if (objectType == 1) // Light
-            {
-                newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
-               // AddRederableObjects(dynamic_cast<Light*>(newObject));
-                //objects.push_back(dynamic_cast<DirectionalLight*>(newObject));
-            }
-            else if (objectType == 2) // Light
-            {
-               // newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
-                // AddRederableObjects(dynamic_cast<Light*>(newObject));
-                 //objects.push_back(dynamic_cast<DirectionalLight*>(newObject));
-            }
-            else if (objectType == 3) // Light
-            {
-                //newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
-                // AddRederableObjects(dynamic_cast<Light*>(newObject));
-                 //objects.push_back(dynamic_cast<DirectionalLight*>(newObject));
-            }
-            else if (objectType == 4) // Light
-            {
-                //newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
-                // AddRederableObjects(dynamic_cast<Light*>(newObject));
-                 //objects.push_back(dynamic_cast<DirectionalLight*>(newObject));
-            }
-
-            if (newObject)
-            {
-                AddRederableObjects(newObject);
-                m_selectedObject = newObject; // Select the new object
-                objectName[0] = '\0'; // Clear the name buffer
-            }
-        }
-    }
     // Display properties of the selected scene object
     if (m_selectedObject)
     {
@@ -236,7 +267,6 @@ void Scene::controlWindow()
     {
         sceneCamera->ControlWindow();
     }
-   
 
     // Show input field for renaming the model
     if (m_renameObject)
@@ -264,23 +294,33 @@ void Scene::controlWindow()
             ImGui::EndPopup();
         }
     }
-   
+
     ImGui::End();
 
     if (ImGui::Begin("Graphics Settings", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
-            ImGui::BeginTabBar("Settings");
-            if (ImGui::BeginTabItem("General")) {
-                m_graphics.ControlWindow();
-                ImGui::EndTabItem();
-            }
+        ImGui::BeginTabBar("Settings");
+        if (ImGui::BeginTabItem("General"))
+        {
+            m_graphics.ControlWindow();
+            ImGui::EndTabItem();
+        }
 
-            if (ImGui::BeginTabItem("Shader Editor")) {
-                editor->Render();
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
+        if (ImGui::BeginTabItem("Shader Editor"))
+        {
+            editor->Render();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
     }
     ImGui::End();
 }
+
+
+void Scene::AddObjectWindow()
+{
+   
+}
+
+
 

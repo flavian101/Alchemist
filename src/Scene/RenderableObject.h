@@ -1,10 +1,13 @@
 #pragma once
-#include "Graphics\Utilis.h"
-#include "Shaders/ShaderManager.h"
-#include "models\Transform.h"
-#include "MathUtils\MathUtils.h"
 #include <string>
 #include <memory>
+#include "MathUtils\MathUtils.h"
+#include"stdafx.h"
+
+class Graphics;
+class Transform;
+class ShaderManager;
+
 
 /// <summary>
 /// set the pixel constant buffer

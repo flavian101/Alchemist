@@ -1,5 +1,14 @@
 #include "SceneCamera.h"
 #include <iostream>
+#include "Graphics/Camera/Camera.h"
+#include "Graphics/Camera/PerspectiveCamera.h"
+#include "Graphics/Camera/FreeLook.h"
+#include "Graphics/Camera/FirstPerson.h"
+#include "Graphics/Camera/ThirdPerson.h"
+#include <Graphics/Camera/OrthographicCamera.h>
+#include <Graphics/Graphics.h>
+#include "Input/Input.h"
+#include "Scene/Player.h"
 
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
 std::vector<std::string> SceneCamera::m_cameraNames;

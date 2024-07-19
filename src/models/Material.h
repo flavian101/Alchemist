@@ -1,6 +1,16 @@
 #pragma once
-#include "Scene/RenderableObject.h"
 #include <unordered_map>
+#include "stdafx.h"
+#include <string>
+#include "Graphics/ConstantBuffer.h"
+
+namespace Utils
+{
+	class Texture;
+	class Sampler;
+}
+class Graphics;
+
 
 class Material
 {

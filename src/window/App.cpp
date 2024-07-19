@@ -2,9 +2,9 @@
 
 
 
-App::App(HINSTANCE hInstance, int showWnd)
+App::App()
     :
-    window(hInstance, showWnd, L"engine", L"DirectX", 1366, 768),
+    window(L"engine", L"DirectX", 1366, 768),
     sceneManager(window.Gfx(),window),
     timer()
 {}
@@ -34,10 +34,6 @@ void App::Render()
 }
 App::~App()
 {
-  // for (auto scene : manager.GetScenes())
-  // {
-  //     delete scene;
-  // }
 }
 
 

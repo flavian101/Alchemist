@@ -1,8 +1,10 @@
 #pragma once
-#include "MeshParts.h"
 #include <vector>
 #include <memory>
-#include "Material.h"
+
+class Graphics;
+class Material;
+class MeshParts;
 
 
 class Mesh
@@ -10,7 +12,7 @@ class Mesh
 public:
     Mesh(Graphics& g);
 
-    void AddMeshPart(MeshParts parts);
+    void AddMeshPart(MeshParts* parts);
     void Bind();
     void Render();
     void SetMaterial(std::unique_ptr<Material> material); // New method

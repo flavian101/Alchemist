@@ -2,10 +2,10 @@
 #include "stdafx.h"
 #include <optional>
 #include <memory>
-#include "Graphics/Graphics.h"
 #include <tuple>
 #include "resource.h"
 
+class Graphics;
 
 class Window
 {
@@ -14,23 +14,23 @@ class Window
 private:
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
-	int m_nShowWnd;
 	LPCWSTR m_windowTitle;
 	LPCWSTR m_windowClass;
 	int m_width;
 	int m_height;
-	std::unique_ptr<Graphics> pGfx;
+	//std::unique_ptr<Graphics> pGfx;
 
 
 public:
 	
-	Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle,
+	Window(LPCWSTR windowTitle,
 		LPCWSTR windowClass, int Width, int Height);
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
+	void OnDelete();
 	~Window();
 
-	Graphics& Gfx();
+	static Graphics& Gfx();
 	static std::optional<int> ProcessMessages();
 	HWND GetHwnd()const;
 	HINSTANCE GetHinstance()const;

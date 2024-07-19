@@ -1,4 +1,8 @@
 #include "Mesh.h"
+#include "MeshParts.h"
+#include "Material.h"
+#include "Graphics/Graphics.h"
+#include "imgui/imgui.h"
 
 Mesh::Mesh(Graphics& g)
 	:
@@ -6,10 +10,10 @@ Mesh::Mesh(Graphics& g)
 {
 }
 
-void Mesh::AddMeshPart(MeshParts parts)
+void Mesh::AddMeshPart(MeshParts* parts)
 {
 	m_meshParts.emplace_back(m_graphics);
-	m_meshParts.back().Initialize(parts.getIndices(), parts.getVertices());
+	m_meshParts.back().Initialize(parts->getIndices(), parts->getVertices());
 }
 void Mesh::Bind()
 {

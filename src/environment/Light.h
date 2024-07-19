@@ -1,6 +1,9 @@
 #pragma once
 #include "Scene/RenderableObject.h"
+#include "Graphics/ConstantBuffer.h"
 
+class Graphics;
+class ShaderManager;
 
 class Light: public RenderableObject
 {

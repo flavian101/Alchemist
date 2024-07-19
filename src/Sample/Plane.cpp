@@ -1,4 +1,6 @@
 #include "Plane.h"
+#include "models/Vertex.h"
+#include "Scene/Shaders/ShaderManager.h"
 
 Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> maneger)
 	:

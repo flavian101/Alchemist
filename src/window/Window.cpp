@@ -1,11 +1,11 @@
 #include "Window.h"
 #include "imgui/imgui_impl_win32.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/DeviceResources.h"
 
-
-Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height)
+Window::Window(LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height)
 	:
-	m_hInstance(hInstance),
-	m_nShowWnd(nCmdShow),
+	m_hInstance(GetModuleHandle(nullptr)),
 	m_windowTitle(windowTitle),
 	m_windowClass(windowClass),
 	m_width(Width),
@@ -19,22 +19,19 @@ Window::Window(HINSTANCE hInstance, int nCmdShow, LPCWSTR windowTitle, LPCWSTR w
 	
 }
 
+void Window::OnDelete()
+{
+	Graphics::DestroyInstance();
+	ImGui_ImplWin32_Shutdown();
+}
+
 Window::~Window()
 {
-	if (m_hwnd)
-	{
-		ImGui_ImplWin32_Shutdown();
-
-		DestroyWindow(m_hwnd);
-	}
+	
 }
 Graphics& Window::Gfx()
 {
-	if (!pGfx)
-	{
-		MessageBox(m_hwnd, L"failed initialize graphics Object", L"error", MB_OK);
-	}
-	return *pGfx;
+	return Graphics::GetInstance();
 }
 
 bool Window::Initialize()
@@ -83,8 +80,8 @@ bool Window::Initialize()
 	AdjustWindowRectEx(&initialRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
 	LONG initialWidth = initialRect.right - initialRect.left;
 	LONG initialHeight = initialRect.bottom - initialRect.top;
-	m_hwnd = CreateWindowEx(
-		NULL,
+
+	m_hwnd = CreateWindow(
 		m_windowClass,
 		m_windowTitle,
 		WS_POPUP | WS_VISIBLE,
@@ -103,12 +100,13 @@ bool Window::Initialize()
 		return 1;
 	}
 
-	ShowWindow(m_hwnd, m_nShowWnd);
-	//UpdateWindow(m_hwnd);
-	//SetFocus(m_hwnd);
+	ShowWindow(m_hwnd, SW_SHOWDEFAULT);
+	UpdateWindow(m_hwnd);
+	SetFocus(m_hwnd);
 	ImGui_ImplWin32_Init(m_hwnd);
-	pGfx = std::make_unique<Graphics>(m_hwnd,m_width, m_height);
-	pGfx->SetWin(std::make_tuple(m_hwnd, m_hInstance));
+	Graphics::GetInstance().Initialize(m_hwnd, m_width, m_height);
+	Graphics::GetInstance().SetWin(std::make_tuple(m_hwnd, m_hInstance));
+	
     return true;
 }
 
@@ -124,6 +122,7 @@ std::optional<int> Window::ProcessMessages()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	Sleep(1);
 	return {};
 }
 
@@ -137,7 +136,6 @@ HINSTANCE Window::GetHinstance() const
 {
 	return m_hInstance;
 }
-
 
 LRESULT Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -177,20 +175,21 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_SIZE:
 		m_width = LOWORD(lParam);
 		m_height = HIWORD(lParam);
-		if (pGfx) // Check if pGfx is initialized
-		{
-			this->Gfx().GetDeviceResources()->Resize(m_width, m_height);
-		}
-		return 0;
+
+		//Graphics::GetInstance(m_hwnd, m_width, m_height).GetDeviceResources()->Resize(m_width, m_height);
+			//Gfx().GetDeviceResources()->Resize(m_width, m_height);
+		break;
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{
+			OnDelete();
 			DestroyWindow(hWnd);
 		}
 		return 0;
 	case WM_DESTROY:
+		OnDelete();
 		PostQuitMessage(0);
-		return 0;
+		break;
 	
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);

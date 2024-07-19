@@ -1,6 +1,9 @@
 #include "Utilis.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb image.h"
+#include "Graphics.h"
+#include "models/Vertex.h"
+#include "DeviceResources.h"
 
 
 
@@ -18,6 +21,7 @@ Utils::VertexBuffer::~VertexBuffer()
 
 void Utils::VertexBuffer::InitializeVertexBuffer(std::vector<Vertex>& vertices)
 {
+    if (pVertexBuffer)pVertexBuffer.Reset();
     stride = sizeof(Vertex);
     D3D11_BUFFER_DESC vbDesc;
     ZeroMemory(&vbDesc, sizeof(vbDesc));
@@ -35,7 +39,7 @@ void Utils::VertexBuffer::InitializeVertexBuffer(std::vector<Vertex>& vertices)
     vbData.SysMemPitch = 0;
     vbData.SysMemSlicePitch = 0;
     CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateBuffer(&vbDesc, &vbData, pVertexBuffer.GetAddressOf()));
-
+    //vertices.clear();
 }
 
 void Utils::VertexBuffer::Bind()
@@ -47,10 +51,7 @@ Utils::IndexBuffer::IndexBuffer(Graphics& g)
     :
     m_graphics(g),
     pIndexBuffer(nullptr)
-{
-
-    
-}
+{}
 
 Utils::IndexBuffer::~IndexBuffer()
 {
@@ -59,6 +60,8 @@ Utils::IndexBuffer::~IndexBuffer()
 
 void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indices)
 {
+    if (pIndexBuffer)pIndexBuffer.Reset();
+
     D3D11_BUFFER_DESC idDesc;
     ZeroMemory(&idDesc, sizeof(idDesc));
     idDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -74,12 +77,7 @@ void Utils::IndexBuffer::InitializeIndexBuffer(std::vector<unsigned short>& indi
     idData.pSysMem = indices.data();
 
     CHECK_RESULT(m_graphics.GetDeviceResources()->GetDevice()->CreateBuffer(&idDesc, &idData, pIndexBuffer.GetAddressOf()));
-    // Ensure pIndexBuffer ComPtr is valid
-    if (pIndexBuffer == nullptr) {
-        // Output error message if pIndexBuffer is null
-        OutputDebugString(L"pIndexBuffer is null\n");
-        return;
-    }
+    //indices.clear();
 }
 
 void Utils::IndexBuffer::Bind()
@@ -100,6 +98,7 @@ Utils::InputLayout::~InputLayout()
 }
 void Utils::InputLayout::CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
+    layouts.clear();
     if (keyword == "POSITION")
     {
         layouts.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
@@ -161,14 +160,16 @@ Utils::VertexShader::~VertexShader()
 
 void Utils::VertexShader::LoadStreamVertexShader(std::string stream)
 {
+    if (pVertexShader)pVertexShader.Reset();
     CHECK_RESULT(D3DCompile(stream.c_str(), stream.size(), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, pShaderBlob.GetAddressOf(), nullptr));
     m_graphics.GetDeviceResources()->GetDevice()->CreateVertexShader(
         pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pVertexShader.GetAddressOf());
-
+    
 }
 
 void Utils::VertexShader::LoadCompiledVertexShader(std::wstring path)
 {
+    if (pVertexShader)pVertexShader.Reset();
     D3DReadFileToBlob(path.c_str(), pShaderBlob.GetAddressOf());
     if (pShaderBlob == NULL)
     {
@@ -202,6 +203,7 @@ Utils::PixelShader::~PixelShader()
 
 void Utils::PixelShader::LoadStreamPixelShader(std::string stream)
 {
+    if (pPixelShader)pPixelShader.Reset();
     CHECK_RESULT(D3DCompile(stream.c_str(), stream.size(), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, pShaderBlob.GetAddressOf(), nullptr));
     m_graphics.GetDeviceResources()->GetDevice()->CreatePixelShader(
         pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
@@ -209,6 +211,7 @@ void Utils::PixelShader::LoadStreamPixelShader(std::string stream)
 
 void Utils::PixelShader::LoadCompiledPixelShader(std::wstring path)
 {
+    if (pPixelShader)pPixelShader.Reset();
     D3DReadFileToBlob(path.c_str(), &pShaderBlob);
     m_graphics.GetDeviceResources()->GetDevice()->CreatePixelShader(pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), nullptr, pPixelShader.GetAddressOf());
 
@@ -247,6 +250,8 @@ Utils::Texture::~Texture()
 
 void Utils::Texture::LoadTexture(const char* path)
 {
+    if (pTex) pTex.Reset();
+    if (textureView) textureView.Reset();
     int image_Width, image_height , image_Channels, image_Desired_channels = 4;
 
     unsigned char* data = stbi_load(path, &image_Width, &image_height,

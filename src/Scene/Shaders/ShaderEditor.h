@@ -1,6 +1,8 @@
 #pragma once
-#include "ShaderManager.h"
 #include <string>
+#include <memory>
+
+class ShaderManager;
 
 class ShaderEditor
 {

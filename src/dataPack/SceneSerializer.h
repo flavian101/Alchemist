@@ -2,6 +2,20 @@
 #include "Scene/SceneManager.h"
 #include "Json.hpp"
 
+class DeviceResources;
+class Graphics;
+class Window;
+class Scene;
+class PerspectiveCamera;
+class OrthographicCamera;
+class SceneCamera;
+class ShaderManager;
+class Model;
+class MeshParts;
+class Mesh;
+class Vertex;
+
+
 class SceneSerializer
 {
 public:

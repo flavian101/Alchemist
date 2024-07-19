@@ -1,4 +1,8 @@
 #include "ShaderManager.h"
+#include "Graphics/Utilis.h"
+#include "Graphics/Graphics.h"
+#include <sstream>
+#include <fstream>
 
 ShaderManager::ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
 	:
@@ -9,7 +13,11 @@ ShaderManager::ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
 	m_layout(std::make_unique < Utils::InputLayout>(g))
 {}
 
-void ShaderManager::LoadShaders(std::wstring vertexShader, std::wstring pixelShader)
+ShaderManager::~ShaderManager()
+{
+}
+
+void ShaderManager::LoadShaders(const std::wstring& vertexShader,const std::wstring& pixelShader)
 {
 	vertexShaderPath = vertexShader;
 	pixelShaderPath = pixelShader;
@@ -23,7 +31,8 @@ void ShaderManager::LoadShaders(std::wstring vertexShader, std::wstring pixelSha
 
 	m_vertexShaderCode = vertexShaderStream.str();
 	m_pixelShaderCode = pixelShaderStream.str();
-	
+	vertexShaderStream.clear();
+	pixelShaderStream.clear();
 	m_vertexShader->LoadStreamVertexShader(m_vertexShaderCode);
 	m_pixelShader->LoadStreamPixelShader(m_pixelShaderCode);
 

@@ -1,9 +1,16 @@
 #pragma once
-#include "Scene\RenderableObject.h"
-#include "Mesh.h"
-#include "Graphics/Camera/ThirdPerson.h"
 #include <algorithm>
-#include "Material.h"
+#include "Scene\RenderableObject.h"
+#include <vector>
+#include <string>
+
+
+class Graphics;
+class Mesh;
+class ThirdPerson;
+class Material;
+class MeshParts;
+class Vertex;
 
 class Model : public RenderableObject
 {
@@ -30,8 +37,8 @@ private:
 
 protected:
 	Graphics& m_graphics;
-	Mesh m_mesh;
-	MeshParts* part;
+	std::shared_ptr<Mesh> m_mesh;
+	std::shared_ptr<MeshParts> part;
 	std::shared_ptr<ShaderManager> m_manager;
 	UINT m_slot;
 	bool isTextured;

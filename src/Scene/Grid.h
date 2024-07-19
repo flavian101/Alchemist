@@ -1,6 +1,10 @@
 #pragma once
 #include "models/Model.h"
 
+class Graphics;
+class ShaderManager;
+class Vertex;
+
 class Grid: public Model
 {
 public:

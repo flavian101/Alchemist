@@ -1,9 +1,10 @@
 #pragma once
-#include "Graphics.h"
 #include <vector>
-#include "Vertex.h"
 #include <codecvt>
 #include <stdafx.h>
+
+class Graphics;
+class Vertex;
 
 namespace Utils
 {

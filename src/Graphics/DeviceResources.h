@@ -1,13 +1,8 @@
 #pragma once
+#include "stdafx.h"
 #include "ErrorEx.h"
-#include <d3d11.h>
-#include <wrl/client.h>
 #include <vector>
 #include <string>
-#include <DirectXMath.h>
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx11.h"
-#include "imgui/imgui_impl_win32.h"
 #include <codecvt>
 #include <memory>
 
@@ -15,9 +10,12 @@
 
 class DeviceResources {
 public:
-    DeviceResources(HWND hwnd, int width, int height);
+    DeviceResources();
     DeviceResources(const DeviceResources&) = delete;
     DeviceResources& operator=(const DeviceResources&) = delete;
+    static DeviceResources* Get();
+    void Initialize(HWND hwnd, int width, int height);
+    void ReleaseResources();
     ~DeviceResources();
 
     void Resize(UINT width, UINT height);
@@ -40,7 +38,6 @@ public:
     bool enableMsaa;
 
 private:
-    void Initialize();
     bool CreateDevice();
     bool CreateSwapChain();
     void CreateDepthStencil(UINT width, UINT height);
@@ -48,7 +45,7 @@ private:
     void CreateRasterizerState();
     void CreateBlendState();
     void InitializeImGui();
-    void EnumerateAdaptersAndOutputs();
+    bool EnumerateAdaptersAndOutputs();
 
     HWND hWnd;
     UINT m_width;
@@ -56,14 +53,15 @@ private:
     bool isFullscreenEnabled = true;
 
     Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
+    Microsoft::WRL::ComPtr< IDXGIDevice1> pDDevice;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext = nullptr;
     Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain = nullptr;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTarget = nullptr;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil = nullptr;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> CCWcullMode = nullptr;
-    Microsoft::WRL::ComPtr<IDXGIFactory1> factory = nullptr;
-    Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIFactory1> pFactory = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> pAdapter = nullptr;
     Microsoft::WRL::ComPtr<IDXGIOutput> adapterOutput = nullptr;
     Microsoft::WRL::ComPtr <ID3D11DepthStencilState> depthStencilState = nullptr;
     Microsoft::WRL::ComPtr<ID3D11BlendState> blendState = nullptr;

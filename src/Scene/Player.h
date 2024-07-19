@@ -1,5 +1,12 @@
 #pragma once
+#include <string>
+#include <memory>
+#include <vector>
 #include "models/Model.h"
+
+class ShaderManager;
+class Vertex;
+class Graphics;
 
 
 class Player : public Model

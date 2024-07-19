@@ -1,4 +1,9 @@
 #include "SceneManager.h"
+#include "Graphics\Graphics.h"
+#include "Scene\Scene.h"
+#include "imgui/imgui.h"
+#include "Graphics/Utilis.h"
+
 
 SceneManager::SceneManager(Graphics& g, Window& win)
     :
@@ -69,6 +74,7 @@ void SceneManager::Render()
 }
 void SceneManager::ControlWindow()
 { 
+
     if (ImGui::BeginMainMenuBar())
     {
         ImTextureID tex_id_1 = Logo->GetSRV();
@@ -100,6 +106,9 @@ void SceneManager::ControlWindow()
         }
         if (ImGui::BeginMenu("Edit"))
         {
+            if (ImGui::MenuItem("add object"))
+            {
+            }
 
             ImGui::EndMenu();
         }

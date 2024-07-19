@@ -1,5 +1,8 @@
 #include "Transform.h"
 #include <MathUtils\MathUtils.h>
+#include <DirectXMath.h>
+#include "Graphics\Graphics.h"
+#include "Graphics/DeviceResources.h"
 
 Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotation, const XMFLOAT3& scale)
 	:

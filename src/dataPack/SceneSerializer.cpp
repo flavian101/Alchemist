@@ -1,5 +1,17 @@
 #include "SceneSerializer.h"
 #include <fstream>
+#include "window/Window.h"
+#include "Scene/Scene.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/DeviceResources.h"
+#include "Graphics/Camera/PerspectiveCamera.h"
+#include "Graphics/Camera/OrthographicCamera.h"
+#include "models/vertex.h"
+#include "models/Model.h"
+#include "models/Mesh.h"
+#include "models/MeshParts.h"
+#include "Scene/SceneCamera.h"
+#include "Scene/Shaders/ShaderManager.h"
 
 
 SceneSerializer::SceneSerializer(Scene& scene,Graphics& g)
@@ -199,7 +211,7 @@ nlohmann::json SceneSerializer::SerializeSceneModels(Model* model)
 	//mesh
 	if (model->getMesh())
 	{
-		j["mesh"] = SerializeMeshParts(model->part);
+		j["mesh"] = SerializeMeshParts(model->part.get());
 	}
 	return j;
 }
@@ -362,8 +374,8 @@ void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json&
 
 	if (j.contains("mesh"))
 	{
-		model->part = new MeshParts(m_graphics);
-		DeserializeMeshParts(model->part, j["mesh"]);
+		model->part = std::make_unique<MeshParts>(m_graphics);
+		DeserializeMeshParts(model->part.get(), j["mesh"]);
 
 		if (model->isTextured)
 		{

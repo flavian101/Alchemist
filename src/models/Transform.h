@@ -1,12 +1,11 @@
 #pragma once
-#include <DirectXMath.h>
 #include "Graphics\ConstantBuffer.h"
-#include "Graphics\Graphics.h"
+
+class Graphics;
 /// <summary>
 /// ///set the Vertex constant buffer
 /// </summary>
 
-using namespace DirectX;
 
 
 class Transform

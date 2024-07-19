@@ -1,16 +1,24 @@
 #pragma once
-#include "DeviceResources.h"
 #include <tuple>
+#include <memory>
+#include "stdafx.h"
 
+class SceneSerializer;
+class DeviceResources;
 
 class Graphics {
 public:
-    Graphics(HWND hwnd, int width, int height);
+
+    Graphics();
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
+    void Initialize(HWND hwnd, int width, int height);
+
+    static Graphics& GetInstance();
+    static void DestroyInstance();
     ~Graphics();
 
-    DeviceResources* GetDeviceResources() const;
+    static DeviceResources* GetDeviceResources();
 
     void ClearDepthColor(float red, float green, float blue);
     void Render(UINT indexCount);
@@ -34,8 +42,10 @@ public:
     void SetWin(const std::tuple<HWND, HINSTANCE>& win);
     std::tuple<HWND, HINSTANCE> getWin();
 
+
+
+
 private:
-    std::unique_ptr<DeviceResources> deviceResources;
     HWND m_hwnd;
     HINSTANCE m_hinstance;
     DirectX::XMMATRIX projection;

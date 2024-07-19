@@ -1,5 +1,6 @@
 #include "FreeLook.h"
 
+
 FreeLook::FreeLook()
 {
 	mode = freeLook;

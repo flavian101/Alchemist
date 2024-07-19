@@ -1,5 +1,6 @@
 #include "CameraController.h"
-
+#include "PerspectiveCamera.h"
+#include "OrthographicCamera.h"
 
 void CameraController::CameraShake(PerspectiveCamera* cam, float intensity, float duration, float deltaTime)
 {

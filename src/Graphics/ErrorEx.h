@@ -38,7 +38,7 @@ do { \
         } \
         \
         /* Break into debugger */ \
-        __debugbreak(); \
+        \
     } \
 } while (0)
 #else

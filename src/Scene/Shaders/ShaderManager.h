@@ -1,15 +1,23 @@
 #pragma once
-#include "Graphics\Utilis.h"
 #include <memory>
+#include <string>
+#include "stdafx.h"
 
-
+class Graphics;
+namespace Utils
+{
+	class VertexShader;
+	class PixelShader;
+	class InputLayout;
+	class Topology;
+}
 
 class ShaderManager
 {
 public:
 	ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	void LoadShaders(std::wstring vertexShader, std::wstring pixelShader);
+	~ShaderManager();
+	void LoadShaders(const std::wstring& vertexShader,const  std::wstring& pixelShader);
 	void loadCompiledShader(std::wstring vertexShader, std::wstring pixelShader);
 	void ReloadShaders();
 	void SetShaderLayout(const std::string& layout);

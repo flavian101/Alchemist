@@ -1,7 +1,6 @@
 #pragma once
-#include <DirectXMath.h>
+#include "stdafx.h"
 
-using namespace DirectX;
 enum class VertexType {
     pos3,
     Pos3Col,

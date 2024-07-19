@@ -13,7 +13,9 @@
 
 
 #include <DirectXMath.h>
+using namespace DirectX;
 #include <wrl.h>
+#include <wrl/client.h>
 
 #define DIRECTINPUT_VERSION 0x0800 
 #pragma comment (lib, "dinput8.lib")

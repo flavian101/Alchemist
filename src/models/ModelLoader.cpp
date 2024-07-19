@@ -1,4 +1,9 @@
 #include "ModelLoader.h"
+#include "models/Vertex.h"
+#include "Graphics/Graphics.h"
+#include "Scene/Shaders/ShaderManager.h"
+#include "MeshParts.h"
+#include "Mesh.h"
 
 ModelLoader::ModelLoader(Graphics& g, std::shared_ptr<ShaderManager> manager)
 	:
@@ -9,6 +14,7 @@ ModelLoader::ModelLoader(Graphics& g, std::shared_ptr<ShaderManager> manager)
 
 bool ModelLoader::LoadModel(const std::string& filepath)
 {
+    m_filepath = filepath;
 	Assimp::Importer importer;
     basePath = std::filesystem::path(filepath).parent_path().string();
 
@@ -105,7 +111,7 @@ Mesh& ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     part = new MeshParts(m_graphics);
     part->Initialize(m_indices, m_vertices);
     Mesh* mmesh = new Mesh(m_graphics);
-    mmesh->AddMeshPart(*part);
+    mmesh->AddMeshPart(part);
     mmesh->SetMaterial(std::move(material)); // Set the material for the mesh
 
     return *mmesh;

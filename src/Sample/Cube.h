@@ -1,5 +1,7 @@
 #pragma once
 #include "models\Model.h"
+class Graphics;
+class ShaderManager;
 
 class Cube : public Model
 {

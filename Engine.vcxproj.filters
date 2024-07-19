@@ -60,9 +60,6 @@
     <ClCompile Include="src\Graphics\FrameTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Camera\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Input\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,7 +170,7 @@
     <ClInclude Include="src\Sample\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Vertex.h">
+    <ClInclude Include="src\models\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\window\ImguiManager.h">
@@ -306,6 +303,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\models\ModelLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\imgui\FileBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

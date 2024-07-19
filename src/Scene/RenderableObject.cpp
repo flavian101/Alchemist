@@ -1,4 +1,7 @@
 #include "RenderableObject.h"
+#include "Shaders/ShaderManager.h"
+#include "models/Transform.h"
+#include "Graphics/Graphics.h"
 
 RenderableObject::RenderableObject(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:
@@ -22,8 +25,6 @@ void RenderableObject::Render()
 {
 	m_transform->BindConstantBuffer();
 	m_shaderManager->BindShaders();
-	
-
 }
 
 XMMATRIX RenderableObject::GetTransform()const 

@@ -1,6 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
-#include "window\ImguiManager.h"
+class ImguiManager;
 
 
 using namespace DirectX;

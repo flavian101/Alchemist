@@ -1,4 +1,7 @@
 #include "ShaderEditor.h"
+#include "ShaderManager.h"
+#include "imgui/imgui.h"
+#include <fstream>
 
 ShaderEditor::ShaderEditor(std::shared_ptr<ShaderManager> shaderManager)
 	:

@@ -2,13 +2,18 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "Graphics/Camera/FreeLook.h"
-#include "Graphics/Camera/FirstPerson.h"
-#include "Graphics/Camera/ThirdPerson.h"
-#include <Graphics/Camera/OrthographicCamera.h>
-#include <Graphics/Graphics.h>
-#include "Input\Input.h"
+#include <memory>
 
+
+class Graphics;
+class Camera;
+class PerspectiveCamera;
+class FreeLook;
+class FirstPersin;
+class ThirdPerson;
+class OrthographicCamera;
+class Input;
+class Player;
 
 class SceneCamera {
 public:

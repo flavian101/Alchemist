@@ -1,4 +1,7 @@
 #include "Player.h"
+#include "Scene/Shaders/ShaderManager.h"
+#include "Graphics/Graphics.h"
+#include "models/Vertex.h"
 
 Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:

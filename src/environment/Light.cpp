@@ -1,4 +1,8 @@
 #include "Light.h"
+#include "imgui/imgui.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/DeviceResources.h"
+#include "Scene/Shaders/ShaderManager.h"
 
 Light::Light(const std::string& name,Graphics& g,std::shared_ptr<ShaderManager> manager)
 	:

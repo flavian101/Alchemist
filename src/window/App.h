@@ -4,12 +4,14 @@
 #include "Graphics/FrameTime.h"
 #include <vector>
 #include "Scene\SceneManager.h"
+#include "Graphics/Graphics.h"
 class App
 {
 public:
-	App(HINSTANCE hInstance, int showWnd);
+	App();
 	~App();
 	int createLoop();
+
 
 private:
 	void Render();
@@ -24,3 +26,4 @@ private:
 	SceneManager sceneManager;
 	
 };
+

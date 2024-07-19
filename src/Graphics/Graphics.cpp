@@ -1,15 +1,39 @@
 #include "Graphics.h"
+#include "DeviceResources.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_dx11.h"
+#include "imgui/imgui_impl_win32.h"
 
-Graphics::Graphics(HWND hwnd, int width, int height)
-    : deviceResources(std::make_unique<DeviceResources>(hwnd, width, height)),
-    imguiEnabled(true) {}
-
-Graphics::~Graphics() 
-{}
-
-DeviceResources* Graphics::GetDeviceResources() const
+Graphics::Graphics()
+    :
+    imguiEnabled(true) 
 {
-    return deviceResources.get();
+
+}
+
+void Graphics::Initialize(HWND hwnd, int width, int height)
+{
+    DeviceResources::Get()->Initialize(hwnd, width, height);
+}
+
+Graphics& Graphics::GetInstance()
+{
+    static Graphics graphics;
+    return graphics;
+}
+
+void Graphics::DestroyInstance()
+{
+    DeviceResources::Get()->ReleaseResources();
+}
+
+Graphics::~Graphics()
+{
+}
+
+DeviceResources* Graphics::GetDeviceResources()
+{
+    return DeviceResources::Get();
 }
 
 void Graphics::ClearDepthColor(float red, float green, float blue) {
@@ -20,15 +44,16 @@ void Graphics::ClearDepthColor(float red, float green, float blue) {
         ImGui::NewFrame();
     }
     const float color[] = { red, green, blue, 1.0f };
-    deviceResources->GetContext()->ClearRenderTargetView(deviceResources->GetRenderTargetView(), color);
-    deviceResources->GetContext()->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-    deviceResources->GetContext()->OMSetRenderTargets(1, deviceResources->GetRenderTargetViewAddress(), deviceResources->GetDepthStencilView());
+
+    DeviceResources::Get()->GetContext()->ClearRenderTargetView(DeviceResources::Get()->GetRenderTargetView(), color);
+    DeviceResources::Get()->GetContext()->ClearDepthStencilView(DeviceResources::Get()->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+    DeviceResources::Get()->GetContext()->OMSetRenderTargets(1, DeviceResources::Get()->GetRenderTargetViewAddress(), DeviceResources::Get()->GetDepthStencilView());
 }
 
 void Graphics::Render(UINT indexCount) {
-    deviceResources->BindBlendState();
-    deviceResources->GetContext()->RSSetState(deviceResources->GetRasterizerState());
-    deviceResources->GetContext()->DrawIndexed(indexCount, 0, 0);
+    DeviceResources::Get()->BindBlendState();
+    DeviceResources::Get()->GetContext()->RSSetState(DeviceResources::Get()->GetRasterizerState());
+    DeviceResources::Get()->GetContext()->DrawIndexed(indexCount, 0, 0);
 }
 
 void Graphics::End() {
@@ -36,7 +61,7 @@ void Graphics::End() {
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
-   CHECK_RESULT(deviceResources->GetSwapChain()->Present(deviceResources->isVsyncEnabled ? 1 : 0, 0));
+   CHECK_RESULT(DeviceResources::Get()->GetSwapChain()->Present(DeviceResources::Get()->isVsyncEnabled ? 1 : 0, 0));
 }
 
 void Graphics::ControlWindow()
@@ -44,10 +69,10 @@ void Graphics::ControlWindow()
     ImGui::Text("Graphics Settings");
     ImGui::Text("Resolution:%.2f X %.2f ", GetWidth(), GetHeight());
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Checkbox("Vsync", &deviceResources->isVsyncEnabled);
-    bool msaaChanged = ImGui::Checkbox("MSAA", &deviceResources->enableMsaa);
+    ImGui::Checkbox("Vsync", &DeviceResources::Get()->isVsyncEnabled);
+    bool msaaChanged = ImGui::Checkbox("MSAA", &DeviceResources::Get()->enableMsaa);
     if (msaaChanged) {
-       deviceResources->ToggleMsaa(deviceResources->enableMsaa);
+        DeviceResources::Get()->ToggleMsaa(DeviceResources::Get()->enableMsaa);
     }
 }
 
@@ -80,15 +105,15 @@ DirectX::XMMATRIX Graphics::GetViewMatrix() const {
 }
 
 float Graphics::GetAspectRatio() const {
-    return static_cast<float>(deviceResources->GetWidth()) / deviceResources->GetHeight();
+    return static_cast<float>(DeviceResources::Get()->GetWidth()) / DeviceResources::Get()->GetHeight();
 }
 
 float Graphics::GetWidth() const {
-    return deviceResources->GetWidth();
+    return  DeviceResources::Get()->GetWidth();
 }
 
 float Graphics::GetHeight() const {
-    return deviceResources->GetHeight();
+    return  DeviceResources::Get()->GetHeight();
 }
 
 void Graphics::SetWin(const std::tuple<HWND, HINSTANCE>& win)

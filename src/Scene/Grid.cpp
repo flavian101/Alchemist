@@ -1,4 +1,7 @@
 #include "Grid.h"
+#include "models/Vertex.h"
+#include "Graphics/Graphics.h"
+#include "Scene/Shaders/ShaderManager.h"
 
 Grid::Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager)
 	:

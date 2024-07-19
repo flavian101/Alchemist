@@ -1,38 +1,75 @@
 #include "DeviceResources.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_dx11.h"
 
-DeviceResources::DeviceResources(HWND hwnd, int width, int height)
-    : hWnd(hwnd), m_width(width), m_height(height),
+
+
+DeviceResources::DeviceResources()
+    :
     isFullscreenEnabled(true),
     isVsyncEnabled(true),
-    enableMsaa(false) {
-    Initialize();
+    enableMsaa(false) 
+{}
+DeviceResources* DeviceResources::Get()
+{
+    static DeviceResources resource;
+    return &resource;
+}
+void DeviceResources::Initialize(HWND hwnd, int width, int height)
+{
+    this->hWnd = hwnd;
+    this->m_width=width;
+    this->m_height = height;
+
+    if (!CreateDevice()) {
+        MessageBox(hWnd, L"Failed to create device", L"Error", MB_ICONEXCLAMATION);
+    }
+    if (!EnumerateAdaptersAndOutputs())
+    {
+        MessageBox(hWnd, L"Failed to enumarate adapters", L"Error", MB_ICONEXCLAMATION);
+
+    }
+
+    if (!CreateSwapChain()) {
+        MessageBox(hWnd, L"Failed to create swap chain", L"Error", MB_ICONEXCLAMATION);
+    }
+    InitializeImGui();
+
+    CreateDepthStencil(m_width, m_height);
+    CreateRenderTarget();
+    CreateRasterizerState();
+    CreateBlendState();
+
 }
 
-DeviceResources::~DeviceResources() {
-
+void DeviceResources::ReleaseResources()
+{
 #if defined(DEBUG) || defined(_DEBUG)
     // Report live device objects before shutting down ImGui
     Microsoft::WRL::ComPtr<ID3D11Debug> debugDevice;
-    if (SUCCEEDED(pDevice.As(&debugDevice)))
-    {
-        debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-    }
+    CHECK_RESULT(this->pDevice.As(&debugDevice));
+    debugDevice->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+
 #endif
 
-
     ImGui_ImplDX11_Shutdown();
+    debugDevice.Reset();
     adapterOutput.Reset();
-    adapter.Reset();
-    factory.Reset();
+    pDDevice.Reset();
+    pAdapter.Reset();
+    pFactory.Reset();
+    pDevice.Reset();
     pContext.Reset();
     pSwapChain.Reset();
-    pDevice.Reset();
     pRenderTarget.Reset();
     pDepthStencil.Reset();
     pDSV.Reset();
     CCWcullMode.Reset();
     blendState.Reset();
 }
+
+DeviceResources::~DeviceResources()
+{}
 
 void DeviceResources::BindBlendState()
 {
@@ -43,24 +80,6 @@ HWND DeviceResources::getHwnd()
 {
     return hWnd;
 }
-
-void DeviceResources::Initialize() {
-    EnumerateAdaptersAndOutputs();
-    if (!CreateDevice()) {
-        MessageBox(hWnd, L"Failed to create device", L"Error", MB_ICONEXCLAMATION);
-    }
-    if (!CreateSwapChain()) {
-        MessageBox(hWnd, L"Failed to create swap chain", L"Error", MB_ICONEXCLAMATION);
-    }
-    InitializeImGui();
-  
-    CreateDepthStencil(m_width, m_height);
-    CreateRenderTarget();
-    CreateRasterizerState();
-    CreateBlendState();
-
-}
-
 bool DeviceResources::CreateDevice() {
     UINT creationFlags = 0u;
 #if defined(DEBUG) || defined(_DEBUG)
@@ -69,8 +88,8 @@ bool DeviceResources::CreateDevice() {
     D3D_FEATURE_LEVEL featureLevel = { D3D_FEATURE_LEVEL_11_0 };
 
     CHECK_RESULT(D3D11CreateDevice(
-        adapter.Get(),
-        D3D_DRIVER_TYPE_UNKNOWN,
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
         nullptr,                 //software device
         creationFlags,
         nullptr,
@@ -107,7 +126,8 @@ bool DeviceResources::CreateSwapChain() {
     swapChainDesc.SampleDesc.Quality = enableMsaa ? m4xMsaaQuality - 1 : 0;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     swapChainDesc.Flags = 0;
-    CHECK_RESULT(factory->CreateSwapChain(pDevice.Get(), &swapChainDesc, pSwapChain.GetAddressOf()));
+
+    CHECK_RESULT(pFactory->CreateSwapChain(pDevice.Get(), &swapChainDesc, pSwapChain.GetAddressOf()));
     return true;
 }
 
@@ -196,49 +216,13 @@ void DeviceResources::InitializeImGui() {
     ImGui_ImplDX11_Init(pDevice.Get(), pContext.Get());
 }
 
-void DeviceResources::EnumerateAdaptersAndOutputs() {
-    unsigned long long stringLength;
+bool DeviceResources::EnumerateAdaptersAndOutputs()
+{
 
-    //graphic interface
-    CHECK_RESULT(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)factory.GetAddressOf()));
-    CHECK_RESULT(factory->EnumAdapters1(0u, adapter.GetAddressOf()));
-    CHECK_RESULT(adapter->EnumOutputs(0u, adapterOutput.GetAddressOf()));
-    CHECK_RESULT(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr));
-
-
-    //list
-    displayModeList = new DXGI_MODE_DESC[numModes];
-    if (!displayModeList)
-    {
-        //return false;
-    }
-    CHECK_RESULT(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,
-        DXGI_ENUM_MODES_INTERLACED,
-        &numModes, displayModeList));
-
-    unsigned int i;
-    for (i = 0; i < numModes; i++)
-    {
-        if (displayModeList[i].Width == (unsigned int)m_width && displayModeList[i].Height == (unsigned int)m_height)
-        {
-            numerator = displayModeList[i].RefreshRate.Numerator;
-            denominator = displayModeList[i].RefreshRate.Denominator;
-            break;
-        }
-    }
-
-    //desc adapter
-    DXGI_ADAPTER_DESC1 adapterDesc = {};
-    //ZeroMemory(adapterDesc, sizeof(DXGI_ADAPTER_DESC1));
-    CHECK_RESULT(adapter->GetDesc1(&adapterDesc));
-    videoMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
-
-    //convert name(adapter) to character array and store it
-    err = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
-
-
-    delete[] displayModeList;
-    displayModeList = 0;
+    pDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)pDDevice.GetAddressOf());
+    pDDevice->GetParent(__uuidof(IDXGIAdapter1), (void**)pAdapter.GetAddressOf());
+    pAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)pFactory.GetAddressOf());
+    return true;
 }
 
 void DeviceResources::Resize(UINT width, UINT height) {
