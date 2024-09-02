@@ -2,7 +2,7 @@
 #include "Scene/SceneManager.h"
 #include "Json.hpp"
 
-class DeviceResources;
+class Renderer;
 class Graphics;
 class Window;
 class Scene;
@@ -24,7 +24,7 @@ public:
 	void Deserialize(const char* filepath);
 private:
 	//Serialize
-	nlohmann::json SerializeDevice(const DeviceResources& device);
+	nlohmann::json SerializeDevice(const Renderer& device);
 	
 	nlohmann::json SerializeGraphics(Graphics& graphics);
 
@@ -48,7 +48,7 @@ private:
 	//Deserialize 
 	void DeserializeGraphics(Graphics& graphics, const nlohmann::json& j);
 
-	void DeserializeDevice(DeviceResources& device, const nlohmann::json& j);
+	void DeserializeDevice(Renderer& device, const nlohmann::json& j);
 
 	void DeserializeWindow(Window& win, const nlohmann::json& j);
 

@@ -2,7 +2,6 @@
 #include <MathUtils\MathUtils.h>
 #include <DirectXMath.h>
 #include "Graphics\Graphics.h"
-#include "Graphics/DeviceResources.h"
 
 Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotation, const XMFLOAT3& scale)
 	:
@@ -48,7 +47,7 @@ void Transform::Update(float time)
 
 void Transform::BindConstantBuffer()
 {
-	m_graphics.GetDeviceResources()->GetContext()->VSSetConstantBuffers(0, 1, CB_Buffer.GetAddressOf());
+	m_graphics.GetContext()->VSSetConstantBuffers(0, 1, CB_Buffer.GetAddressOf());
 }
 
 void Transform::controlWindow()

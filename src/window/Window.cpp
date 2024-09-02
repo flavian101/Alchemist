@@ -1,39 +1,37 @@
 #include "Window.h"
 #include "imgui/imgui_impl_win32.h"
 #include "Graphics/Graphics.h"
-#include "Graphics/DeviceResources.h"
+#include "Graphics/Renderer.h"
 
 Window::Window(LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height)
 	:
+	m_hwnd(nullptr),
 	m_hInstance(GetModuleHandle(nullptr)),
 	m_windowTitle(windowTitle),
 	m_windowClass(windowClass),
 	m_width(Width),
-	m_height(Height),
-	m_hwnd(nullptr)
+	m_height(Height)
 {
 	if (!Initialize())
 	{
 		MessageBox(m_hwnd, L"failed to create Window", L"ERROR", MB_OK | MB_ICONERROR);
 	}
-	
-}
-
-void Window::OnDelete()
-{
-	
 }
 
 Window::~Window()
 {
-	Graphics::DestroyInstance();
 	ImGui_ImplWin32_Shutdown();
 	DestroyWindow(m_hwnd);
 
 }
-Graphics& Window::Gfx()
+Graphics& Window::GetInstance()
 {
-	return Graphics::GetInstance();
+	//static Graphics graphics(hwnd);
+	if (!pGfx)
+	{
+		MessageBoxA(m_hwnd, "error", "No Graphics Application", MB_ICONEXCLAMATION| MB_OK);
+	}
+	return *pGfx;
 }
 
 bool Window::Initialize()
@@ -106,9 +104,33 @@ bool Window::Initialize()
 	UpdateWindow(m_hwnd);
 	SetFocus(m_hwnd);
 	ImGui_ImplWin32_Init(m_hwnd);
-	Graphics::GetInstance().Initialize(m_hwnd, m_width, m_height);
-	Graphics::GetInstance().SetWin(std::make_tuple(m_hwnd, m_hInstance));
+	pGfx = std::make_unique<Graphics>(m_hwnd);
+	pGfx->SetWin(std::make_tuple(m_hwnd, m_hInstance));
 	
+	int maxWidth = pGfx->GetWidth();  
+	int maxHeight = pGfx->GetHeight();
+
+	// Adjust the window rect to account for window styles
+	RECT newRect = { 0, 0, maxWidth, maxHeight };
+	AdjustWindowRectEx(&newRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
+	LONG newWidth = newRect.right - newRect.left;
+	LONG newHeight = newRect.bottom - newRect.top;
+
+	// Resize the window
+	SetWindowPos(m_hwnd, HWND_TOP, 0, 0, newWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Optionally, center the window on the screen
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	int x = (screenWidth - newWidth) / 2;
+	int y = (screenHeight - newHeight) / 2;
+	
+	SetWindowPos(m_hwnd, HWND_TOP, x, y, newWidth, newHeight, SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Update window and focus
+	UpdateWindow(m_hwnd);
+	SetFocus(m_hwnd);
+
     return true;
 }
 
@@ -181,16 +203,15 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_SIZE:
 		m_width = LOWORD(lParam);
 		m_height = HIWORD(lParam);
-
-		//Graphics::GetInstance(m_hwnd, m_width, m_height).GetDeviceResources()->Resize(m_width, m_height);
+		//::GetInstance().SetWin(std::make_tuple(hWnd, m_hInstance));
+	    //Graphics::GetInstance().GetDeviceResources()->Resize(m_width, m_height);
+		
 			//Gfx().GetDeviceResources()->Resize(m_width, m_height);
 		break;
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{}
-		break;
-
-	
+		break;		
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

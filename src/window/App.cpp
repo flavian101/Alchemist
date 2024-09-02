@@ -5,9 +5,11 @@
 App::App()
     :
     window(L"engine", L"DirectX", 1366, 768),
-    sceneManager(window.Gfx(),window),
-    timer()
-{}
+    timer(),
+    sceneManager(&window)
+{
+
+}
 
 
 int App::createLoop()
@@ -23,15 +25,17 @@ int App::createLoop()
         sceneManager.Update(timer.Tick());
         Render();
     }
+
+ 
 }
 void App::Render()
 {
-    window.Gfx().ClearDepthColor(0.0f,0.0f,0.0f);
+    window.GetInstance().ClearDepthColor(0.0f, 0.0f, 0.0f);
     sceneManager.Render();
-    window.Gfx().End();
+    window.GetInstance().End();
 
-  
 }
+
 App::~App()
 {
 }

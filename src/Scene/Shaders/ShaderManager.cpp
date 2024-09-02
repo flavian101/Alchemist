@@ -9,8 +9,7 @@ ShaderManager::ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
 	m_graphics(g),
 	m_topology(std::make_unique < Utils::Topology>(g,type)),
 	m_vertexShader(std::make_unique<Utils::VertexShader>(g)),
-	m_pixelShader(std::make_unique < Utils::PixelShader>(g)),
-	m_layout(std::make_unique < Utils::InputLayout>(g))
+	m_pixelShader(std::make_unique < Utils::PixelShader>(g))
 {}
 
 ShaderManager::~ShaderManager()
@@ -58,7 +57,7 @@ void ShaderManager::ReloadShaders()
 
 void ShaderManager::SetShaderLayout(const std::string& layout)
 {
-	m_layout->CreateLayout(layout,m_vertexShader->GetByteCode());
+	m_layout = std::make_unique<Utils::InputLayout>(m_graphics, layout, m_vertexShader->GetByteCode());
 }
 
 void ShaderManager::SetVertexShaderCode(const std::string& V_code)

@@ -3,28 +3,23 @@
 #include "Scene\Scene.h"
 #include "imgui/imgui.h"
 #include "Graphics/Utilis.h"
+#include "window/Window.h"
 
 
-SceneManager::SceneManager(Graphics& g, Window& win)
+SceneManager::SceneManager (Window* win)
     :
-    m_graphics(g),
-    m_window(win),
+    m_graphics(win->GetInstance()),
     activeScene(nullptr),
     thumbnail(nullptr)
 {
-    activeScene = new Scene("begin", g, win);
+    activeScene = new Scene("begin", *win);
     AddScene(activeScene);
     showSceneWindow = true; 
-    thumbnail = std::make_unique<Utils::Texture>(g);
-    thumbnail->LoadTexture("Assets/textures/thumbnail/Alchemist.png");
-    Logo = std::make_unique<Utils::Texture>(g);
-    Logo->LoadTexture("Assets/textures/thumbnail/Alchemist.png");
-    minimize= std::make_unique<Utils::Texture>(g);
-    minimize->LoadTexture("Assets/textures/thumbnail/minimize.png"); 
-    maximize = std::make_unique<Utils::Texture>(g);
-    maximize->LoadTexture("Assets/textures/thumbnail/maximize.png");
-    close = std::make_unique<Utils::Texture>(g);
-    close->LoadTexture("Assets/textures/thumbnail/close.png");
+    thumbnail = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/Alchemist.png");
+    Logo = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/Alchemist.png");
+    minimize= std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/minimize.png");
+    maximize = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/maximize.png");
+    close = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/close.png");
     serializer = new SceneSerializer(*activeScene,m_graphics);
 
 }
@@ -204,8 +199,9 @@ void SceneManager::ControlWindow()
                     return scene->GetName() == sceneName;
                 }))
             {
-                Scene* newScene = new Scene(sceneName, m_graphics, m_window);
-                AddScene(newScene);
+                //fix the creation of the scene later
+             //   Scene* newScene = new Scene(sceneName,win );
+              //  AddScene(newScene);
                 
             }
 

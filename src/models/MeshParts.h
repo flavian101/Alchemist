@@ -3,18 +3,29 @@
 #include <vector>
 #include <memory>
 #include "Graphics/Utilis.h"
+#include "Vertex.h"
 
 class Graphics;
-#include "Vertex.h"
 class SceneSerializer;
-
 
 class MeshParts
 {
 public:
-	MeshParts(Graphics& g);
+	MeshParts(Graphics& g, const std::vector<unsigned short>& indices, const  std::vector<Vertex>& vertices);
+	~MeshParts();
+	// Provide a copy constructor if needed
+	MeshParts(const MeshParts& other) = default;
 
-	void Initialize(const std::vector<unsigned short>& indices, const std::vector<Vertex>& vertices);
+	// Provide a move constructor if needed
+	MeshParts(MeshParts&& other) noexcept = default;
+
+	// Provide a copy assignment operator if needed
+	MeshParts& operator=(const MeshParts& other) = default;
+
+	// Provide a move assignment operator if needed
+	MeshParts& operator=(MeshParts&& other) noexcept = default;
+
+
 	std::vector<unsigned short>& getIndices();
 	std::vector<Vertex>& getVertices();
 

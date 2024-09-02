@@ -18,7 +18,7 @@ namespace Utils
 class SceneManager
 {
 public:
-	SceneManager(Graphics &g,Window& win);
+	SceneManager(Window* win);
 	~SceneManager();
     // Add a scene to the manager
     void AddScene(Scene* scene);
@@ -43,7 +43,6 @@ public:
 
 private:
 	Graphics& m_graphics;
-    Window& m_window;
     std::vector<Scene*> scenes;
     Scene* activeScene;
     std::unique_ptr<Utils::Texture> thumbnail;

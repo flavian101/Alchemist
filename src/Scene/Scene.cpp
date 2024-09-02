@@ -14,11 +14,10 @@
 #include "models/MeshParts.h"
 
 
-Scene::Scene(const std::string& name, Graphics& g, Window& win)
+Scene::Scene(const std::string& name, Window& win)
 	:
 	m_name(name),
-	m_graphics(g),
-	m_win(win),
+	m_graphics(win.GetInstance()),
 	sceneCamera(nullptr),
 	cube(nullptr),			
 	plane(nullptr),

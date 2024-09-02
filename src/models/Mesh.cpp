@@ -12,8 +12,7 @@ Mesh::Mesh(Graphics& g)
 
 void Mesh::AddMeshPart(MeshParts* parts)
 {
-	m_meshParts.emplace_back(m_graphics);
-	m_meshParts.back().Initialize(parts->getIndices(), parts->getVertices());
+	m_meshParts.emplace_back(m_graphics, parts->getIndices(), parts->getVertices());
 }
 void Mesh::Bind()
 {

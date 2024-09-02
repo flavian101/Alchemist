@@ -18,10 +18,10 @@ private:
 	void GameProjects();
 	//
 private:
-	FrameTime timer;
-	float speedfactor = 1.0f;
 	ImguiManager imgui;
 	Window window;
+	FrameTime timer;
+	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
 	SceneManager sceneManager;
 	

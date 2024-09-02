@@ -4,21 +4,16 @@
 #include "stdafx.h"
 
 class SceneSerializer;
-class DeviceResources;
+class Renderer;
 
 class Graphics {
-public:
-
-    Graphics();
+private:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
-    void Initialize(HWND hwnd, int width, int height);
-
-    static Graphics& GetInstance();
-    static void DestroyInstance();
+public:
+    Graphics(HWND hwnd);
+   // Graphics();
     ~Graphics();
-
-    static DeviceResources* GetDeviceResources();
 
     void ClearDepthColor(float red, float green, float blue);
     void Render(UINT indexCount);
@@ -42,6 +37,9 @@ public:
     void SetWin(const std::tuple<HWND, HINSTANCE>& win);
     std::tuple<HWND, HINSTANCE> getWin();
 
+    //To be implementes as static methods
+     Microsoft::WRL::ComPtr< ID3D11Device4> GetDevice();
+     Microsoft::WRL::ComPtr<ID3D11DeviceContext4> GetContext();
 
 
 
@@ -50,7 +48,9 @@ private:
     HINSTANCE m_hinstance;
     DirectX::XMMATRIX projection;
     DirectX::XMMATRIX view;
-
     bool imguiEnabled ;
+    std::unique_ptr<Renderer> renderer;
+
+private:
     friend class SceneSerializer;
 };

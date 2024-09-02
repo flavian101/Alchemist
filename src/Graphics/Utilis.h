@@ -11,9 +11,8 @@ namespace Utils
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(Graphics& g);
+		VertexBuffer(Graphics& g,const std::vector<Vertex>& vertices);
 		~VertexBuffer();
-		void InitializeVertexBuffer(std::vector<Vertex>& vertices);
 		void Bind();
 	private:
 		Graphics& m_graphics;
@@ -26,9 +25,8 @@ namespace Utils
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(Graphics& g);
+		IndexBuffer(Graphics& g,const std::vector<unsigned short>& indices);
 		~IndexBuffer();
-		void InitializeIndexBuffer(std::vector<unsigned short>& i);
 		void Bind();
 	private:
 		Graphics& m_graphics;
@@ -37,9 +35,8 @@ namespace Utils
 	class InputLayout
 	{
 	public:
-		InputLayout(Graphics& g);
+		InputLayout(Graphics& g, const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		~InputLayout();
-		void CreateLayout(const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		void Bind();
 	private:
 		Graphics& m_graphics;
@@ -89,9 +86,8 @@ namespace Utils
 	class Texture
 	{
 	public:
-		Texture(Graphics& g);
+		Texture(Graphics& g, const char* path);
 		~Texture();
-		void LoadTexture(const char* path);
 		void Bind(UINT slot= 0);
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
 	private:

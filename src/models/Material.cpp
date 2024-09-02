@@ -2,7 +2,6 @@
 #include "Graphics/Utilis.h"
 #include "Graphics/Graphics.h"
 #include <imgui/imgui.h>
-#include "Graphics/DeviceResources.h"
 
 
 Material::Material(Graphics& g)
@@ -35,7 +34,7 @@ void Material::Update()
 
 void Material::Bind()
 {
-	m_graphics.GetDeviceResources()->GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
+	m_graphics.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
 	samp->Bind();
 	this->BindTextures();
 }
@@ -46,8 +45,7 @@ void Material::LoadTexture(TextureType type, const std::string& path)
 	{
 		return;
 	}
-	auto texture = std::make_unique<Utils::Texture>(m_graphics);
-	texture->LoadTexture(path.c_str());
+	auto texture = std::make_unique<Utils::Texture>(m_graphics, path.c_str());
 	textures[type] = std::move(texture);
 }
 

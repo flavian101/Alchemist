@@ -157,6 +157,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\DXRenderTarget.cpp" />
+    <ClCompile Include="src\Graphics\DXGIAdapterInfo.cpp" />
+    <ClCompile Include="src\Graphics\DXBlender.cpp" />
+    <ClCompile Include="src\Graphics\DXContext.cpp" />
+    <ClCompile Include="src\Graphics\DXDepthStencil.cpp" />
+    <ClCompile Include="src\Graphics\DXDevice.cpp" />
+    <ClCompile Include="src\Graphics\DXRasterizer.cpp" />
+    <ClCompile Include="src\Graphics\DXViewPort.cpp" />
     <ClCompile Include="src\models\ModelLoader.cpp" />
     <ClCompile Include="src\Scene\Grid.cpp" />
     <ClCompile Include="src\models\Material.cpp" />
@@ -167,6 +175,7 @@
     <ClCompile Include="src\Graphics\Camera\FirstPerson.cpp" />
     <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
     <ClCompile Include="src\Graphics\Camera\ThirdPerson.cpp" />
+    <ClCompile Include="src\Graphics\SwapChain.cpp" />
     <FxCompile Include="Assets\shader\GridPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -188,7 +197,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <ClCompile Include="src\Scene\Shaders\ShaderEditor.cpp" />
-    <ClCompile Include="src\Graphics\DeviceResources.cpp" />
+    <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\environment\Light.cpp" />
     <ClCompile Include="src\models\MeshParts.cpp" />
@@ -222,7 +231,15 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\DXRenderTarget.h" />
+    <ClInclude Include="src\Graphics\DXGIAdapterInfo.h" />
     <ClInclude Include="dependencies\imgui\FileBrowser.h" />
+    <ClInclude Include="src\Graphics\DXBlender.h" />
+    <ClInclude Include="src\Graphics\DXContext.h" />
+    <ClInclude Include="src\Graphics\DXDepthStencil.h" />
+    <ClInclude Include="src\Graphics\DXDevice.h" />
+    <ClInclude Include="src\Graphics\DXRasterizer.h" />
+    <ClInclude Include="src\Graphics\DXViewPort.h" />
     <ClInclude Include="src\models\ModelLoader.h" />
     <ClInclude Include="src\Scene\Grid.h" />
     <ClInclude Include="src\resource.h" />
@@ -234,7 +251,7 @@
     <ClInclude Include="src\Graphics\Camera\FirstPerson.h" />
     <ClInclude Include="src\Graphics\Camera\FreeLook.h" />
     <ClInclude Include="src\Scene\Shaders\ShaderEditor.h" />
-    <ClInclude Include="src\Graphics\DeviceResources.h" />
+    <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="src\dataPack\Json.hpp" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\environment\Light.h" />
@@ -276,6 +293,7 @@
     <ClInclude Include="src\Graphics\Utilis.h" />
     <ClInclude Include="src\Sample\Cube.h" />
     <ClInclude Include="src\Graphics\Camera\ThirdPerson.h" />
+    <ClInclude Include="src\Graphics\SwapChain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

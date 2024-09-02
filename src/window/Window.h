@@ -18,19 +18,17 @@ private:
 	LPCWSTR m_windowClass;
 	int m_width;
 	int m_height;
-	//std::unique_ptr<Graphics> pGfx;
+	std::unique_ptr<Graphics> pGfx;
 
 
 public:
 	
-	Window(LPCWSTR windowTitle,
-		LPCWSTR windowClass, int Width, int Height);
+	Window(LPCWSTR windowTitle, LPCWSTR windowClass, int Width, int Height);
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
-	void OnDelete();
 	~Window();
 
-	static Graphics& Gfx();
+	Graphics& GetInstance();
 	static std::optional<int> ProcessMessages();
 	HWND GetHwnd()const;
 	HINSTANCE GetHinstance()const;

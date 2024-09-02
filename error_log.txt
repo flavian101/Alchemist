@@ -258,45 +258,242 @@ Error in function CreateSwapChain at line 123: The application made a call that 
 Enable the D3D debug layer in order to see details via debug messages.
 
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
 
-Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
-Enable the D3D debug layer in order to see details via debug messages.
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateSwapChain at line 123: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function InitializeIndexBuffer at line 79: The parameter is incorrect.
+
+
+Error in function InitializeVertexBuffer at line 41: The parameter is incorrect.
+
+
+Error in function InitializeIndexBuffer at line 79: The parameter is incorrect.
+
+
+Error in function InitializeVertexBuffer at line 41: The parameter is incorrect.
+
+
+Error in function InitializeIndexBuffer at line 79: The parameter is incorrect.
+
+
+Error in function InitializeVertexBuffer at line 41: The parameter is incorrect.
+
+
+Error in function InitializeIndexBuffer at line 79: The parameter is incorrect.
+
+
+Error in function InitializeVertexBuffer at line 41: The parameter is incorrect.
+
+
+Error in function Initaialize at line 43: The parameter is incorrect.
+
+
+Error in function Initaialize at line 43: The parameter is incorrect.
+
+
+Error in function Initialize at line 28: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 21: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 21: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function DXDevice at line 35: The parameter is incorrect.
+
+
+Error in function DXDevice at line 35: The parameter is incorrect.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function SwapChain at line 21: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function DXDevice at line 36: The parameter is incorrect.
+
+
+Error in function DXDevice at line 39: The parameter is incorrect.
+
+
+Error in function DXDevice at line 37: The parameter is incorrect.
+
+
+Error in function DXDevice at line 37: The parameter is incorrect.
+
+
+Error in function DXDevice at line 37: The parameter is incorrect.
+
+
+Error in function DXDevice at line 37: The parameter is incorrect.
+
+
+Error in function SwapChain at line 21: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 22: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 22: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 22: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 22: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function SwapChain at line 22: The application made a call that is invalid. Either the parameters of the call or the state of some object was incorrect.
+
+Enable the D3D debug layer in order to see details via debug messages.
+
+
+Error in function CreateDepthStencilView at line 41: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 46: The parameter is incorrect.
+
+
+Error in function Initialize at line 23: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 41: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 46: The parameter is incorrect.
+
+
+Error in function Initialize at line 23: The parameter is incorrect.
+
+
+Error in function DXRenderTarget at line 15: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 41: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 46: The parameter is incorrect.
+
+
+Error in function choosePrimaryAdapter at line 85: No such interface supported
+
+
+Error in function DXRenderTarget at line 15: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 41: The parameter is incorrect.
+
+
+Error in function CreateDepthStencilView at line 46: The parameter is incorrect.
+
+
+Error in function DXRenderTarget at line 15: The parameter is incorrect.
+
+
+Error in function DXRenderTarget at line 15: The parameter is incorrect.
+
+
+Error in function DXRenderTarget at line 15: The parameter is incorrect.
+
+
+Error in function DXDevice at line 37: The parameter is incorrect.
 

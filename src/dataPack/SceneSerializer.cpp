@@ -3,7 +3,6 @@
 #include "window/Window.h"
 #include "Scene/Scene.h"
 #include "Graphics/Graphics.h"
-#include "Graphics/DeviceResources.h"
 #include "Graphics/Camera/PerspectiveCamera.h"
 #include "Graphics/Camera/OrthographicCamera.h"
 #include "models/vertex.h"
@@ -23,12 +22,12 @@ void SceneSerializer::Serialize(const char* filepath)
 {
 	nlohmann::json j;
 	j["Scene Name"] = m_scene.GetName();
-	DeviceResources* res = m_scene.m_graphics.GetDeviceResources();
-	j["device"] = SerializeDevice(*res);
-	j["graphics"] = SerializeGraphics(m_scene.m_graphics);
-	j["window"] = SerializeWindow( m_scene.m_win);
-	j["SceneCamera"] = SerializeSceneCamera( m_scene.sceneCamera);
-	j["SceneShader"] = SerializeSceneShader( m_scene.shaders);
+	//Renderer* res = m_scene.m_graphics.GetDeviceResources();
+	//j["device"] = SerializeDevice(*res);
+	//j["graphics"] = SerializeGraphics(m_scene.m_graphics);
+	//j["window"] = SerializeWindow( *Window::get());
+	//j["SceneCamera"] = SerializeSceneCamera( m_scene.sceneCamera);
+	//j["SceneShader"] = SerializeSceneShader( m_scene.shaders);
 
 	
 	j["model"] = nlohmann::json::array();
@@ -56,11 +55,11 @@ void SceneSerializer::Deserialize(const char* filepath)
 	//	MessageBox(nullptr, (LPCWSTR)filepath, L"file does not contain a scene", MB_OK);
 
 	m_scene.SetName(j["Scene Name"]);
-	DeviceResources* res = m_scene.m_graphics.GetDeviceResources();
-	DeserializeDevice(*res, j["device"]);
-	DeserializeGraphics(m_scene.m_graphics, j["graphics"]);
-	DeserializeWindow(m_scene.m_win, j["window"]);
-	DeserializeSceneCamera(m_scene.sceneCamera, j["SceneCamera"]);
+	//Renderer* res = m_scene.m_graphics.GetDeviceResources();
+	//DeserializeDevice(*res, j["device"]);
+	//DeserializeGraphics(m_scene.m_graphics, j["graphics"]);
+	//DeserializeWindow(*Window::get(), j["window"]);
+	//DeserializeSceneCamera(m_scene.sceneCamera, j["SceneCamera"]);
 	//DeserializeSceneShader(m_scene.defaultShader, j["defaultShader"]);
 	//DeserializeSceneShader(m_scene.texturedShader, j["texturedShader"]);
 
@@ -77,15 +76,15 @@ void SceneSerializer::Deserialize(const char* filepath)
 }
 
 
-nlohmann::json SceneSerializer::SerializeDevice(const DeviceResources& device)
+nlohmann::json SceneSerializer::SerializeDevice(const Renderer& device)
 {
 	nlohmann::json j;
-
-	j["width"] = device.GetWidth();
-	j["height"] = device.GetHeight();
-	j["isFullscreenEnabled"] = device.isFullscreenEnabled;
-	j["isVsyncEnabled"] = device.isVsyncEnabled;
-	j["enableMsaa"] = device.enableMsaa;
+  
+	///j["width"] = device.GetWidth();
+	///j["height"] = device.GetHeight();
+	///j["isFullscreenEnabled"] = device.isFullscreenEnabled;
+	///j["isVsyncEnabled"] = device.isVsyncEnabled;
+	//j["enableMsaa"] = device.enableMsaa;
 
 	return j;
 }
@@ -258,13 +257,13 @@ nlohmann::json SceneSerializer::SerializeVertex(Vertex* v)
 	return j;
 }
 
-void SceneSerializer::DeserializeDevice(DeviceResources& device, const nlohmann::json& j)
+void SceneSerializer::DeserializeDevice(Renderer& device, const nlohmann::json& j)
 {
-	device.m_height = (j["height"]);
-	device.isFullscreenEnabled = j["isFullscreenEnabled"];
-	device.m_width = (j["width"]);
-	device.enableMsaa = j["enableMsaa"];
-	device.isVsyncEnabled = j["isVsyncEnabled"];
+	//device.m_height = (j["height"]);
+	//device.isFullscreenEnabled = j["isFullscreenEnabled"];
+	//device.m_width = (j["width"]);
+	//device.enableMsaa = j["enableMsaa"];
+	//device.isVsyncEnabled = j["isVsyncEnabled"];
 }
 void SceneSerializer::DeserializeGraphics(Graphics& graphics, const nlohmann::json& j)
 {
@@ -372,18 +371,18 @@ void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json&
 
 
 
-	if (j.contains("mesh"))
-	{
-		model->part = std::make_unique<MeshParts>(m_graphics);
-		DeserializeMeshParts(model->part.get(), j["mesh"]);
-
-		if (model->isTextured)
-		{
-			//model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"].get<std::string>().c_str(), j["textureSlot"]);
-		}
-		model->CreateMesh(model->part->getVertices(), model->part->getIndices());
-		
-	}
+	//if (j.contains("mesh"))
+	//{
+	//	model->part = std::make_unique<MeshParts>(m_graphics);
+	//	DeserializeMeshParts(model->part.get(), j["mesh"]);
+	//
+	//	if (model->isTextured)
+	//	{
+	//		//model->TexturedMesh(model->part->getVertices(), model->part->getIndices(), j["texture path"].get<std::string>().c_str(), j["textureSlot"]);
+	//	}
+	//	model->CreateMesh(model->part->getVertices(), model->part->getIndices());
+	//	
+	//}
 
 }
 

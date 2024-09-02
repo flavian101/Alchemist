@@ -108,8 +108,7 @@ Mesh& ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     }
 
 
-    part = new MeshParts(m_graphics);
-    part->Initialize(m_indices, m_vertices);
+    part = new MeshParts(m_graphics, m_indices, m_vertices);
     Mesh* mmesh = new Mesh(m_graphics);
     mmesh->AddMeshPart(part);
     mmesh->SetMaterial(std::move(material)); // Set the material for the mesh

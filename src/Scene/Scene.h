@@ -22,7 +22,7 @@ class RenderableObject;
 class Scene
 {
 public:
-	Scene(const std::string& name, Graphics& g, Window& win);
+	Scene(const std::string& name,Window& win);
 	~Scene();
 
 	void RemoveRenderableObject(RenderableObject* object);
@@ -40,7 +40,6 @@ private:
 
 private:
 	Graphics& m_graphics;
-	Window& m_win;
 	std::string m_name;
 	SceneCamera* sceneCamera;
 	std::unique_ptr<Player> player;

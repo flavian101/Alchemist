@@ -1,7 +1,6 @@
 #include "Light.h"
 #include "imgui/imgui.h"
 #include "Graphics/Graphics.h"
-#include "Graphics/DeviceResources.h"
 #include "Scene/Shaders/ShaderManager.h"
 
 Light::Light(const std::string& name,Graphics& g,std::shared_ptr<ShaderManager> manager)
@@ -58,7 +57,7 @@ void Light::Update(float deltaTime)
 
 void Light::Render()
 {
-	m_graphics.GetDeviceResources()->GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
+	m_graphics.GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
 	RenderableObject::Render();
 }
 

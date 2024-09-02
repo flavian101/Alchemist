@@ -61,8 +61,7 @@ void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<
 
 void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<unsigned short>& indices )
 {
-	part = std::make_unique<MeshParts>(m_graphics);
-	part->Initialize(indices, vertices);
+	part = std::make_unique<MeshParts>(m_graphics, indices, vertices);
 	m_mesh->AddMeshPart(part.get());
 }
 
