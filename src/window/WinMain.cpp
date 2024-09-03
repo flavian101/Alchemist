@@ -2,6 +2,9 @@
 #include "App.h"
 #include <exception>
 #include <iostream>
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 
 struct AllocationMetrics
 {
@@ -35,6 +38,7 @@ static void PrintMemoryUsage()
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	PrintMemoryUsage();
 	App app;
 	PrintMemoryUsage();
