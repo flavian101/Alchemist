@@ -1,5 +1,4 @@
 #include "Cube.h"
-#include "models/Vertex.h"
 #include "Graphics/Graphics.h"
 #include "Scene/Shaders/ShaderManager.h"
 
@@ -8,20 +7,16 @@
 
 
 Cube::Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager)
-    :Model(name,g,std::move(manager)),
-    m_graphic(g)   
+    :
+    m_graphic(g),
+    builder(name, g, std::move(manager))
 {
-    m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
-    this->setTranslation(Math::XMVectorToFloat3(m_position));
-    m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
-    this->setRotation(Math::XMVectorToFloat4(m_orientation));
+  //  m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
+  //  this->setTranslation(Math::XMVectorToFloat3(m_position));
+  //  m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
+  //  this->setRotation(Math::XMVectorToFloat4(m_orientation));
 
-
-}
-
-void Cube::CreateCube()
-{
-    // Front face
+      // Front face
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-left-back
     vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // top-left-back
     vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // top-right-back
@@ -108,14 +103,28 @@ void Cube::CreateCube()
     indices.push_back(22);
     indices.push_back(23);
 
+  auto material =   builder.CreateMaterial(
+        "Assets/textures/metalpanel.jpg",
+        "Assets/textures/N_metalpanel.jpg",
+        "Assets/textures/M_metalpanel.jpg",
+        "Assets/textures/S_metalpanel.jpg",
+        "Assets/textures/AO_metalpanel.jpg");
+
+    builder.createMesh(indices, vertices,material);
 
     //CreateMesh(vertices, indices);
-    TexturedMesh(vertices, indices,
-        "Assets/textures/metalpanel.jpg", 
-        "Assets/textures/N_metalpanel.jpg", 
-        "Assets/textures/M_metalpanel.jpg", 
-        "Assets/textures/S_metalpanel.jpg", 
-        "Assets/textures/AO_metalpanel.jpg");
+   
+
+}
+
+void Cube::Update(float deltaTime)
+{
+    builder.getModel().Update(deltaTime);
+}
+
+void Cube::Render()
+{
+    builder.getModel().Render();
 }
 
 

@@ -497,3 +497,99 @@ Error in function DXRenderTarget at line 15: The parameter is incorrect.
 
 Error in function DXDevice at line 37: The parameter is incorrect.
 
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function DXDepthStencil at line 30: The parameter is incorrect.
+
+Error in function DXDepthStencil at line 35: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+
+Error in function Texture at line 274: The parameter is incorrect.
+
+Error in function Texture at line 282: The parameter is incorrect.
+

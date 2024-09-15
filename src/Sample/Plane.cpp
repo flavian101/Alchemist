@@ -4,17 +4,23 @@
 
 Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> maneger)
 	:
-	Model(name,g,std::move(maneger)),
-	m_graphic(g)
+	m_graphic(g),
+    builder(name, g, std::move(maneger))
+
 {
-	m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	this->setTranslation(Math::XMVectorToFloat3(m_position));
-	m_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	this->setScale(Math::XMVectorToFloat3(m_scale));
+   
+
+	//m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	//this->setTranslation(Math::XMVectorToFloat3(m_position));
+	//m_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	//this->setScale(Math::XMVectorToFloat3(m_scale));
 }
 
 void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
 {
+    std::vector<Vertex> vertices;
+    std::vector<unsigned short> indices;
+
     UINT vertexCount = m * n;
     UINT faceCount = (m - 1) * (n - 1) * 2;
 
@@ -144,12 +150,15 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
     }
 
     // Create the mesh with the generated vertices and indices
-    TexturedMesh(vertices, indices, 
+    auto material = builder.CreateMaterial(
         "Assets/textures/hay.jpg",
         "Assets/textures/N_hay.png",
         "Assets/textures/M_hay.png",
         "Assets/textures/S_hay.png",
         "Assets/textures/AO_hay.png");
+
+    builder.createMesh(indices, vertices, material);
+   
 }
 
 
@@ -158,4 +167,14 @@ float Plane::calculateHeight(float x, float z)
     float frequency =1.0f;
     float amplitude = 3.0f;
     return amplitude * sin(frequency * x) * cos(frequency * z);
+}
+
+void Plane::Update(float deltaTime)
+{
+    builder.getModel().Update(deltaTime);
+}
+
+void Plane::Render()
+{
+    builder.getModel().Render();
 }

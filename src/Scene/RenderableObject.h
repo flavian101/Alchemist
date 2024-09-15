@@ -5,7 +5,6 @@
 #include"stdafx.h"
 
 class Graphics;
-class Transform;
 class ShaderManager;
 
 
@@ -20,14 +19,6 @@ public:
 	~RenderableObject();
 	virtual void Update(float time);
 	virtual void Render();
-	XMMATRIX GetTransform()const;
-	XMVECTOR GetTranslation()const;
-	XMVECTOR GetRotation()const;
-	XMVECTOR GetScale()const;
-	void setTranslation(const XMFLOAT3& translation);
-	void setRotation(const XMFLOAT4& rotation);
-	void setScale(const XMFLOAT3& scale);
-
 
 	std::shared_ptr<ShaderManager> GetShadermanager()const;
 	void SetShaderManager(std::shared_ptr<ShaderManager> manager);
@@ -38,8 +29,6 @@ public:
 private:
 	Graphics& m_graphics;
 	std::shared_ptr<ShaderManager> m_shaderManager;
-	std::unique_ptr<Transform> m_transform;
-
 
 
 protected:

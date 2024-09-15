@@ -11,7 +11,6 @@
 #include "models/ModelLoader.h"
 #include "Player.h"
 #include "Scene/Shaders/ShaderManager.h"
-#include "models/MeshParts.h"
 
 
 Scene::Scene(const std::string& name, Window& win)
@@ -24,53 +23,52 @@ Scene::Scene(const std::string& name, Window& win)
 	m_selectedObject(nullptr),
     light(nullptr)
 {
+    //cameras
+    sceneCamera = new SceneCamera("main", m_graphics);
 
 	//initialize shadermanager
-    auto defaultShader = std::make_shared<ShaderManager>(m_graphics);
-    defaultShader->LoadShaders(L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
+    auto defaultShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
     defaultShader->SetShaderLayout("POSITION|COLOR");
 
-    auto texturedShader = std::make_shared<ShaderManager>(m_graphics );
-    texturedShader->LoadShaders(L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
+    auto texturedShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
     texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL|TANGENT");
 
-    auto gridShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
-    gridShader->LoadShaders(L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
+    auto gridShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_LINELIST, L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
     gridShader->SetShaderLayout("POSITION|COLOR");
     
-    shaders.push_back(defaultShader);
-    shaders.push_back(gridShader);
-    shaders.push_back(texturedShader);
+    shaders.emplace_back(defaultShader);
+    shaders.emplace_back(gridShader);
+    shaders.emplace_back(texturedShader);
 
     //shaderEditor
     editor = std::make_unique<ShaderEditor>(texturedShader);
 
-	//cameras
-	sceneCamera = new SceneCamera("main",m_graphics);
+	
     //light
     //light = std::make_unique<DirectionalLight>("Directional", m_graphics, texturedShader);
     light = new DirectionalLight("Directional", m_graphics, texturedShader);
     AddRenderableObject(light);
 	//model loading 
     grid = std::make_unique<Grid>("grid", m_graphics, gridShader);
-    AddRenderableObject(grid.get());
     //player
     player = std::make_unique<Player>("player", m_graphics, texturedShader);
-    AddRenderableObject(player.get());
 
 
 	cube = new Cube("cube", m_graphics, texturedShader);
-	cube->CreateCube();
-    AddRenderableObject(cube);
 
 	plane = new Plane("ground", m_graphics, texturedShader);
 	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
-    AddRenderableObject(plane);
 
-    m_model = new ModelLoader(m_graphics, texturedShader);
-    m_model->LoadModel("Assets/model/gobber/GoblinX.obj");
+    //m_model = new ModelLoader("Assets/model/ghost/ghost.glb",m_graphics, texturedShader);
+    //m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",m_graphics, texturedShader);
+    //m_model = new ModelLoader("Assets/model/ring.gltf",m_graphics, texturedShader);
+   // m_model = new ModelLoader("Assets/model/boxy.gltf",m_graphics, texturedShader);
+      //m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics, texturedShader);
+  //  m_model = new ModelLoader("Assets/model/muro/muro.obj",m_graphics, texturedShader);
+     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj",m_graphics, texturedShader);
+     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf",m_graphics, texturedShader);
    // m_model->LoadModel("Assets/model/nano.gltf");
-    AddRenderableObject(m_model);
+
 }
 
 Scene::~Scene()
@@ -79,6 +77,8 @@ Scene::~Scene()
 	delete cube;
 	delete plane;
     delete light;
+    shaders.clear();
+
 }
 
 void Scene::RemoveRenderableObject(RenderableObject* object)
@@ -93,12 +93,16 @@ void Scene::RemoveRenderableObject(RenderableObject* object)
 
 void Scene::AddRenderableObject(RenderableObject* object)
 {
-    objects.push_back(object);
+    objects.emplace_back(object);
 }
 
 void Scene::Update(float deltaTime)
 {
 	sceneCamera->Update(deltaTime,*player.get());
+    m_model->Update(deltaTime);
+   // player->Update(deltaTime);
+   // cube->Update(deltaTime);
+   // plane->Update(deltaTime);
     for (const auto& objects : objects)
     {
         objects->Update(deltaTime);
@@ -108,12 +112,18 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
+    m_model->Render();
+    m_model->controlWindow();
 	this->controlWindow();
     for (const auto& object : objects)
     {
         object->Render();
     }
     sceneCamera->Render();
+    m_model->controlWindow();
+   // player->Render();
+   // cube->Render();
+   // plane->Render();
 
 
 }
@@ -159,7 +169,7 @@ void Scene::controlWindow()
                 if (objectType == 0) // Model
                 {
                     newObject = new Model(objectName, m_graphics, shaders[0]);
-                    dynamic_cast<Model*>(newObject)->CreateMesh(cube->getMesh()->getVertices(), cube->getMesh()->getIndices());
+                   // dynamic_cast<Model*>(newObject)->CreateMesh(cube->getVertices(), cube->getMesh()->getIndices());
                 }
                 else if (objectType == 1) // Directional Light
                 {

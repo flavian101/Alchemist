@@ -11,7 +11,6 @@ class OrthographicCamera;
 class SceneCamera;
 class ShaderManager;
 class Model;
-class MeshParts;
 class Mesh;
 class Vertex;
 
@@ -40,7 +39,7 @@ private:
 
 	nlohmann::json SerializeSceneModels(Model* model);
 
-	nlohmann::json SerializeMeshParts(MeshParts* part);
+//	nlohmann::json SerializeMeshParts(MeshParts* part);
 
 	nlohmann::json SerializeVertex(Vertex* v);
 
@@ -62,7 +61,7 @@ private:
 
 	void DeserializeSceneModels(Model* model, const nlohmann::json& j);
 
-	void DeserializeMeshParts(MeshParts* part, const nlohmann::json& j);
+	//void DeserializeMeshParts(MeshParts* part, const nlohmann::json& j);
 
 	void DeserializeVertex(Vertex* v, const nlohmann::json& j);
 	

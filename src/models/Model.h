@@ -9,7 +9,6 @@ class Graphics;
 class Mesh;
 class ThirdPerson;
 class Material;
-class MeshParts;
 class Vertex;
 
 class Model : public RenderableObject
@@ -18,12 +17,8 @@ public:
 	Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager);
 	~Model();
 
-	void TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices,
-		const char* albedoPath = nullptr, const char* normalPath = nullptr, const char* metallicPath = nullptr,
-		const char* roughnessPath = nullptr, const char* aoPath = nullptr);
-	void CreateMesh(const std::vector<Vertex>& vertices,const  std::vector<unsigned short>& indices );
-	MeshParts* getMesh();
-	UINT getSlot() { return m_slot; }
+	void AddMesh(Mesh* mesh);
+
 	virtual void Update(float deltaTime)override;
 	virtual void Render() override;
 	void controlWindow()override ;
@@ -37,17 +32,7 @@ private:
 
 protected:
 	Graphics& m_graphics;
-	std::shared_ptr<Mesh> m_mesh;
-	std::shared_ptr<MeshParts> part;
-	std::shared_ptr<ShaderManager> m_manager;
-	UINT m_slot;
-	bool isTextured;
-	const char* m_albedoPath;
-	const char* m_normalPath;
-	const char* m_metallicPath;
-	const char* m_roughnessPath;
-	const char* m_aoPath;
-	std::unique_ptr<Material> material;
+	std::vector<Mesh*> m_meshes;
 	DirectX::XMVECTOR m_position;
 	DirectX::XMVECTOR m_orientation;
 	DirectX::XMVECTOR m_scale;

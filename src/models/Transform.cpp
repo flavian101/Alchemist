@@ -11,7 +11,7 @@ Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotat
 	m_scale(XMLoadFloat3(&scale))
 {
 	CB_Buffer.Initialize(g);
-	transform = XMMatrixIdentity();
+	m_transform = XMMatrixIdentity();
 	//scale translation rotation
 	//transform = XMVectorMultiply()
 }
@@ -23,25 +23,41 @@ Transform::Transform(Graphics& g,const XMFLOAT3& position, const XMFLOAT4& rotat
 //
 XMMATRIX Transform::GetTransform() const
 {
-	return transform;
+	return m_transform;
+}
+
+void Transform::setTransform(const FXMMATRIX& matrix)
+{
+	m_transform = matrix;
 }
 
 void Transform::Update(float time)
 {
-	// Create the matrices for each component
 	XMMATRIX scaleMatrix = XMMatrixScalingFromVector(m_scale);
 	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYawFromVector(m_rotation);
 	XMMATRIX translationMatrix = XMMatrixTranslationFromVector(m_position);
 
-	transform = XMMatrixMultiply(scaleMatrix, rotationMatrix);
-	transform = XMMatrixMultiply(transform, translationMatrix);
+	m_transform = XMMatrixMultiply(scaleMatrix, rotationMatrix);
+	m_transform = XMMatrixMultiply(m_transform, translationMatrix);
 
 	//update matrix transfoms
-	CB_Buffer.data.WVP = XMMatrixTranspose(XMMatrixMultiply(transform, 
+	CB_Buffer.data.WVP = XMMatrixTranspose(XMMatrixMultiply(m_transform, 
 		XMMatrixMultiply(
 		m_graphics.GetViewMatrix(), m_graphics.GetProjectionMatrix())));
 	CB_Buffer.data.View = XMMatrixTranspose(m_graphics.GetViewMatrix());
-	CB_Buffer.data.Model = XMMatrixTranspose(transform);
+	CB_Buffer.data.Model = XMMatrixTranspose(m_transform);
+	CB_Buffer.Update(m_graphics);
+}
+
+void Transform::UpdateFromTransform(float Time)
+{
+	CB_Buffer.data.WVP = XMMatrixTranspose(
+		XMMatrixMultiply(
+			XMMatrixMultiply(m_transform, m_graphics.GetViewMatrix()),
+			m_graphics.GetProjectionMatrix()
+		));
+	CB_Buffer.data.View = XMMatrixTranspose(m_graphics.GetViewMatrix());
+	CB_Buffer.data.Model = XMMatrixTranspose(m_transform);
 	CB_Buffer.Update(m_graphics);
 }
 
@@ -55,4 +71,19 @@ void Transform::controlWindow()
 	Math::ImGuiDragXMVector3("position", m_position);
 	Math::ImGuiDragXMVector3("Rotation", m_rotation);
 	Math::ImGuiDragXMVector3("Scale", m_scale);
+}
+
+void Transform::PrintMatrix(const char* name, const XMMATRIX& matrix)
+{
+	XMFLOAT4X4 matValues;
+	XMStoreFloat4x4(&matValues, matrix);  // Store the matrix in a float4x4 structure
+
+	std::cout << name << " Matrix:\n";
+	for (int i = 0; i < 4; ++i) {
+		std::cout << matValues.m[i][0] << ", "
+			<< matValues.m[i][1] << ", "
+			<< matValues.m[i][2] << ", "
+			<< matValues.m[i][3] << "\n";
+	}
+	std::cout << std::endl;
 }

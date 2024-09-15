@@ -1,19 +1,22 @@
 #pragma once
-#include "models\Model.h"
+#include "models\ModelBuilder.h"
+
 class Graphics;
 class ShaderManager;
+#include "models/Vertex.h"
 
-class Cube : public Model
+class Cube 
 {
 
 public:
 	Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager);
-	void CreateCube();
-	
+	void Update(float deltaTime);
+	void Render();
 
 
 private:
 	Graphics& m_graphic;
+	ModelBuilder builder;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned short> indices;
 	std::vector<Vertex> v;

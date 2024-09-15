@@ -1,12 +1,16 @@
 #include "Material.h"
-#include "Graphics/Utilis.h"
 #include "Graphics/Graphics.h"
 #include <imgui/imgui.h>
 
 
 Material::Material(Graphics& g)
 	:
-	m_graphics(g)
+	m_graphics(g),
+	hasAlbedoMap(FALSE),
+	hasNormalMap (FALSE),
+	hasMetallicMap( FALSE),
+	hasRoughnessMap (FALSE),
+	hasAOMap (FALSE)
 {
 	materialBuffer.Initialize(m_graphics);
 	materialBuffer.data.materialStruct.baseColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
@@ -14,29 +18,24 @@ Material::Material(Graphics& g)
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
-	hasAlbedoMap = false;
-	hasNormalMap = false;
-	hasMetallicMap = false;
-	hasRoughnessMap = false;
-	hasAOMap = false;
 	samp = std::make_unique<Utils::Sampler>(m_graphics);
 }
 
 void Material::Update()
 {
-	materialBuffer.data.materialStruct.hasAlbedoMap = hasAlbedoMap;
-	materialBuffer.data.materialStruct.hasNormalMap = hasNormalMap;
-	materialBuffer.data.materialStruct.hasMetallicMap = hasMetallicMap;
-	materialBuffer.data.materialStruct.hasRoughnessMap = hasRoughnessMap;
-	materialBuffer.data.materialStruct.hasAOMap = hasAOMap;
+	materialBuffer.data.materialStruct.hasAlbedoMap =static_cast<BOOL>(hasAlbedoMap);
+	materialBuffer.data.materialStruct.hasNormalMap = static_cast<BOOL>(hasNormalMap);
+	materialBuffer.data.materialStruct.hasMetallicMap = static_cast<BOOL>(hasMetallicMap);
+	materialBuffer.data.materialStruct.hasRoughnessMap = static_cast<BOOL>(hasRoughnessMap);
+	materialBuffer.data.materialStruct.hasAOMap = static_cast<BOOL>(hasAOMap);
 	materialBuffer.Update(m_graphics);
 }
 
 void Material::Bind()
 {
 	m_graphics.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
+	BindTextures();
 	samp->Bind();
-	this->BindTextures();
 }
 
 void Material::LoadTexture(TextureType type, const std::string& path)
@@ -55,7 +54,7 @@ void Material::BindTextures()
 	{
 		if (texture)
 		{
-			texture->Bind(static_cast<UINT>(type)); // Binding each texture to its corresponding slot
+			texture->Bind(static_cast<UINT>(type)); 
 		}
 	}
 }
@@ -94,10 +93,12 @@ void Material::controlWindow()
 	ImGui::DragFloat("Roughness", &materialBuffer.data.materialStruct.roughness);
 	ImGui::DragFloat("AO", &materialBuffer.data.materialStruct.ao, 0.2f);
 	ImGui::Text("Textures material activation");
-	bool albedomap = (bool)materialBuffer.data.materialStruct.hasAlbedoMap;
-	ImGui::Checkbox("albedo map", &albedomap);
-	bool normalmap = (bool)materialBuffer.data.materialStruct.hasNormalMap;
-	ImGui::Checkbox("normal map", &normalmap);
+	// Toggle texture maps
+	ImGui::Checkbox("Albedo Map", &hasAlbedoMap);
+	ImGui::Checkbox("Normal Map", &hasNormalMap);
+	ImGui::Checkbox("Metallic Map", &hasMetallicMap);
+	ImGui::Checkbox("Roughness Map", &hasRoughnessMap);
+	ImGui::Checkbox("AO Map", &hasAOMap);
 	
 	//ImGui::Checkbox("metallic map", &materialBuffer.data.materialStruct.hasMetallicMap);
 	//ImGui::Checkbox("rougnes map", &materialBuffer.data.materialStruct.hasRoughnessMap);

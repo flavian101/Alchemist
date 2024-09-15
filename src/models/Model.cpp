@@ -1,5 +1,4 @@
 #include "Model.h"
-#include "MeshParts.h"
 #include "Graphics/Camera/ThirdPerson.h"
 #include "Material.h"
 #include "Mesh.h"
@@ -8,95 +7,63 @@
 
 Model::Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
 	:
-	RenderableObject(name,g,std::move(shaderManager)),
+	RenderableObject(name,g,shaderManager),
 	m_graphics(g),
-	m_manager(std:: move(shaderManager)),
-	m_mesh(std::make_shared<Mesh>(g)),
-	part(nullptr),
-	isTextured(false),
 	yaw(0.0f),
 	pitch(0.0f)
 {
-	material =std::make_unique< Material>(m_graphics);
 }
 
 Model::~Model()
 {
+	//m_meshes.clear();
 }
-
-
-void Model::TexturedMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices,
-	const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
+void Model::AddMesh(Mesh* mesh)
 {
-	isTextured = true;
-	if (albedoPath) 
-	{
-		material->LoadTexture(Material::TextureType::Albedo, albedoPath); 
-		material->hasAlbedoMap = true;
-	}
-	if(normalPath)
-	{
-		material->LoadTexture(Material::TextureType::Normal, normalPath);
-		material->hasNormalMap = true;
-	}
-	if (metallicPath)
-	{
-		material->LoadTexture(Material::TextureType::Metallic, metallicPath);
-		material->hasMetallicMap = true;
-	}
-	if (roughnessPath)
-	{
-		material->LoadTexture(Material::TextureType::Roughness, roughnessPath);
-		material->hasRoughnessMap = true;
-	}
-	if (aoPath)
-	{
-		material->LoadTexture(Material::TextureType::AmbientOcclusion, aoPath);
-		material->hasAOMap = true;
-	}
-	m_mesh->SetMaterial(std::move(material));
-	CreateMesh(vertices, indices);
-
-}
-
-void Model::CreateMesh( const std::vector<Vertex>& vertices,const std::vector<unsigned short>& indices )
-{
-	part = std::make_unique<MeshParts>(m_graphics, indices, vertices);
-	m_mesh->AddMeshPart(part.get());
-}
-
-MeshParts* Model::getMesh()
-{
-	return part.get();
+	m_meshes.push_back(mesh);
 }
 
 void Model::Update(float deltaTime)
 {
 	RenderableObject::Update(deltaTime);
+	for (auto& mesh : m_meshes)
+	{
+		mesh->Update(deltaTime);
+	}
+	
 }
 
 void Model::Render()
 {
 	RenderableObject::Render();
-	m_mesh->Bind();
-	m_mesh->Render();
+	for (auto& mesh : m_meshes)
+	{
+		mesh->Bind();
+		mesh->Render();
+	}
 }
 
 void Model::controlWindow()
 {
 	RenderableObject::controlWindow();
-	m_mesh->controlWindow();
+	for (auto& mesh : m_meshes)
+	{
+		mesh->controlWindow();
+	}
 	ImGui::Separator();
 	ImGui::Text("Information");
 	ImGui::Text("name: %s",m_name.c_str());
-	ImGui::Text("index count: %d", part->getIndices().size());
-	ImGui::Text("Vertex count: %d", part->getVertices().size());
+	//ImGui::Text("Index Count: %d", static_cast<int>(m_mesh->getIndexCount()));
+	//ImGui::Text("Vertex Count: %d", static_cast<int>(m_mesh->getVertexCount()));
+
+	ImGui::Text("Mesh");
+	
 }
 
 void Model::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)
 {
 	m_position += direction * speed * deltaTime;
-	setTranslation(Math::XMVectorToFloat3(m_position));
+	//setTranslation(Math::XMVectorToFloat3(m_position));
 }
 
 void Model::Rotate(float yawAmount,float pitchAmount)
@@ -113,7 +80,7 @@ void Model::Rotate(float yawAmount,float pitchAmount)
 	// Combine the yaw and pitch quaternions
 	m_orientation = DirectX::XMQuaternionMultiply(pitchQuat, yawQuat);
 	m_orientation = DirectX::XMQuaternionNormalize(m_orientation);
-	setRotation(Math::XMVectorToFloat4(m_orientation));
+	//setRotation(Math::XMVectorToFloat4(m_orientation));
 }
 
 

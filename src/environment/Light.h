@@ -2,8 +2,10 @@
 #include "Scene/RenderableObject.h"
 #include "Graphics/ConstantBuffer.h"
 
+
 class Graphics;
 class ShaderManager;
+class Transform;
 
 class Light: public RenderableObject
 {
@@ -24,5 +26,6 @@ private:
 	Graphics& m_graphics;
 	std::string m_name;
 	ConstantBuffer<cb_psConstantBuffer> PS_Buffer;
+
 };
 

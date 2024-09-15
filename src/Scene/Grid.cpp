@@ -5,7 +5,7 @@
 
 Grid::Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager)
 	:
-	Model(name, g, manager)
+	builder(name, g, manager)
 {
 
     float gridSize = 1000.0f; // 100 units across (50 in each direction from center)
@@ -30,5 +30,5 @@ Grid::Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> 
     {
         indices.push_back(i);
     }
-    CreateMesh(vertices, indices);
+    builder.createMesh(indices, vertices, nullptr);
 }

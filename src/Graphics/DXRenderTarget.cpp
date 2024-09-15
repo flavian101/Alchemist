@@ -10,7 +10,7 @@ DXRenderTarget::DXRenderTarget(Microsoft::WRL::ComPtr<ID3D11Device4>& device, Mi
 
     CHECK_RESULT(swapchain->GetBuffer(0u, __uuidof(ID3D11Resource), reinterpret_cast<void**>(backbuffer.GetAddressOf())));
     D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-    rtvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     rtvDesc.ViewDimension = enableMsaa ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 
     CHECK_RESULT(device->CreateRenderTargetView(backbuffer.Get(), &rtvDesc, pRenderTarget.GetAddressOf()));

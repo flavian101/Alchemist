@@ -33,6 +33,9 @@ SceneCamera::SceneCamera(const std::string& name, Graphics& g)
     m_cameras[name] = this;
     m_cameraNames.push_back(name);
     input = std::make_unique<Input>(g.getWin());
+    g.SetViewMatrix(m_perspectiveCamera->GetView());
+    g.SetProjectionMatrix(m_perspectiveCamera->GetProjectionMatrix());
+    m_perspectiveCamera->SetAspectRatio(g.GetAspectRatio());
 }
 
 SceneCamera::~SceneCamera() {

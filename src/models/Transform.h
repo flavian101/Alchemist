@@ -29,16 +29,22 @@ public:
     XMVECTOR GetRotation() const { return m_rotation; }
     XMVECTOR GetScale() const { return m_scale; }
     XMMATRIX GetTransform() const;
+    void setTransform(const FXMMATRIX& matrix);
 
     // Update method (e.g., for animation)
     void Update(float time);
+    void UpdateFromTransform(float Time);
         void BindConstantBuffer();
 
         //imgui window
         void controlWindow();
+        void PrintMatrix(const char* name, const XMMATRIX& matrix);
 
 private:
-    XMMATRIX transform;
+
+
+private:
+    XMMATRIX m_transform;
     XMVECTOR m_position;
     XMVECTOR m_rotation;
     XMVECTOR m_scale;

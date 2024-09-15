@@ -180,6 +180,7 @@ ID3D10Blob* Utils::VertexShader::GetByteCode()
 
 void Utils::VertexShader::Bind()
 {
+   // pShaderBlob.Reset();
     m_graphics.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
 }
 

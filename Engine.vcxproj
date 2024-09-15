@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\models\ModelBuilder.cpp" />
     <ClCompile Include="src\Graphics\DXRenderTarget.cpp" />
     <ClCompile Include="src\Graphics\DXGIAdapterInfo.cpp" />
     <ClCompile Include="src\Graphics\DXBlender.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
     <ClCompile Include="src\Graphics\Camera\ThirdPerson.cpp" />
     <ClCompile Include="src\Graphics\SwapChain.cpp" />
+    <ClCompile Include="src\Scene\TransformComponent.cpp" />
     <FxCompile Include="Assets\shader\GridPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -200,7 +202,6 @@
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\environment\Light.cpp" />
-    <ClCompile Include="src\models\MeshParts.cpp" />
     <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Sample\Plane.cpp" />
     <ClCompile Include="src\Graphics\Camera\CameraController.cpp" />
@@ -231,6 +232,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\models\ModelBuilder.h" />
     <ClInclude Include="src\Graphics\DXRenderTarget.h" />
     <ClInclude Include="src\Graphics\DXGIAdapterInfo.h" />
     <ClInclude Include="dependencies\imgui\FileBrowser.h" />
@@ -255,7 +257,6 @@
     <ClInclude Include="src\dataPack\Json.hpp" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\environment\Light.h" />
-    <ClInclude Include="src\models\MeshParts.h" />
     <ClInclude Include="src\MathUtils\MathUtils.h" />
     <ClInclude Include="src\Sample\Plane.h" />
     <ClInclude Include="src\Graphics\Camera\CameraController.h" />
@@ -294,6 +295,7 @@
     <ClInclude Include="src\Sample\Cube.h" />
     <ClInclude Include="src\Graphics\Camera\ThirdPerson.h" />
     <ClInclude Include="src\Graphics\SwapChain.h" />
+    <ClInclude Include="src\Scene\TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

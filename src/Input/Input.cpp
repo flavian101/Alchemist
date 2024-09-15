@@ -103,27 +103,27 @@ void Input::DetectInputThird(float time, ThirdPerson* cam, Player& player)
     pMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrState);
     pKeyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 
-   
-    XMVECTOR characterPosition = player.GetTranslation();
-    XMVECTOR characterOrientation = player.GetRotation();
-
-    // Convert the orientation quaternion to a forward direction vector
-    XMVECTOR forwardDirection = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), characterOrientation);
-
-
-    // Camera movement based on keyboard input
-    if (keyboardState[DIK_W] & 0x80) {
-        player.Move(forwardDirection, cam->GetMoveSpeed(), time);
-    }
-    else if (keyboardState[DIK_S] & 0x80) {
-        player.Move(-forwardDirection, cam->GetMoveSpeed(), time);
-    }
-    if (keyboardState[DIK_A] & 0x80) {
-        player.Rotate(-cam->GetRotationSpeed()*time, 0.0f);
-    }
-    else if (keyboardState[DIK_D] & 0x80) {
-        player.Rotate(cam->GetRotationSpeed() * time, 0.0f);
-    }
+   //
+   // XMVECTOR characterPosition = player.GetTranslation();
+   // XMVECTOR characterOrientation = player.GetRotation();
+   //
+   // // Convert the orientation quaternion to a forward direction vector
+   // XMVECTOR forwardDirection = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), characterOrientation);
+   //
+   //
+   // // Camera movement based on keyboard input
+   // if (keyboardState[DIK_W] & 0x80) {
+   //     player.Move(forwardDirection, cam->GetMoveSpeed(), time);
+   // }
+   // else if (keyboardState[DIK_S] & 0x80) {
+   //     player.Move(-forwardDirection, cam->GetMoveSpeed(), time);
+   // }
+   // if (keyboardState[DIK_A] & 0x80) {
+   //     player.Rotate(-cam->GetRotationSpeed()*time, 0.0f);
+   // }
+   // else if (keyboardState[DIK_D] & 0x80) {
+   //     player.Rotate(cam->GetRotationSpeed() * time, 0.0f);
+   // }
 
     if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY)) {
         float yawAngle = mouseCurrState.lX * cam->GetRotationSpeed() * time;
@@ -135,7 +135,7 @@ void Input::DetectInputThird(float time, ThirdPerson* cam, Player& player)
 
         mouseLastState = mouseCurrState;
     }
-    cam->SetPlayerPosition(player.GetTranslation(), player.GetRotation());
+  //  cam->SetPlayerPosition(player.GetTranslation(), player.GetRotation());
     cam->Update(time);
 
 }

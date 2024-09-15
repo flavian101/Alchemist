@@ -11,7 +11,9 @@
 Graphics::Graphics(HWND hwnd)
     :
     imguiEnabled(true),
-    renderer(std::make_unique<Renderer>(hwnd))
+    renderer(std::make_unique<Renderer>(hwnd)),
+    view(XMMatrixIdentity()),
+    projection(XMMatrixIdentity())
 {
     renderer->initializeImgui();
 }

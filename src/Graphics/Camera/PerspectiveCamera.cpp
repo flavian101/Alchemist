@@ -13,8 +13,12 @@ PerspectiveCamera::PerspectiveCamera()
     m_nearPlane = 1.0f;
     m_farPlane = 1000.0f;
     mode = freeLook;
-    m_FOV = 45.0;
+    m_FOV = 45.0f;
     camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
+}
+void PerspectiveCamera::SetAspectRatio(float ratio)
+{
+    m_aspectRatio = ratio;
 }
 DirectX::XMMATRIX PerspectiveCamera::GetProjectionMatrix() const
 {

@@ -24,14 +24,15 @@ struct Material
 {
     float4 baseColor;
     float4 emissive;
-    float metallic;
-    float roughness; // This now represents smoothness in the material properties
-    float ao;
     bool hasAlbedoMap;
     bool hasNormalMap;
     bool hasMetallicMap;
     bool hasRoughnessMap;
     bool hasAOMap;
+    float metallic;
+    float roughness; 
+    float ao;
+    float pad1[4];
 };
 
 // Constant Buffers

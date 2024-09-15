@@ -4,15 +4,15 @@
 #include "models/Vertex.h"
 
 Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
-	:
-	Model(name, g, shaderManager)
+    :
+    builder(name, g, shaderManager)
 {
-    m_position = XMVectorSet(1.0f, 2.0f, 0.0f, 0.0f);
-    this->setTranslation(Math::XMVectorToFloat3(m_position));
-    m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
-    this->setRotation(Math::XMVectorToFloat4(m_orientation));
+    // m_position = XMVectorSet(1.0f, 2.0f, 0.0f, 0.0f);
+    // this->setTranslation(Math::XMVectorToFloat3(m_position));
+    // m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
+    // this->setRotation(Math::XMVectorToFloat4(m_orientation));
 
-    // Front face
+      // Front face
     vertices.push_back(Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // bottom-left-back
     vertices.push_back(Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // top-left-back
     vertices.push_back(Vertex(1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f)); // top-right-back
@@ -99,21 +99,21 @@ Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManag
     indices.push_back(22);
     indices.push_back(23);
 
-
-    //CreateMesh(vertices, indices);
-    TexturedMesh(vertices, indices,
-        "Assets/textures/stone wall.jpg",
+    auto material = builder.CreateMaterial("Assets/textures/stone wall.jpg",
         "Assets/textures/N_stone wall.jpg",
         "Assets/textures/M_stone wall.jpg",
         "Assets/textures/S_stone wall.jpg",
         "Assets/textures/AO_stone wall.jpg");
+
+    builder.createMesh(indices, vertices, material);
+  
+
 }
-//
-//void Player::Update(float deltaTime)
-//{
-//}
-//
-//void Player::Render()
-//{
-//}
-//
+void Player::Update(float deltaTime)
+{
+    builder.getModel().Update(deltaTime);
+}
+void Player::Render()
+{
+    builder.getModel().Render();
+}

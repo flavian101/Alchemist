@@ -8,7 +8,6 @@
 #include "models/vertex.h"
 #include "models/Model.h"
 #include "models/Mesh.h"
-#include "models/MeshParts.h"
 #include "Scene/SceneCamera.h"
 #include "Scene/Shaders/ShaderManager.h"
 
@@ -194,13 +193,13 @@ nlohmann::json SceneSerializer::SerializeSceneModels(Model* model)
 {
 	nlohmann::json j;
 	j["name"] = model->m_name;
-	j["isTextured"] = model->isTextured;
-	XMFLOAT3 position = XMFLOAT3(Math::XMVectorToFloat3(model->GetTranslation()));
-	XMFLOAT3 scale = XMFLOAT3(Math::XMVectorToFloat3(model->GetScale()));
-	XMFLOAT4 rotation = XMFLOAT4(Math::XMVectorToFloat4(model->GetRotation()));
-	j["position"] = { position.x,position.y,position.z };
-	j["scale"] = { scale.x,scale.y,scale.z };
-	j["rotation"] = { rotation.x,rotation.y,rotation.z,rotation.w };
+	//j["isTextured"] = model->isTextured;
+//XMFLOAT3 position = XMFLOAT3(Math::XMVectorToFloat3(model->GetTranslation()));
+//XMFLOAT3 scale = XMFLOAT3(Math::XMVectorToFloat3(model->GetScale()));
+//XMFLOAT4 rotation = XMFLOAT4(Math::XMVectorToFloat4(model->GetRotation()));
+//j["position"] = { position.x,position.y,position.z };
+//j["scale"] = { scale.x,scale.y,scale.z };
+//j["rotation"] = { rotation.x,rotation.y,rotation.z,rotation.w };
 
 	//if (model->isTextured && model->texture)
 	//{
@@ -208,24 +207,24 @@ nlohmann::json SceneSerializer::SerializeSceneModels(Model* model)
 	//	j["textureSlot"] = model->getSlot();
 	//}
 	//mesh
-	if (model->getMesh())
-	{
-		j["mesh"] = SerializeMeshParts(model->part.get());
-	}
+	//if (model->getMesh())
+	//{
+	//	//j["mesh"] = SerializeMeshParts(model->part.get());
+	//}
 	return j;
 }
-
-nlohmann::json SceneSerializer::SerializeMeshParts(MeshParts* part)
-{
-	nlohmann::json j;
-	j["indices"] = part->m_indices;
-	j["vertices"] = nlohmann::json::array();
-	for (auto& vertex : part->m_vertices)
-	{
-		j["vertices"].push_back(SerializeVertex(&vertex));
-	}
-	return j;
-}
+//
+//nlohmann::json SceneSerializer::SerializeMeshParts(MeshParts* part)
+//{
+//	nlohmann::json j;
+//	j["indices"] = part->m_indices;
+//	j["vertices"] = nlohmann::json::array();
+//	for (auto& vertex : part->m_vertices)
+//	{
+//		j["vertices"].push_back(SerializeVertex(&vertex));
+//	}
+//	return j;
+//}
 
 nlohmann::json SceneSerializer::SerializeVertex(Vertex* v)
 {
@@ -358,16 +357,16 @@ void SceneSerializer::DeserializeSceneShader(std::shared_ptr<ShaderManager> shad
 void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json& j)
 {
 	model->m_name = j["name"];
-	model->isTextured = j["isTextured"];
+//	model->isTextured = j["isTextured"];
 
-	XMFLOAT3 position(j["position"][0], j["position"][1], j["position"][2]);
-	model->setTranslation(position);
-
-	XMFLOAT3 scale(j["scale"][0], j["scale"][1], j["scale"][2]);
-	model->setScale(scale);
-
-	XMFLOAT4 rotation(j["rotation"][0], j["rotation"][1], j["rotation"][2], j["rotation"][3]);
-	model->setRotation(rotation);
+	//XMFLOAT3 position(j["position"][0], j["position"][1], j["position"][2]);
+	//model->setTranslation(position);
+	//
+	//XMFLOAT3 scale(j["scale"][0], j["scale"][1], j["scale"][2]);
+	//model->setScale(scale);
+	//
+	//XMFLOAT4 rotation(j["rotation"][0], j["rotation"][1], j["rotation"][2], j["rotation"][3]);
+	//model->setRotation(rotation);
 
 
 
@@ -386,18 +385,18 @@ void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json&
 
 }
 
-void SceneSerializer::DeserializeMeshParts(MeshParts* part, const nlohmann::json& j)
-{
-	part->m_indices = j["indices"].get<std::vector<unsigned short>>();
-	for (const auto& vertex_json : j["vertices"])
-	{
-		Vertex vertex;
-		DeserializeVertex(&vertex, vertex_json);
-		part->m_vertices.push_back(vertex);
-	}
-	
-}
-
+//void SceneSerializer::DeserializeMeshParts(MeshParts* part, const nlohmann::json& j)
+//{
+//	part->m_indices = j["indices"].get<std::vector<unsigned short>>();
+//	for (const auto& vertex_json : j["vertices"])
+//	{
+//		Vertex vertex;
+//		DeserializeVertex(&vertex, vertex_json);
+//		part->m_vertices.push_back(vertex);
+//	}
+//	
+//}
+//
 void SceneSerializer::DeserializeVertex(Vertex* v, const nlohmann::json& j)
 {
 	v->type = j["type"];

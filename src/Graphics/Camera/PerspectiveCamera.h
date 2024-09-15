@@ -21,6 +21,7 @@ public:
 	void SetView(DirectX::XMMATRIX view);
 	virtual void ControlWindow() override;
 	//setters and getters
+	void SetAspectRatio(float ratio);
 	DirectX::XMMATRIX GetProjectionMatrix() const override;
 	void Update(float delta) override;
 	DirectX::XMMATRIX GetView()const override;

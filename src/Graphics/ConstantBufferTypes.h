@@ -10,9 +10,9 @@ struct cb_vs2DConstantBuffer
 
 struct cb_vsConstantBuffer
 {
-	XMMATRIX WVP;
-    XMMATRIX View;
-    XMMATRIX Model;
+    alignas(16)XMMATRIX WVP;
+    alignas(16)XMMATRIX View;
+    alignas(16)XMMATRIX Model;
 };
 struct LightStruct
 {
@@ -26,10 +26,10 @@ struct LightStruct
     float cone;
     XMFLOAT3 att;
     float intensity;
-    XMFLOAT4 color;
-    XMFLOAT4 ambient;
-    XMFLOAT4 diffuse;
-    XMFLOAT4 specular;
+     alignas(16) XMFLOAT4 color;
+     alignas(16) XMFLOAT4 ambient;
+     alignas(16)XMFLOAT4 diffuse;
+     alignas(16)XMFLOAT4 specular;
 };
 struct cb_psConstantBuffer
 {
@@ -42,8 +42,8 @@ struct MaterialStruct
     {
         ZeroMemory(this, sizeof(MaterialStruct));
     }
-    XMFLOAT4 baseColor;
-    XMFLOAT4 emissive;
+    alignas(16)XMFLOAT4 baseColor;
+    alignas(16)XMFLOAT4 emissive;
     BOOL hasAlbedoMap;
     BOOL hasNormalMap;
     BOOL hasMetallicMap;

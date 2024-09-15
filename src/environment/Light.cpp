@@ -5,7 +5,7 @@
 
 Light::Light(const std::string& name,Graphics& g,std::shared_ptr<ShaderManager> manager)
 	:
-	RenderableObject(name,g,std::move( manager )),
+	RenderableObject(name,g,manager),
 	m_name(name),
 	m_graphics(g)
 {

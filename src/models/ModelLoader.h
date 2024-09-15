@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <vector>
 #include <memory>
+#include <models/Model.h>
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
@@ -11,32 +12,30 @@
 
 class Graphics;
 class Vertex;
-class MeshParts;
 class Mesh;
 
 
-class ModelLoader  : public RenderableObject
+class ModelLoader
 {
 public:
-	ModelLoader( Graphics& g, std::shared_ptr<ShaderManager> manager);
-	bool LoadModel(const std::string& filepath);
-	void Update(float deltaTime)override;
-	void Render()override;
-	std::string& GetPath() { return m_filepath; }
-	void setPath(std::string& path);
+	ModelLoader(const std::string& filepath, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	void Update(float deltaTime);
+	void Render();
+	//std::string& GetPath() { return m_filepath; }
+	//void setPath(std::string& path);
+
+	void controlWindow();
 
 private:
-	void ProcessNode(aiNode* node, const aiScene* scene);
-	Mesh& ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	void ProcessNode(aiNode* node, const aiScene* scene, const DirectX::FXMMATRIX& parentTransform);
+	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, const DirectX::FXMMATRIX& nodeTransform);
 	bool LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material);
 	
 	
 private:
 	Graphics& m_graphics;
-	std::string m_filepath;
 	std::string basePath;
-	std::vector<Mesh*> m_meshes;
-	MeshParts* part;
+	Model m_model;
 
 };
 

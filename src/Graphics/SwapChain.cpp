@@ -12,7 +12,7 @@ SwapChain::SwapChain(HWND hwnd, DXGIAdapterInfo& info, DXDevice& device, bool en
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
     swapChainDesc.BufferDesc.Width = 1024;
     swapChainDesc.BufferDesc.Height = 720;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     //to implement vsync later
     swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
     swapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
@@ -25,7 +25,7 @@ SwapChain::SwapChain(HWND hwnd, DXGIAdapterInfo& info, DXDevice& device, bool en
     swapChainDesc.OutputWindow = hwnd;
     swapChainDesc.Windowed = TRUE;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    swapChainDesc.Flags = 0;
+    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 
     CHECK_RESULT(info.pFactory->CreateSwapChain(
@@ -51,7 +51,7 @@ void SwapChain::Resize(UINT width, UINT height)
 
 void SwapChain::Present(bool isVsyncEnabled)
 {
-    pSwapChain->Present(isVsyncEnabled ?1:0 ,0u );
+    pSwapChain->Present(isVsyncEnabled ?1u:0u ,0u );
 }
 
 

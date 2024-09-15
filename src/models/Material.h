@@ -3,12 +3,8 @@
 #include "stdafx.h"
 #include <string>
 #include "Graphics/ConstantBuffer.h"
+#include "Graphics/Utilis.h"
 
-namespace Utils
-{
-	class Texture;
-	class Sampler;
-}
 class Graphics;
 
 
@@ -28,17 +24,18 @@ public:
 	void Bind();
 	void LoadTexture(TextureType type, const std::string& path);
 
+	void HasAlbedo(bool has) { hasAlbedoMap = has; };
+	void HasNormal(bool has) { hasNormalMap = has; };
+	void HasMetallic(bool has) { hasMetallicMap = has; };
+	void HasRoughness(bool has) { hasRoughnessMap = has; };
+	void HasAO(bool has) { hasAOMap = has; };
 	void SetAmbient(const XMFLOAT4& ambient);
 	void SetEmissive(const XMFLOAT4& emissive);
 	void SetMetallic(float metallic);
 	void SetRoughness(float roughness);
 	void SetAO(float AO);
 	void controlWindow();
-	bool hasAlbedoMap    = false;
-	bool hasNormalMap    = false;
-	bool hasMetallicMap  = false;
-	bool hasRoughnessMap = false;
-	bool hasAOMap        = false;
+	
 private:
 	void BindTextures();
 
@@ -48,5 +45,10 @@ private:
 	std::unique_ptr<Utils::Sampler> samp;
 	ConstantBuffer<cb_psMaterialBuffer> materialBuffer;
 	std::unordered_map<TextureType, std::unique_ptr<Utils::Texture>> textures;
+	bool hasAlbedoMap;
+	bool hasNormalMap;
+	bool hasMetallicMap;
+	bool hasRoughnessMap;
+	bool hasAOMap;
 };
 
