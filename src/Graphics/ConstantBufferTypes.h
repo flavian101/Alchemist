@@ -10,9 +10,8 @@ struct cb_vs2DConstantBuffer
 
 struct cb_vsConstantBuffer
 {
-    alignas(16)XMMATRIX WVP;
-    alignas(16)XMMATRIX View;
-    alignas(16)XMMATRIX Model;
+    DirectX::XMMATRIX modelView;
+    DirectX::XMMATRIX modelViewProj;
 };
 struct LightStruct
 {

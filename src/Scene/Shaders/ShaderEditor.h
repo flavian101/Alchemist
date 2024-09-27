@@ -3,13 +3,14 @@
 #include <memory>
 
 class ShaderManager;
+class Graphics;
 
 class ShaderEditor
 {
 public:
 	ShaderEditor(std::shared_ptr<ShaderManager> shaderManager);
 
-	void Render();
+	void Render(Graphics& gfx);
 
 
 private:

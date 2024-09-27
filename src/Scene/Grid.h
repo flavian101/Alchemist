@@ -9,7 +9,7 @@ class Vertex;
 class Grid
 {
 public:
-	Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> manager);
 private:
 	ModelBuilder builder;
 	std::vector<Vertex> vertices;

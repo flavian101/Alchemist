@@ -15,7 +15,7 @@ class Plane;
 class Cube;
 class DirectionalLight;
 class Player;
-class RenderableObject;
+class GameObject;
 
 
 
@@ -25,13 +25,13 @@ public:
 	Scene(const std::string& name,Window& win);
 	~Scene();
 
-	void RemoveRenderableObject(RenderableObject* object);
-	void AddRenderableObject(RenderableObject* object);
-	void Update(float time);
-	void Render();
+	void RemoveGameObject(GameObject* object);
+	void AddGameObject(GameObject* object);
+	void Update(Graphics& gfx,float time);
+	void Render(Graphics& gfx);
 	std::string GetName()const { return m_name; }
 	void SetName(const std::string& name);
-	void controlWindow();
+	void controlWindow(Graphics& gfx);
 	void AddObjectWindow();
 	
 private:
@@ -39,7 +39,6 @@ private:
 
 
 private:
-	Graphics& m_graphics;
 	std::string m_name;
 	SceneCamera* sceneCamera;
 	std::unique_ptr<Player> player;
@@ -53,9 +52,9 @@ private:
 	friend class SceneSerializer;
 
 	/// rederables
-	std::vector<RenderableObject*> objects;
-	RenderableObject* m_selectedObject;
-	std::unique_ptr<RenderableObject> newobject;
+	std::vector<GameObject*> objects;
+	std::unique_ptr<GameObject> m_selectedObject;
+	std::unique_ptr<GameObject> newobject;
 	ModelLoader* m_model;
 };
 

@@ -157,6 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\models\Model.cpp" />
+    <ClCompile Include="src\models\Node.cpp" />
     <ClCompile Include="src\models\ModelBuilder.cpp" />
     <ClCompile Include="src\Graphics\DXRenderTarget.cpp" />
     <ClCompile Include="src\Graphics\DXGIAdapterInfo.cpp" />
@@ -167,6 +169,7 @@
     <ClCompile Include="src\Graphics\DXRasterizer.cpp" />
     <ClCompile Include="src\Graphics\DXViewPort.cpp" />
     <ClCompile Include="src\models\ModelLoader.cpp" />
+    <ClCompile Include="src\Scene\GameObject.cpp" />
     <ClCompile Include="src\Scene\Grid.cpp" />
     <ClCompile Include="src\models\Material.cpp" />
     <ClCompile Include="src\environment\DirectionalLight.cpp" />
@@ -177,7 +180,6 @@
     <ClCompile Include="src\Graphics\Camera\FreeLook.cpp" />
     <ClCompile Include="src\Graphics\Camera\ThirdPerson.cpp" />
     <ClCompile Include="src\Graphics\SwapChain.cpp" />
-    <ClCompile Include="src\Scene\TransformComponent.cpp" />
     <FxCompile Include="Assets\shader\GridPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -215,10 +217,8 @@
     <ClCompile Include="src\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Graphics\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Graphics\Camera\PerspectiveCamera.cpp" />
-    <ClCompile Include="src\models\Model.cpp" />
     <ClCompile Include="src\Scene\Shaders\ShaderManager.cpp" />
     <ClCompile Include="src\models\Transform.cpp" />
-    <ClCompile Include="src\Scene\RenderableObject.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
@@ -232,6 +232,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\models\Node.h" />
     <ClInclude Include="src\models\ModelBuilder.h" />
     <ClInclude Include="src\Graphics\DXRenderTarget.h" />
     <ClInclude Include="src\Graphics\DXGIAdapterInfo.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="src\Graphics\DXRasterizer.h" />
     <ClInclude Include="src\Graphics\DXViewPort.h" />
     <ClInclude Include="src\models\ModelLoader.h" />
+    <ClInclude Include="src\Scene\GameObject.h" />
     <ClInclude Include="src\Scene\Grid.h" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\models\Material.h" />
@@ -274,7 +276,6 @@
     <ClInclude Include="src\models\Model.h" />
     <ClInclude Include="src\Scene\Shaders\ShaderManager.h" />
     <ClInclude Include="src\models\Transform.h" />
-    <ClInclude Include="src\Scene\RenderableObject.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneManager.h" />
     <ClInclude Include="src\Input\Input.h" />
@@ -295,7 +296,6 @@
     <ClInclude Include="src\Sample\Cube.h" />
     <ClInclude Include="src\Graphics\Camera\ThirdPerson.h" />
     <ClInclude Include="src\Graphics\SwapChain.h" />
-    <ClInclude Include="src\Scene\TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />

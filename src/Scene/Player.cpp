@@ -3,9 +3,9 @@
 #include "Graphics/Graphics.h"
 #include "models/Vertex.h"
 
-Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager)
+Player::Player(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> shaderManager)
     :
-    builder(name, g, shaderManager)
+    builder(name, shaderManager)
 {
     // m_position = XMVectorSet(1.0f, 2.0f, 0.0f, 0.0f);
     // this->setTranslation(Math::XMVectorToFloat3(m_position));
@@ -99,21 +99,22 @@ Player::Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManag
     indices.push_back(22);
     indices.push_back(23);
 
-    auto material = builder.CreateMaterial("Assets/textures/stone wall.jpg",
+    auto material = builder.CreateMaterial(gfx,
+        "Assets/textures/stone wall.jpg",
         "Assets/textures/N_stone wall.jpg",
         "Assets/textures/M_stone wall.jpg",
         "Assets/textures/S_stone wall.jpg",
         "Assets/textures/AO_stone wall.jpg");
 
-    builder.createMesh(indices, vertices, material);
+    builder.createMesh(gfx,indices, vertices, material);
   
 
 }
-void Player::Update(float deltaTime)
+void Player::Update(Graphics& gfx,float deltaTime)
 {
-    builder.getModel().Update(deltaTime);
+    builder.getModel().Update(gfx,deltaTime);
 }
-void Player::Render()
+void Player::Render(Graphics& gfx)
 {
-    builder.getModel().Render();
+    builder.getModel().Render(gfx);
 }

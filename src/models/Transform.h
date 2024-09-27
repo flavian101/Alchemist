@@ -11,7 +11,7 @@ class Graphics;
 class Transform
 {
 public:
-    Transform(Graphics& g,
+    Transform(Graphics& gfx,
         const XMFLOAT3& position = XMFLOAT3(0.0f, 0.0f, 0.0f),
         const XMFLOAT4& rotation = XMFLOAT4(0.0f, 0.0f, 0.0f,0.0f),
         const XMFLOAT3& scale = XMFLOAT3(1.0f, 1.0f, 1.0f));
@@ -29,12 +29,12 @@ public:
     XMVECTOR GetRotation() const { return m_rotation; }
     XMVECTOR GetScale() const { return m_scale; }
     XMMATRIX GetTransform() const;
-    void setTransform(const FXMMATRIX& matrix);
+    void setTransform(const XMMATRIX& matrix);
 
     // Update method (e.g., for animation)
-    void Update(float time);
-    void UpdateFromTransform(float Time);
-        void BindConstantBuffer();
+    void Update(Graphics& gfx);
+    void UpdateFromTransform(Graphics& gfx,FXMMATRIX transform);
+        void BindConstantBuffer(Graphics& gfx);
 
         //imgui window
         void controlWindow();
@@ -49,6 +49,5 @@ private:
     XMVECTOR m_rotation;
     XMVECTOR m_scale;
     ConstantBuffer< cb_vsConstantBuffer> CB_Buffer;
-    Graphics& m_graphics;
 };
 

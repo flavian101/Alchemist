@@ -33,16 +33,15 @@ public:
     void SetActiveScene(const std::string& name);
 
     // Update the active scene
-    void Update(float deltaTime);
+    void Update(Graphics& gfx,float deltaTime);
 
     // Render the active scene
-    void Render();
+    void Render(Graphics& gfx);
 
-    void ControlWindow();
+    void ControlWindow(Graphics& gfx);
 
 
 private:
-	Graphics& m_graphics;
     std::vector<Scene*> scenes;
     Scene* activeScene;
     std::unique_ptr<Utils::Texture> thumbnail;

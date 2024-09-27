@@ -23,19 +23,18 @@ public:
     void SetPerspectiveCamera(std::unique_ptr<PerspectiveCamera> newPerspectiveCamera);
     void SetOrthographicCamera(std::unique_ptr < OrthographicCamera> newOrthographicCamera);
     void Update(float delta,Player& player);
-    void Render();
+    void Render(Graphics& gfx);
     Camera* getActiveCamera() const;
     SceneCamera* GetSelectedCamera();
     bool isPerspectiveCamera() const;
     PerspectiveCamera* GetPerspective();
     OrthographicCamera* GetOrthographic();
-    void CreateNewCamera(const std::string& name, bool perspective);
+    void CreateNewCamera(const std::string& name, bool perspective, Graphics& gfx);
     const std::map<std::string, SceneCamera*>& GetCameras() const;
-    void ControlWindow();
+    void ControlWindow(Graphics& gfx);
 
 private:
     std::string m_name;
-    Graphics& m_graphics;
     std::unique_ptr<PerspectiveCamera > m_perspectiveCamera;
     std::unique_ptr<OrthographicCamera> m_orthographicCamera;
     SceneCamera* m_selectedCamera;

@@ -6,10 +6,9 @@
 
 
 
-Cube::Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager)
+Cube::Cube(const std::string& name,Graphics& gfx, std::shared_ptr<ShaderManager> manager)
     :
-    m_graphic(g),
-    builder(name, g, std::move(manager))
+    builder(name,std::move(manager))
 {
   //  m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
   //  this->setTranslation(Math::XMVectorToFloat3(m_position));
@@ -103,28 +102,28 @@ Cube::Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> m
     indices.push_back(22);
     indices.push_back(23);
 
-  auto material =   builder.CreateMaterial(
+  auto material =   builder.CreateMaterial(gfx,
         "Assets/textures/metalpanel.jpg",
         "Assets/textures/N_metalpanel.jpg",
         "Assets/textures/M_metalpanel.jpg",
         "Assets/textures/S_metalpanel.jpg",
         "Assets/textures/AO_metalpanel.jpg");
 
-    builder.createMesh(indices, vertices,material);
+    builder.createMesh(gfx,indices, vertices,material);
 
     //CreateMesh(vertices, indices);
    
 
 }
 
-void Cube::Update(float deltaTime)
+void Cube::Update(Graphics& gfx,float deltaTime)
 {
-    builder.getModel().Update(deltaTime);
+    builder.getModel().Update(gfx,deltaTime);
 }
 
-void Cube::Render()
+void Cube::Render(Graphics& gfx)
 {
-    builder.getModel().Render();
+    builder.getModel().Render(gfx);
 }
 
 

@@ -22,7 +22,7 @@ int App::createLoop()
             //if return optional has value, means we'are exiting the program by returning the exit code
             return *ecode;
         }
-        sceneManager.Update(timer.Tick());
+        sceneManager.Update(window.GetInstance(),timer.Tick());
         Render();
     }
 
@@ -31,7 +31,7 @@ int App::createLoop()
 void App::Render()
 {
     window.GetInstance().ClearDepthColor(0.0f, 0.0f, 0.0f);
-    sceneManager.Render();
+    sceneManager.Render(window.GetInstance());
     window.GetInstance().End();
 
 }

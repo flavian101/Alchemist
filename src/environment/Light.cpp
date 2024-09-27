@@ -3,14 +3,12 @@
 #include "Graphics/Graphics.h"
 #include "Scene/Shaders/ShaderManager.h"
 
-Light::Light(const std::string& name,Graphics& g,std::shared_ptr<ShaderManager> manager)
+Light::Light(const std::string& name,Graphics& gfx,std::shared_ptr<ShaderManager> manager)
 	:
-	RenderableObject(name,g,manager),
-	m_name(name),
-	m_graphics(g)
+	m_name(name)
 {
 
-	PS_Buffer.Initialize(g);
+	PS_Buffer.Initialize(gfx);
 	PS_Buffer.data.lightStruct.position = XMFLOAT3(0.0f, 10.0f, 0.0f);
 	PS_Buffer.data.lightStruct.dir = XMFLOAT3(0.0f, -1.0f, 0.0f);
 	PS_Buffer.data.lightStruct.range = 1000.0f;
@@ -49,16 +47,14 @@ void Light::SetSpecular(XMFLOAT4 specular)
 {
 	PS_Buffer.data.lightStruct.specular = specular;
 }
-void Light::Update(float deltaTime)
+void Light::Update(Graphics& gfx,float deltaTime)
 {
-	RenderableObject::Update(deltaTime);
-	PS_Buffer.Update(m_graphics);
+	PS_Buffer.Update(gfx);
 }
 
-void Light::Render()
+void Light::Render(Graphics& gfx)
 {
-	m_graphics.GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
-	RenderableObject::Render();
+	gfx.GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
 }
 
 void Light::controlWindow()

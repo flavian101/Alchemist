@@ -1,8 +1,7 @@
-cbuffer cb_vsConstantBuffer : register(b2)
+cbuffer cb_vsConstantBuffer
 {
-    matrix WVP;
-    matrix View;
-    matrix Model;
+    matrix modelView : packoffset(c0);
+    matrix modelViewProj : packoffset(c4);
 };
 
 // Structures
@@ -51,7 +50,7 @@ struct VertexOut
     float4 posH : SV_POSITION;
     float2 tex : TEXCOORD0;
     float3 normal : NORMAL;
-    float3 worldPos : POSITION;
+    float3 worldPos : POSITION1;
     float3 viewPos : TEXCOORD1;
     float3 tangent : TANGENT;
 };
@@ -109,11 +108,11 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 float4 main(VertexOut input) : SV_Target
 {
     // Sample textures
-    float4 albedo = material.hasAlbedoMap ? albedoMap.Sample(samp, input.tex) : float4(1.0, 1.0, 1.0, 1.0);
-    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz : float3(0.0, 0.0, 1.0);
-    float metallic = material.hasMetallicMap ? metallicMap.Sample(samp, input.tex).r : 0.0;
+    float4 albedo = material.hasAlbedoMap ? albedoMap.Sample(samp, input.tex) : material.baseColor;
+    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz :input.normal;
+    float metallic = material.hasMetallicMap ? metallicMap.Sample(samp, input.tex).r : material.metallic;
     float smoothness = material.hasRoughnessMap ? smoothnessMap.Sample(samp, input.tex).r : 1.0;
-    float ao = material.hasAOMap ? aoMap.Sample(samp, input.tex).r : 1.0;
+    float ao = material.hasAOMap ? aoMap.Sample(samp, input.tex).r : material.ao;
 
     // Convert smoothness to roughness
     float roughness = 1.0 - smoothness;

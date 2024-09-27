@@ -68,8 +68,8 @@ void SceneSerializer::Deserialize(const char* filepath)
 	// Deserialize models
 	for (const auto& model_json : j["model"])
 	{
-		Model* model = new Model("", m_graphics, m_scene.shaders[1]);
-		DeserializeSceneModels(model, model_json);
+		//Model* model = new Model("", m_graphics, m_scene.shaders[1]);
+		//DeserializeSceneModels(model, model_json);
 //		m_scene.m_models.push_back(model);
 	}
 }
@@ -192,7 +192,7 @@ nlohmann::json SceneSerializer::SerializeSceneShader(std::vector<std::shared_ptr
 nlohmann::json SceneSerializer::SerializeSceneModels(Model* model)
 {
 	nlohmann::json j;
-	j["name"] = model->m_name;
+	//j["name"] = model->m_name;
 	//j["isTextured"] = model->isTextured;
 //XMFLOAT3 position = XMFLOAT3(Math::XMVectorToFloat3(model->GetTranslation()));
 //XMFLOAT3 scale = XMFLOAT3(Math::XMVectorToFloat3(model->GetScale()));
@@ -233,21 +233,21 @@ nlohmann::json SceneSerializer::SerializeVertex(Vertex* v)
 	switch (v->type) {
 	case VertexType::Pos3Col:
 		j = nlohmann::json{
-			{"pos", {v->pos3Col.pos.x, v->pos3Col.pos.y, v->pos3Col.pos.z}},
-			{"col", {v->pos3Col.col.x, v->pos3Col.col.y, v->pos3Col.col.z, v->pos3Col.col.w}}
+			{"pos", {v->posCol.pos.x, v->posCol.pos.y, v->posCol.pos.z}},
+			{"col", {v->posCol.col.x, v->posCol.col.y, v->posCol.col.z, v->posCol.col.w}}
 		};
 		break;
 	case VertexType::Pos3Tex:
 		j = nlohmann::json{
-			{"pos", {v->pos3Tex.pos.x, v->pos3Tex.pos.y, v->pos3Tex.pos.z}},
-			{"tex", {v->pos3Tex.tex.x, v->pos3Tex.tex.y}}
+			{"pos", {v->posTex.pos.x, v->posTex.pos.y, v->posTex.pos.z}},
+			{"tex", {v->posTex.tex.x, v->posTex.tex.y}}
 		};
 		break;
 	case VertexType::Pos3TexNorm:
 		j = nlohmann::json{
-			{"pos", {v->pos3TexNorm.pos.x, v->pos3TexNorm.pos.y, v->pos3TexNorm.pos.z}},
-			{"tex", {v->pos3TexNorm.tex.x, v->pos3TexNorm.tex.y}},
-			{"norm",{v->pos3TexNorm.norm.x,v->pos3TexNorm.norm.y,v->pos3TexNorm.norm.z}}
+			{"pos", {v->posTexNorm.pos.x, v->posTexNorm.pos.y, v->posTexNorm.pos.z}},
+			{"tex", {v->posTexNorm.tex.x, v->posTexNorm.tex.y}},
+			{"norm",{v->posTexNorm.norm.x,v->posTexNorm.norm.y,v->posTexNorm.norm.z}}
 		};
 		break;
 	}
@@ -356,7 +356,7 @@ void SceneSerializer::DeserializeSceneShader(std::shared_ptr<ShaderManager> shad
 
 void SceneSerializer::DeserializeSceneModels(Model* model, const nlohmann::json& j)
 {
-	model->m_name = j["name"];
+	//model->m_name = j["name"];
 //	model->isTextured = j["isTextured"];
 
 	//XMFLOAT3 position(j["position"][0], j["position"][1], j["position"][2]);
@@ -403,17 +403,17 @@ void SceneSerializer::DeserializeVertex(Vertex* v, const nlohmann::json& j)
 	switch (v->type) {
 	default:
 	case VertexType::Pos3Col:
-		v->pos3Col.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
-		v->pos3Col.col = DirectX::XMFLOAT4(j["col"][0], j["col"][1], j["col"][2], j["col"][3]);
+		v->posCol.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
+		v->posCol.col = DirectX::XMFLOAT4(j["col"][0], j["col"][1], j["col"][2], j["col"][3]);
 		break;
 	case VertexType::Pos3Tex:
-		v->pos3Tex.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
-		v->pos3Tex.tex = DirectX::XMFLOAT2(j["tex"][0], j["tex"][1]);
+		v->posTex.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
+		v->posTex.tex = DirectX::XMFLOAT2(j["tex"][0], j["tex"][1]);
 		break;
 	case VertexType::Pos3TexNorm:
-		v->pos3TexNorm.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
-		v->pos3TexNorm.tex = DirectX::XMFLOAT2(j["tex"][0], j["tex"][1]);
-		v->pos3TexNorm.norm = DirectX::XMFLOAT3(j["norm"][0], j["norm"][1], j["norm"][2]);
+		v->posTexNorm.pos = DirectX::XMFLOAT3(j["pos"][0], j["pos"][1], j["pos"][2]);
+		v->posTexNorm.tex = DirectX::XMFLOAT2(j["tex"][0], j["tex"][1]);
+		v->posTexNorm.norm = DirectX::XMFLOAT3(j["norm"][0], j["norm"][1], j["norm"][2]);
 		break;
 	}
 

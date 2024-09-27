@@ -1,42 +1,39 @@
 #pragma once
 #include <algorithm>
-#include "Scene\RenderableObject.h"
 #include <vector>
 #include <string>
+#include <stdafx.h>
+#include <memory>
 
-
+class ShaderManager;
 class Graphics;
+class Node;
 class Mesh;
 class ThirdPerson;
 class Material;
 class Vertex;
 
-class Model : public RenderableObject
+class Model 
 {
 public:
-	Model(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> shaderManager);
+	Model(const std::string& name, std::shared_ptr<ShaderManager> shaderManager);
 	~Model();
 
-	void AddMesh(Mesh* mesh);
+	
 
-	virtual void Update(float deltaTime)override;
-	virtual void Render() override;
-	void controlWindow()override ;
+	void Update(Graphics& gfx,float deltaTime);
+	void SetRootTransform(FXMMATRIX tf);
+	void Render(Graphics& gfx) ;
 
-	void Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime);
-	void Rotate(float yawAmount, float pitchAmount);
+
+	void controlWindow();
 
 	
 private:
 	friend class SceneSerializer;
 
 protected:
-	Graphics& m_graphics;
-	std::vector<Mesh*> m_meshes;
-	DirectX::XMVECTOR m_position;
-	DirectX::XMVECTOR m_orientation;
-	DirectX::XMVECTOR m_scale;
-	float yaw;
-	float pitch;
+	std::unique_ptr<Node> pRoot;
+	std::vector<std::unique_ptr<Mesh>> meshPtrs;
 };
 

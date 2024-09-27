@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include "Graphics/Graphics.h"
-#include "Scene/RenderableObject.h"
+#include "Scene/GameObject.h"
 #include "Sample\Cube.h"
 #include "Sample\Plane.h"
 #include "Scene\SceneCamera.h"
@@ -16,7 +16,6 @@
 Scene::Scene(const std::string& name, Window& win)
 	:
 	m_name(name),
-	m_graphics(win.GetInstance()),
 	sceneCamera(nullptr),
 	cube(nullptr),			
 	plane(nullptr),
@@ -24,17 +23,17 @@ Scene::Scene(const std::string& name, Window& win)
     light(nullptr)
 {
     //cameras
-    sceneCamera = new SceneCamera("main", m_graphics);
+    sceneCamera = new SceneCamera("main", win.GetInstance());
 
 	//initialize shadermanager
-    auto defaultShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
-    defaultShader->SetShaderLayout("POSITION|COLOR");
+    auto defaultShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
+    defaultShader->SetShaderLayout(win.GetInstance(),"POSITION|COLOR");
 
-    auto texturedShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
-    texturedShader->SetShaderLayout("POSITION|TEXCOORD|NORMAL|TANGENT");
+    auto texturedShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
+    texturedShader->SetShaderLayout(win.GetInstance(),"POSITION|TEXCOORD|NORMAL|TANGENT");
 
-    auto gridShader = std::make_shared<ShaderManager>(m_graphics, D3D11_PRIMITIVE_TOPOLOGY_LINELIST, L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
-    gridShader->SetShaderLayout("POSITION|COLOR");
+    auto gridShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST, L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
+    gridShader->SetShaderLayout(win.GetInstance(),"POSITION|COLOR");
     
     shaders.emplace_back(defaultShader);
     shaders.emplace_back(gridShader);
@@ -46,27 +45,27 @@ Scene::Scene(const std::string& name, Window& win)
 	
     //light
     //light = std::make_unique<DirectionalLight>("Directional", m_graphics, texturedShader);
-    light = new DirectionalLight("Directional", m_graphics, texturedShader);
-    AddRenderableObject(light);
+    light = new DirectionalLight("Directional", win.GetInstance(), texturedShader);
+   // AddGameObject(light);
 	//model loading 
-    grid = std::make_unique<Grid>("grid", m_graphics, gridShader);
+    grid = std::make_unique<Grid>("grid", win.GetInstance(), gridShader);
     //player
-    player = std::make_unique<Player>("player", m_graphics, texturedShader);
+    player = std::make_unique<Player>("player", win.GetInstance(), texturedShader);
 
 
-	cube = new Cube("cube", m_graphics, texturedShader);
+	cube = new Cube("cube", win.GetInstance(),texturedShader);
 
-	plane = new Plane("ground", m_graphics, texturedShader);
-	plane->CreatePlane(200.0f,200.0f,30.0f,30.0f);
+	plane = new Plane("ground", texturedShader);
+	plane->CreatePlane(win.GetInstance(),200.0f,200.0f,30.0f,30.0f);
 
     //m_model = new ModelLoader("Assets/model/ghost/ghost.glb",m_graphics, texturedShader);
-    //m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",m_graphics, texturedShader);
-    //m_model = new ModelLoader("Assets/model/ring.gltf",m_graphics, texturedShader);
-   // m_model = new ModelLoader("Assets/model/boxy.gltf",m_graphics, texturedShader);
-      //m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics, texturedShader);
-  //  m_model = new ModelLoader("Assets/model/muro/muro.obj",m_graphics, texturedShader);
-     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj",m_graphics, texturedShader);
-     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf",m_graphics, texturedShader);
+    //m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",win.GetInstance(), texturedShader);
+    m_model = new ModelLoader("Assets/model/ring.gltf", win.GetInstance(), texturedShader);
+    //m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance(), texturedShader);
+     // m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics, texturedShader);
+   // m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance(), texturedShader);
+     //m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj",m_graphics, texturedShader);
+     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance(), texturedShader);
    // m_model->LoadModel("Assets/model/nano.gltf");
 
 }
@@ -81,7 +80,7 @@ Scene::~Scene()
 
 }
 
-void Scene::RemoveRenderableObject(RenderableObject* object)
+void Scene::RemoveGameObject(GameObject* object)
 {
 	// Remove the object from the vector
 	auto it = std::find(objects.begin(), objects.end(), object);
@@ -91,35 +90,39 @@ void Scene::RemoveRenderableObject(RenderableObject* object)
 	}
 }
 
-void Scene::AddRenderableObject(RenderableObject* object)
+void Scene::AddGameObject(GameObject* object)
 {
     objects.emplace_back(object);
 }
 
-void Scene::Update(float deltaTime)
+void Scene::Update(Graphics& gfx,float deltaTime)
 {
 	sceneCamera->Update(deltaTime,*player.get());
-    m_model->Update(deltaTime);
+    light->Update(gfx, deltaTime);
+    m_model->Update(gfx,deltaTime);
+
    // player->Update(deltaTime);
    // cube->Update(deltaTime);
    // plane->Update(deltaTime);
     for (const auto& objects : objects)
     {
-        objects->Update(deltaTime);
+        objects->Update(gfx,deltaTime);
     }
 
 }
 
-void Scene::Render()
+void Scene::Render(Graphics& gfx)
 {
-    m_model->Render();
+    shaders[2]->BindShaders(gfx);
+    light->Render(gfx);
+    m_model->Render(gfx);
     m_model->controlWindow();
-	this->controlWindow();
+	this->controlWindow(gfx);
     for (const auto& object : objects)
     {
-        object->Render();
+        object->Render(gfx);
     }
-    sceneCamera->Render();
+    sceneCamera->Render(gfx);
     m_model->controlWindow();
    // player->Render();
    // cube->Render();
@@ -131,9 +134,10 @@ void Scene::SetName(const std::string& name)
 {
     m_name = name;
 }
-void Scene::controlWindow()
+void Scene::controlWindow(Graphics& gfx)
 {
     ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize);
+    light->controlWindow();
 
     // Detect right-click in the empty space to open the Add Object dialog
     if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
@@ -164,16 +168,16 @@ void Scene::controlWindow()
         {
             if (objectName[0] != '\0')
             {
-                RenderableObject* newObject = nullptr;
+                GameObject* newObject = nullptr;
 
                 if (objectType == 0) // Model
                 {
-                    newObject = new Model(objectName, m_graphics, shaders[0]);
+                    //newObject = new Model(objectName, shaders[0]);
                    // dynamic_cast<Model*>(newObject)->CreateMesh(cube->getVertices(), cube->getMesh()->getIndices());
                 }
                 else if (objectType == 1) // Directional Light
                 {
-                    newObject = new DirectionalLight(objectName, m_graphics, shaders[0]);
+                    //newObject = new DirectionalLight(objectName, gfx, shaders[0]);
                 }
                 else if (objectType == 2) // Point Light
                 {
@@ -186,8 +190,8 @@ void Scene::controlWindow()
 
                 if (newObject)
                 {
-                    AddRenderableObject(newObject);
-                    m_selectedObject = newObject; // Select the new object
+                   // AddGameObject(newObject);
+                  //  m_selectedObject = newObject; // Select the new object
                     objectName[0] = '\0'; // Clear the name buffer
                 }
             }
@@ -213,41 +217,41 @@ void Scene::controlWindow()
         for (auto& model : objects)
         {
             // Display model names as selectable items
-            if (ImGui::Selectable(model->getName().c_str(), m_selectedObject == model))
-            {
-                // Update the selected model
-                m_selectedObject = model;
-            }
+           // if (ImGui::Selectable(model->getName().c_str(), m_selectedObject == model))
+           // {
+           //     // Update the selected model
+           //    // m_selectedObject = model;
+           // }
             // Open a context menu when right-clicked on a model
-            if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
-            {
-                // Add option to rename the model
-                if (ImGui::MenuItem("Rename"))
-                {
-                    // Set the flag to show the rename input field
-                    m_renameObject = true;
-                }
-
-                // Add option to delete the model
-                if (ImGui::MenuItem("Delete"))
-                {
-                    // Remove the model from the scene
-                    RemoveRenderableObject(model);
-                }
-
-                if (ImGui::BeginMenu("Change Shader"))
-                {
-                    for (size_t i = 0; i < shaders.size(); ++i)
-                    {
-                        if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str()))
-                        {
-                            model->SetShaderManager(shaders[i]);
-                        }
-                    }
-                    ImGui::EndMenu();
-                }
-                ImGui::EndPopup();
-            }
+           // if (ImGui::BeginPopupContextItem(std::to_string(reinterpret_cast<std::uintptr_t>(model)).c_str()))
+           // {
+           //     // Add option to rename the model
+           //     if (ImGui::MenuItem("Rename"))
+           //     {
+           //         // Set the flag to show the rename input field
+           //         m_renameObject = true;
+           //     }
+           //
+           //     // Add option to delete the model
+           //     if (ImGui::MenuItem("Delete"))
+           //     {
+           //         // Remove the model from the scene
+           //       //  RemoveGameObject(model);
+           //     }
+           //
+           //     if (ImGui::BeginMenu("Change Shader"))
+           //     {
+           //         for (size_t i = 0; i < shaders.size(); ++i)
+           //         {
+           //             if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str()))
+           //             {
+           //                // model->SetShaderManager(shaders[i]);
+           //             }
+           //         }
+           //         ImGui::EndMenu();
+           //     }
+           //     ImGui::EndPopup();
+           // }
         }
 
         ImGui::Text("Scene Cameras");
@@ -274,7 +278,7 @@ void Scene::controlWindow()
     }
     else if (sceneCamera->m_selectedCamera)
     {
-        sceneCamera->ControlWindow();
+        sceneCamera->ControlWindow(gfx);
     }
 
     // Show input field for renaming the model
@@ -311,13 +315,13 @@ void Scene::controlWindow()
         ImGui::BeginTabBar("Settings");
         if (ImGui::BeginTabItem("General"))
         {
-            m_graphics.ControlWindow();
+            gfx.ControlWindow();
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Shader Editor"))
         {
-            editor->Render();
+            editor->Render(gfx);
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

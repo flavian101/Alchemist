@@ -3,9 +3,9 @@
 #include "Graphics/Graphics.h"
 #include "Scene/Shaders/ShaderManager.h"
 
-Grid::Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager)
+Grid::Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> manager)
 	:
-	builder(name, g, manager)
+	builder(name, manager)
 {
 
     float gridSize = 1000.0f; // 100 units across (50 in each direction from center)
@@ -30,5 +30,5 @@ Grid::Grid(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> 
     {
         indices.push_back(i);
     }
-    builder.createMesh(indices, vertices, nullptr);
+    builder.createMesh(gfx,indices, vertices, nullptr);
 }

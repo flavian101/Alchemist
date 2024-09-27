@@ -13,9 +13,8 @@
 std::map<std::string, SceneCamera*> SceneCamera::m_cameras;
 std::vector<std::string> SceneCamera::m_cameraNames;
 
-SceneCamera::SceneCamera(const std::string& name, Graphics& g)
+SceneCamera::SceneCamera(const std::string& name, Graphics& gfx)
     : m_name(name),
-    m_graphics(g),
     m_perspectiveCamera(nullptr),
     m_orthographicCamera(nullptr),
     isPerspective(true),
@@ -23,19 +22,19 @@ SceneCamera::SceneCamera(const std::string& name, Graphics& g)
 {
     if (isPerspective) {
         m_perspectiveCamera = std::make_unique<FreeLook>();
-        //m_perspectiveCamera->SetCamera(45.0f, m_graphics.GetAspectRatio(), 1.0f, 1000.0f);
+        //m_perspectiveCamera->SetCamera(45.0f, gfx.GetAspectRatio(), 1.0f, 1000.0f);
     }
     else {
         m_orthographicCamera = std::make_unique<OrthographicCamera>();
-        m_orthographicCamera->SetCamera(m_graphics.GetWidth(), m_graphics.GetHeight(), 1.0f, 5.0f);
+        m_orthographicCamera->SetCamera(gfx.GetWidth(), gfx.GetHeight(), 1.0f, 5.0f);
     }
 
     m_cameras[name] = this;
     m_cameraNames.push_back(name);
-    input = std::make_unique<Input>(g.getWin());
-    g.SetViewMatrix(m_perspectiveCamera->GetView());
-    g.SetProjectionMatrix(m_perspectiveCamera->GetProjectionMatrix());
-    m_perspectiveCamera->SetAspectRatio(g.GetAspectRatio());
+    input = std::make_unique<Input>(gfx.getWin());
+    gfx.SetViewMatrix(m_perspectiveCamera->GetView());
+    gfx.SetProjectionMatrix(m_perspectiveCamera->GetProjectionMatrix());
+    m_perspectiveCamera->SetAspectRatio(gfx.GetAspectRatio());
 }
 
 SceneCamera::~SceneCamera() {
@@ -81,11 +80,11 @@ void SceneCamera::Update(float delta,Player& player)
     }
 }
 
-void SceneCamera::Render() {
+void SceneCamera::Render(Graphics& gfx) {
    // m_selectedCamera = GetSelectedCamera();
     if (m_selectedCamera) {
-        m_graphics.SetViewMatrix(m_selectedCamera->getActiveCamera()->GetView());
-        m_graphics.SetProjectionMatrix(m_selectedCamera->getActiveCamera()->GetProjectionMatrix());
+        gfx.SetViewMatrix(m_selectedCamera->getActiveCamera()->GetView());
+        gfx.SetProjectionMatrix(m_selectedCamera->getActiveCamera()->GetProjectionMatrix());
     }
 }
 
@@ -117,14 +116,14 @@ OrthographicCamera* SceneCamera::GetOrthographic() {
     return m_orthographicCamera.get();
 }
 
-void SceneCamera::CreateNewCamera(const std::string& name, bool perspective) {
+void SceneCamera::CreateNewCamera(const std::string& name, bool perspective, Graphics& gfx) {
     if (m_cameras.find(name) != m_cameras.end()) {
         std::cout << "A camera with the name '" << name << "' already exists." << std::endl;
         return;
     }
 
-    SceneCamera* newCamera = new SceneCamera(name, m_graphics);
-   // input = std::make_unique<Input>(m_graphics.getWin());
+    SceneCamera* newCamera = new SceneCamera(name, gfx);
+   // input = std::make_unique<Input>(gfx.getWin());
     m_cameras[name] = newCamera;
     m_cameraNames.push_back(name);
 }
@@ -133,7 +132,7 @@ const std::map<std::string, SceneCamera*>& SceneCamera::GetCameras() const {
     return m_cameras;
 }
 
-void SceneCamera::ControlWindow() 
+void SceneCamera::ControlWindow(Graphics& gfx)
 {
     ImGui::Text("Camera Settings");
     if (ImGui::Button("Create New Camera")) {
@@ -144,7 +143,7 @@ void SceneCamera::ControlWindow()
         static char cameraName[128] = "";
         ImGui::InputText("Name", cameraName, IM_ARRAYSIZE(cameraName));
         if (ImGui::Button("Add Camera")) {
-            CreateNewCamera(cameraName, true);
+            CreateNewCamera(cameraName, true,gfx);
             cameraName[0] = '\0'; // Clear the input text field after adding the camera
             showCreateWindow = false; // Hide the create window after adding the camera
         }

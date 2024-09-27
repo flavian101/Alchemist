@@ -7,8 +7,8 @@ public:
 	PointLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
 	void SetRange(float range);
 
-	void Update(float deltaTime)override;
-	void Render()override;
+	void Update(Graphics& gfx,float deltaTime)override;
+	void Render(Graphics& gfx)override;
 	void controlWindow()override;
 
 };

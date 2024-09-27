@@ -9,13 +9,12 @@ class Cube
 {
 
 public:
-	Cube(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> manager);
-	void Update(float deltaTime);
-	void Render();
+	Cube(const std::string& name,Graphics& gfx, std::shared_ptr<ShaderManager> manager);
+	void Update(Graphics& gfx,float deltaTime);
+	void Render(Graphics& gfx);
 
 
 private:
-	Graphics& m_graphic;
 	ModelBuilder builder;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned short> indices;

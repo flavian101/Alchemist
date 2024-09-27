@@ -1,5 +1,4 @@
 #pragma once
-#include "Scene/RenderableObject.h"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -13,29 +12,26 @@
 class Graphics;
 class Vertex;
 class Mesh;
+class Node;
 
 
-class ModelLoader
+class ModelLoader : public Model
 {
 public:
-	ModelLoader(const std::string& filepath, Graphics& g, std::shared_ptr<ShaderManager> manager);
-	void Update(float deltaTime);
-	void Render();
+	ModelLoader(const std::string& filepath, Graphics& gfx, std::shared_ptr<ShaderManager> manager);
+	void Update(Graphics& gfx,float deltaTime);
+	void Render(Graphics& gfx);
 	//std::string& GetPath() { return m_filepath; }
 	//void setPath(std::string& path);
 
-	void controlWindow();
-
 private:
-	void ProcessNode(aiNode* node, const aiScene* scene, const DirectX::FXMMATRIX& parentTransform);
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, const DirectX::FXMMATRIX& nodeTransform);
-	bool LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Material::TextureType textureType, Material& material);
+	std::unique_ptr<Mesh> parseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
+	std::unique_ptr<Node> parseNode(int& nextId, const aiNode& node);
+	bool LoadMaterialTextures(Graphics& gfx,const aiMaterial& mat, aiTextureType type, Material::TextureType textureType, Material& material);
 	
 	
 private:
-	Graphics& m_graphics;
 	std::string basePath;
-	Model m_model;
 
 };
 

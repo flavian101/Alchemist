@@ -3,16 +3,15 @@
 #include "Graphics/Graphics.h"
 #include <sstream>
 #include <fstream>
-ShaderManager::ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type,
+ShaderManager::ShaderManager(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type,
     const std::wstring& vertexShaderPath, const std::wstring& pixelShaderPath, bool isCompiled)
     : 
-    m_graphics(g),
-    m_topology(std::make_unique < Utils::Topology>(g, type)),
-    m_vertexShader(std::make_unique<Utils::VertexShader>(g)),
-    m_pixelShader(std::make_unique < Utils::PixelShader>(g))
+    m_topology(std::make_unique < Utils::Topology>(gfx, type)),
+    m_vertexShader(std::make_unique<Utils::VertexShader>()),
+    m_pixelShader(std::make_unique < Utils::PixelShader>())
 {
     SetShaderPaths(vertexShaderPath, pixelShaderPath);
-    LoadShaders(isCompiled);
+    LoadShaders(gfx,isCompiled);
 }
 
 ShaderManager::~ShaderManager()
@@ -26,12 +25,12 @@ void ShaderManager::SetShaderPaths(const std::wstring& vertexShaderPath, const s
     m_pixelShaderPath = pixelShaderPath;
 }
 
-void ShaderManager::LoadShaders(bool isCompiled)
+void ShaderManager::LoadShaders(Graphics& gfx,bool isCompiled)
 {
     if (isCompiled)
     {
-        m_vertexShader->LoadCompiledVertexShader(m_vertexShaderPath);
-        m_pixelShader->LoadCompiledPixelShader(m_pixelShaderPath);
+        m_vertexShader->LoadCompiledVertexShader(gfx,m_vertexShaderPath);
+        m_pixelShader->LoadCompiledPixelShader(gfx,m_pixelShaderPath);
     }
     else
     {
@@ -50,27 +49,27 @@ void ShaderManager::LoadShaders(bool isCompiled)
         m_vertexShaderCode = vertexShaderStream.str();
         m_pixelShaderCode = pixelShaderStream.str();
 
-        m_vertexShader->LoadStreamVertexShader(m_vertexShaderCode);
-        m_pixelShader->LoadStreamPixelShader(m_pixelShaderCode);
+        m_vertexShader->LoadStreamVertexShader(gfx,m_vertexShaderCode);
+        m_pixelShader->LoadStreamPixelShader(gfx,m_pixelShaderCode);
     }
 }
 
-void ShaderManager::ReloadShaders()
+void ShaderManager::ReloadShaders(Graphics& gfx)
 {
-    LoadShaders(false);  // Reloads shaders from source code
+    LoadShaders(gfx,false);  // Reloads shaders from source code
 }
 
-void ShaderManager::SetShaderLayout(const std::string& layout)
+void ShaderManager::SetShaderLayout(Graphics& gfx,const std::string& layout)
 {
-    m_layout = std::make_unique<Utils::InputLayout>(m_graphics, layout, m_vertexShader->GetByteCode());
+    m_layout = std::make_unique<Utils::InputLayout>(gfx, layout, m_vertexShader->GetByteCode());
 }
 
-void ShaderManager::BindShaders()
+void ShaderManager::BindShaders(Graphics& gfx)
 {
-    m_vertexShader->Bind();
-    m_pixelShader->Bind();
-    m_topology->Bind();
-    m_layout->Bind();
+    m_vertexShader->Bind(gfx);
+    m_pixelShader->Bind(gfx);
+    m_topology->Bind(gfx);
+    m_layout->Bind(gfx);
 }
 void ShaderManager::SetVertexShaderCode(const std::string& V_code)
 {

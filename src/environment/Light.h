@@ -1,5 +1,4 @@
 #pragma once
-#include "Scene/RenderableObject.h"
 #include "Graphics/ConstantBuffer.h"
 
 
@@ -7,7 +6,7 @@ class Graphics;
 class ShaderManager;
 class Transform;
 
-class Light: public RenderableObject
+class Light
 {
 public:
 	Light(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
@@ -17,13 +16,12 @@ public:
 	virtual void SetDiffuse(XMFLOAT4 diffuse);
 	virtual void SetAmbient(XMFLOAT4 ambient);
 	virtual void SetSpecular(XMFLOAT4 specular);
-	virtual void Update(float deltaTime)override;
-	virtual void Render()override;
-	virtual void controlWindow() override;
+	virtual void Update(Graphics& gfx,float deltaTime);
+	virtual void Render(Graphics& gfx);
+	virtual void controlWindow();
 
 
 private:
-	Graphics& m_graphics;
 	std::string m_name;
 	ConstantBuffer<cb_psConstantBuffer> PS_Buffer;
 

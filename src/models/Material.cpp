@@ -3,58 +3,57 @@
 #include <imgui/imgui.h>
 
 
-Material::Material(Graphics& g)
+Material::Material(Graphics& gfx)
 	:
-	m_graphics(g),
 	hasAlbedoMap(FALSE),
 	hasNormalMap (FALSE),
 	hasMetallicMap( FALSE),
 	hasRoughnessMap (FALSE),
 	hasAOMap (FALSE)
 {
-	materialBuffer.Initialize(m_graphics);
+	materialBuffer.Initialize(gfx);
 	materialBuffer.data.materialStruct.baseColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	materialBuffer.data.materialStruct.emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
-	samp = std::make_unique<Utils::Sampler>(m_graphics);
+	samp = std::make_unique<Utils::Sampler>(gfx);
 }
 
-void Material::Update()
+void Material::Update(Graphics& gfx)
 {
 	materialBuffer.data.materialStruct.hasAlbedoMap =static_cast<BOOL>(hasAlbedoMap);
 	materialBuffer.data.materialStruct.hasNormalMap = static_cast<BOOL>(hasNormalMap);
 	materialBuffer.data.materialStruct.hasMetallicMap = static_cast<BOOL>(hasMetallicMap);
 	materialBuffer.data.materialStruct.hasRoughnessMap = static_cast<BOOL>(hasRoughnessMap);
 	materialBuffer.data.materialStruct.hasAOMap = static_cast<BOOL>(hasAOMap);
-	materialBuffer.Update(m_graphics);
+	materialBuffer.Update(gfx);
 }
 
-void Material::Bind()
+void Material::Bind(Graphics& gfx)
 {
-	m_graphics.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
-	BindTextures();
-	samp->Bind();
+	gfx.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
+	BindTextures(gfx);
+	samp->Bind(gfx);
 }
 
-void Material::LoadTexture(TextureType type, const std::string& path)
+void Material::LoadTexture(Graphics& gfx,TextureType type, const std::string& path)
 {
 	if (path.empty())
 	{
 		return;
 	}
-	auto texture = std::make_unique<Utils::Texture>(m_graphics, path.c_str());
+	auto texture = std::make_unique<Utils::Texture>(gfx, path.c_str());
 	textures[type] = std::move(texture);
 }
 
-void Material::BindTextures()
+void Material::BindTextures(Graphics& gfx)
 {
 	for (const auto& [type, texture] : textures)
 	{
 		if (texture)
 		{
-			texture->Bind(static_cast<UINT>(type)); 
+			texture->Bind(gfx,static_cast<UINT>(type)); 
 		}
 	}
 }

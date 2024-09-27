@@ -10,11 +10,11 @@ void PointLight::SetRange(float range)
 {
 }
 
-void PointLight::Update(float deltaTime)
+void PointLight::Update(Graphics& gfx,float deltaTime)
 {
 }
 
-void PointLight::Render()
+void PointLight::Render(Graphics& gfx)
 {
 }
 

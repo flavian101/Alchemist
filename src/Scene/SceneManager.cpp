@@ -8,19 +8,18 @@
 
 SceneManager::SceneManager (Window* win)
     :
-    m_graphics(win->GetInstance()),
     activeScene(nullptr),
     thumbnail(nullptr)
 {
     activeScene = new Scene("begin", *win);
     AddScene(activeScene);
     showSceneWindow = true; 
-    thumbnail = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/Alchemist.png");
-    Logo = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/Alchemist.png");
-    minimize= std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/minimize.png");
-    maximize = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/maximize.png");
-    close = std::make_unique<Utils::Texture>(m_graphics, "Assets/textures/thumbnail/close.png");
-    serializer = new SceneSerializer(*activeScene,m_graphics);
+    thumbnail = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/Alchemist.png");
+    Logo = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/Alchemist.png");
+    minimize= std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/minimize.png");
+    maximize = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/maximize.png");
+    close = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/close.png");
+    serializer = new SceneSerializer(*activeScene,win->GetInstance());
 
 }
 
@@ -55,19 +54,19 @@ void SceneManager::SetActiveScene(const std::string& name) {
     }
 }
 
-void SceneManager::Update(float deltaTime) {
+void SceneManager::Update(Graphics& gfx,float deltaTime) {
     if (activeScene)
-        activeScene->Update(deltaTime);
+        activeScene->Update(gfx,deltaTime);
 }
 
-void SceneManager::Render() 
+void SceneManager::Render(Graphics& gfx)
 {
-    thumbnail->Bind();
-    this->ControlWindow();
+    thumbnail->Bind(gfx);
+    this->ControlWindow(gfx);
     if (activeScene)
-        activeScene->Render();
+        activeScene->Render(gfx);
 }
-void SceneManager::ControlWindow()
+void SceneManager::ControlWindow(Graphics& gfx)
 { 
 
     if (ImGui::BeginMainMenuBar())
@@ -94,7 +93,7 @@ void SceneManager::ControlWindow()
             ImGui::Separator();
             if (ImGui::MenuItem("Exit"))
             {
-                PostMessage(get<0>(m_graphics.getWin()), WM_CLOSE, 0, 0);
+                PostMessage(get<0>(gfx.getWin()), WM_CLOSE, 0, 0);
 
             }
             ImGui::EndMenu();
@@ -112,20 +111,20 @@ void SceneManager::ControlWindow()
         ImTextureID tex_id_2 = minimize->GetSRV();
         if (ImGui::ImageButton(tex_id_2, ImVec2(20, 20)))
         {
-            ShowWindow(get<0>(m_graphics.getWin()), SW_MINIMIZE);
+            ShowWindow(get<0>(gfx.getWin()), SW_MINIMIZE);
         }
         ImGui::SameLine();
         ImTextureID tex_id_3 = maximize->GetSRV();
 
         if (ImGui::ImageButton(tex_id_3, ImVec2(20, 20)))
         {
-            ShowWindow(get<0>(m_graphics.getWin()), IsZoomed(get<0>(m_graphics.getWin())) ? SW_RESTORE : SW_MAXIMIZE);
+            ShowWindow(get<0>(gfx.getWin()), IsZoomed(get<0>(gfx.getWin())) ? SW_RESTORE : SW_MAXIMIZE);
         }
         ImGui::SameLine();
         ImTextureID tex_id_4 = close->GetSRV();
         if (ImGui::ImageButton(tex_id_4, ImVec2(20, 20)))
         {
-            PostMessage(get<0>(m_graphics.getWin()), WM_CLOSE, 0, 0);
+            PostMessage(get<0>(gfx.getWin()), WM_CLOSE, 0, 0);
         }
         // Handle dragging
         if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
@@ -135,7 +134,7 @@ void SceneManager::ControlWindow()
                 g_isDragging = true;
                 GetCursorPos(&g_dragStartPoint);
                 RECT windowRect;
-                GetWindowRect(get<0>(m_graphics.getWin()), &windowRect);
+                GetWindowRect(get<0>(gfx.getWin()), &windowRect);
                 g_windowStartPoint.x = windowRect.left;
                 g_windowStartPoint.y = windowRect.top;
             }
@@ -152,7 +151,7 @@ void SceneManager::ControlWindow()
             int dx = currentPos.x - g_dragStartPoint.x;
             int dy = currentPos.y - g_dragStartPoint.y;
 
-            SetWindowPos(get<0>(m_graphics.getWin()), NULL, g_windowStartPoint.x + dx, g_windowStartPoint.y + dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+            SetWindowPos(get<0>(gfx.getWin()), NULL, g_windowStartPoint.x + dx, g_windowStartPoint.y + dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         }
 
 
@@ -160,7 +159,7 @@ void SceneManager::ControlWindow()
     }
 
     RECT rect;
-    GetClientRect(get<0>(m_graphics.getWin()), &rect);
+    GetClientRect(get<0>(gfx.getWin()), &rect);
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
 

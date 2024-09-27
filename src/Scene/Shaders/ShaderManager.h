@@ -15,13 +15,13 @@ namespace Utils
 class ShaderManager
 {
 public:
-	ShaderManager(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+	ShaderManager(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
 		const std::wstring& vertexShaderPath = L"", const std::wstring& pixelShaderPath = L"", bool isCompiled = false);
 	~ShaderManager();
 
-	void ReloadShaders();
-	void SetShaderLayout(const std::string& layout);
-	void BindShaders();
+	void ReloadShaders(Graphics& gfx);
+	void SetShaderLayout(Graphics& gfx,const std::string& layout);
+	void BindShaders(Graphics& gfx);
 
 
 	void SetVertexShaderCode(const std::string& V_code);
@@ -40,11 +40,10 @@ public:
 	std::string GetVertexShaderCode();
 	std::string GetPixelShaderCode();
 private:
-	void LoadShaders(bool isCompiled);
+	void LoadShaders(Graphics& gfx,bool isCompiled);
 	void SetShaderPaths(const std::wstring& vertexShaderPath, const std::wstring& pixelShaderPath);
 
 private:
-	Graphics& m_graphics;
 	std::shared_ptr<Utils::VertexShader> m_vertexShader;
 	std::shared_ptr<Utils::PixelShader> m_pixelShader;
 	std::shared_ptr<Utils::InputLayout> m_layout;

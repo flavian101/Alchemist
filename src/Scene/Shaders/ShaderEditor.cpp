@@ -2,6 +2,7 @@
 #include "ShaderManager.h"
 #include "imgui/imgui.h"
 #include <fstream>
+#include <Graphics/Graphics.h>
 
 ShaderEditor::ShaderEditor(std::shared_ptr<ShaderManager> shaderManager)
 	:
@@ -15,7 +16,7 @@ ShaderEditor::ShaderEditor(std::shared_ptr<ShaderManager> shaderManager)
 }
 
 
-void ShaderEditor::Render() {
+void ShaderEditor::Render(Graphics& gfx) {
     ImGui::Text("Shader Editor");
 
     static char vertexShaderBuffer[1024 * 16];
@@ -42,7 +43,7 @@ void ShaderEditor::Render() {
     if (m_needsReload && ImGui::Button("compile")) {
         m_shaderManager->SetVertexShaderCode(m_vertexShaderCode);
         m_shaderManager->SetPixelShaderCode(m_pixelShaderCode);
-        m_shaderManager->ReloadShaders();
+        m_shaderManager->ReloadShaders(gfx);
         m_needsReload = false;
         m_needsSaving = true;
     }

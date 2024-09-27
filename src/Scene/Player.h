@@ -13,9 +13,9 @@ class Graphics;
 class Player
 {
 public:
-	Player(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> shaderManager);
-	void Update(float deltaTime);
-	void Render();
+	Player(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> shaderManager);
+	void Update(Graphics& gfx,float deltaTime);
+	void Render(Graphics& gfx);
 
 private:
 	ModelBuilder builder;

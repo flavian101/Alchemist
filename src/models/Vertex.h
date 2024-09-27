@@ -6,83 +6,78 @@ enum class VertexType {
     Pos3Col,
     Pos3Tex,
     Pos3TexNorm,
-    pos3TexNormTan,
+    Pos3TexNormTan,
 };
 
 class Vertex
 {
 public:
-    union
-    {
-        struct pos3
-        {
-            XMFLOAT3 pos;
-        }pos3;
-        struct Pos3Col
-        {
-         
+    union {
+        XMFLOAT3 pos;           // Common position
+        struct {
             XMFLOAT3 pos;
             XMFLOAT4 col;
-            
-        } pos3Col;
+        } posCol;
 
-        struct Pos3TexCol
-        {
+        struct {
             XMFLOAT3 pos;
             XMFLOAT2 tex;
-        } pos3Tex;
-        struct Pos3TexNorm
-        {
+        } posTex;
+
+        struct {
             XMFLOAT3 pos;
             XMFLOAT2 tex;
             XMFLOAT3 norm;
-        }pos3TexNorm;
-        struct Pos3TexNormTan
-        {
+        } posTexNorm;
+
+        struct {
             XMFLOAT3 pos;
             XMFLOAT2 tex;
             XMFLOAT3 norm;
             XMFLOAT3 tangent;
-        }pos3TexNormTan;
+        } posTexNormTan;
     };
-    Vertex()
-    {}
-    Vertex(float x, float y, float z):type(VertexType::pos3)
-    {
-        pos3.pos = XMFLOAT3(x, y, z);
-    }
-    Vertex(float x, float y, float z, float r, float g, float b, float a):type(VertexType::Pos3Col)
-    {
-        pos3Col.pos = XMFLOAT3(x, y, z);
-        pos3Col.col = XMFLOAT4(r, g, b, a);
-    }
 
-    Vertex(float x, float y,float z, float u, float v):type(VertexType::Pos3Tex)
-    {
-        pos3Tex.pos = XMFLOAT3(x, y, z);
-        pos3Tex.tex = XMFLOAT2(u, v);
-    }
-    Vertex(float x, float y, float z, float u, float v,float xn, float yn, float zn) :type(VertexType::Pos3TexNorm)
-    {
-        pos3TexNorm.pos = XMFLOAT3(x, y, z);
-        pos3TexNorm.tex = XMFLOAT2(u, v);
-        pos3TexNorm.norm = XMFLOAT3(xn, yn, zn);
-    }
-
-    Vertex(float x, float y, float z, float u, float v, float xn, float yn,
-        float zn, float tx, float ty, float tz) :type(VertexType::pos3TexNormTan)
-    {
-        pos3TexNorm.pos = XMFLOAT3(x, y, z);
-        pos3TexNorm.tex = XMFLOAT2(u, v);
-        pos3TexNorm.norm = XMFLOAT3(xn, yn, zn);
-        pos3TexNormTan.tangent = (XMFLOAT3(tx, ty, tz));
-    }
-
-    // Ensure proper destruction of union members
-    ~Vertex() {}
-
+    // Type of vertex
     VertexType type;
+    Vertex()
+    {
+
+    }
+    // Constructors based on different layouts
+    Vertex(float x, float y, float z) : type(VertexType::pos3)
+    {
+        pos = XMFLOAT3(x, y, z);
+    }
+
+    Vertex(float x, float y, float z, float r, float g, float b, float a) : type(VertexType::Pos3Col)
+    {
+        posCol.pos = XMFLOAT3(x, y, z);
+        posCol.col = XMFLOAT4(r, g, b, a);
+    }
+
+    Vertex(float x, float y, float z, float u, float v) : type(VertexType::Pos3Tex)
+    {
+        posTex.pos = XMFLOAT3(x, y, z);
+        posTex.tex = XMFLOAT2(u, v);
+    }
+
+    Vertex(float x, float y, float z, float u, float v, float xn, float yn, float zn) : type(VertexType::Pos3TexNorm)
+    {
+        posTexNorm.pos = XMFLOAT3(x, y, z);
+        posTexNorm.tex = XMFLOAT2(u, v);
+        posTexNorm.norm = XMFLOAT3(xn, yn, zn);
+    }
+
+    Vertex(float x, float y, float z, float u, float v, float xn, float yn, float zn, float tx, float ty, float tz)
+        : type(VertexType::Pos3TexNormTan)
+    {
+        posTexNormTan.pos = XMFLOAT3(x, y, z);
+        posTexNormTan.tex = XMFLOAT2(u, v);
+        posTexNormTan.norm = XMFLOAT3(xn, yn, zn);
+        posTexNormTan.tangent = XMFLOAT3(tx, ty, tz);
+    }
+
+    // Destructor
+    ~Vertex() {}
 };
-
-
-

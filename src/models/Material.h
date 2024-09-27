@@ -19,10 +19,10 @@ public:
 		Roughness,
 		AmbientOcclusion
 	};
-	Material(Graphics& g);
-	void Update();
-	void Bind();
-	void LoadTexture(TextureType type, const std::string& path);
+	Material(Graphics& gfx);
+	void Update(Graphics& gfx);
+	void Bind(Graphics& gfx);
+	void LoadTexture(Graphics& gfx,TextureType type, const std::string& path);
 
 	void HasAlbedo(bool has) { hasAlbedoMap = has; };
 	void HasNormal(bool has) { hasNormalMap = has; };
@@ -37,11 +37,10 @@ public:
 	void controlWindow();
 	
 private:
-	void BindTextures();
+	void BindTextures(Graphics& gfx);
 
 	
 private:
-	Graphics& m_graphics;
 	std::unique_ptr<Utils::Sampler> samp;
 	ConstantBuffer<cb_psMaterialBuffer> materialBuffer;
 	std::unordered_map<TextureType, std::unique_ptr<Utils::Texture>> textures;

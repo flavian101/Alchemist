@@ -1,11 +1,11 @@
 #include "Plane.h"
 #include "models/Vertex.h"
 #include "Scene/Shaders/ShaderManager.h"
+#include <MathUtils/MathUtils.h>
 
-Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager> maneger)
+Plane::Plane(const std::string& name, std::shared_ptr<ShaderManager> maneger)
 	:
-	m_graphic(g),
-    builder(name, g, std::move(maneger))
+    builder(name, std::move(maneger))
 
 {
    
@@ -16,7 +16,7 @@ Plane::Plane(const std::string& name,Graphics& g, std::shared_ptr<ShaderManager>
 	//this->setScale(Math::XMVectorToFloat3(m_scale));
 }
 
-void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
+void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned short> indices;
@@ -79,14 +79,14 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
             UINT bottomLeft = (i + 1) * n + j;
             UINT bottomRight = bottomLeft + 1;
 
-            XMFLOAT3 v0 = vertices[topLeft].pos3TexNormTan.pos;
-            XMFLOAT3 v1 = vertices[topRight].pos3TexNormTan.pos;
-            XMFLOAT3 v2 = vertices[bottomLeft].pos3TexNormTan.pos;
-            XMFLOAT3 v3 = vertices[bottomRight].pos3TexNormTan.pos;
+            XMFLOAT3 v0 = vertices[topLeft].posTexNormTan.pos;
+            XMFLOAT3 v1 = vertices[topRight].posTexNormTan.pos;
+            XMFLOAT3 v2 = vertices[bottomLeft].posTexNormTan.pos;
+            XMFLOAT3 v3 = vertices[bottomRight].posTexNormTan.pos;
 
-            XMFLOAT2 uv0 = vertices[topLeft].pos3TexNormTan.tex;
-            XMFLOAT2 uv1 = vertices[topRight].pos3TexNormTan.tex;
-            XMFLOAT2 uv2 = vertices[bottomLeft].pos3TexNormTan.tex;
+            XMFLOAT2 uv0 = vertices[topLeft].posTexNormTan.tex;
+            XMFLOAT2 uv1 = vertices[topRight].posTexNormTan.tex;
+            XMFLOAT2 uv2 = vertices[bottomLeft].posTexNormTan.tex;
 
             XMVECTOR edge1 = XMVectorSubtract(XMLoadFloat3(&v1), XMLoadFloat3(&v0));
             XMVECTOR edge2 = XMVectorSubtract(XMLoadFloat3(&v2), XMLoadFloat3(&v0));
@@ -121,43 +121,43 @@ void Plane::CreatePlane(float width, float depth, UINT m, UINT n)
             XMStoreFloat3(&t, tangent);
 
             // Accumulate normals
-            vertices[topLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topLeft].pos3TexNormTan.norm, n1);
-            vertices[topRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.norm, n1);
-            vertices[bottomLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.norm, n1);
-            vertices[topRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.norm, n2);
-            vertices[bottomLeft].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.norm, n2);
-            vertices[bottomRight].pos3TexNormTan.norm = Math::XMFloat3Add(vertices[bottomRight].pos3TexNormTan.norm, n2);
+            vertices[topLeft].posTexNormTan.norm = Math::XMFloat3Add(vertices[topLeft].posTexNormTan.norm, n1);
+            vertices[topRight].posTexNormTan.norm = Math::XMFloat3Add(vertices[topRight].posTexNormTan.norm, n1);
+            vertices[bottomLeft].posTexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].posTexNormTan.norm, n1);
+            vertices[topRight].posTexNormTan.norm = Math::XMFloat3Add(vertices[topRight].posTexNormTan.norm, n2);
+            vertices[bottomLeft].posTexNormTan.norm = Math::XMFloat3Add(vertices[bottomLeft].posTexNormTan.norm, n2);
+            vertices[bottomRight].posTexNormTan.norm = Math::XMFloat3Add(vertices[bottomRight].posTexNormTan.norm, n2);
 
             // Accumulate tangents
-            vertices[topLeft].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[topLeft].pos3TexNormTan.tangent, t);
-            vertices[topRight].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[topRight].pos3TexNormTan.tangent, t);
-            vertices[bottomLeft].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[bottomLeft].pos3TexNormTan.tangent, t);
-            vertices[bottomRight].pos3TexNormTan.tangent = Math::XMFloat3Add(vertices[bottomRight].pos3TexNormTan.tangent, t);
+            vertices[topLeft].posTexNormTan.tangent = Math::XMFloat3Add(vertices[topLeft].posTexNormTan.tangent, t);
+            vertices[topRight].posTexNormTan.tangent = Math::XMFloat3Add(vertices[topRight].posTexNormTan.tangent, t);
+            vertices[bottomLeft].posTexNormTan.tangent = Math::XMFloat3Add(vertices[bottomLeft].posTexNormTan.tangent, t);
+            vertices[bottomRight].posTexNormTan.tangent = Math::XMFloat3Add(vertices[bottomRight].posTexNormTan.tangent, t);
         }
     }
 
     // Normalize the accumulated normals and tangents
     for (UINT i = 0; i < vertices.size(); ++i)
     {
-        XMVECTOR normal = XMLoadFloat3(&vertices[i].pos3TexNormTan.norm);
-        XMVECTOR tangent = XMLoadFloat3(&vertices[i].pos3TexNormTan.tangent);
+        XMVECTOR normal = XMLoadFloat3(&vertices[i].posTexNormTan.norm);
+        XMVECTOR tangent = XMLoadFloat3(&vertices[i].posTexNormTan.tangent);
 
         normal = XMVector3Normalize(normal);
         tangent = XMVector3Normalize(tangent);
 
-        XMStoreFloat3(&vertices[i].pos3TexNormTan.norm, normal);
-        XMStoreFloat3(&vertices[i].pos3TexNormTan.tangent, tangent);
+        XMStoreFloat3(&vertices[i].posTexNormTan.norm, normal);
+        XMStoreFloat3(&vertices[i].posTexNormTan.tangent, tangent);
     }
 
     // Create the mesh with the generated vertices and indices
-    auto material = builder.CreateMaterial(
+    auto material = builder.CreateMaterial(gfx,
         "Assets/textures/hay.jpg",
         "Assets/textures/N_hay.png",
         "Assets/textures/M_hay.png",
         "Assets/textures/S_hay.png",
         "Assets/textures/AO_hay.png");
 
-    builder.createMesh(indices, vertices, material);
+    builder.createMesh(gfx,indices, vertices, material);
    
 }
 
@@ -169,12 +169,12 @@ float Plane::calculateHeight(float x, float z)
     return amplitude * sin(frequency * x) * cos(frequency * z);
 }
 
-void Plane::Update(float deltaTime)
+void Plane::Update(Graphics& gfx,float deltaTime)
 {
-    builder.getModel().Update(deltaTime);
+    builder.getModel().Update(gfx,deltaTime);
 }
 
-void Plane::Render()
+void Plane::Render(Graphics& gfx)
 {
-    builder.getModel().Render();
+    builder.getModel().Render(gfx);
 }
