@@ -1,12 +1,12 @@
 #pragma once
 #include "Graphics/ConstantBuffer.h"
-
+#include "Scene/GameObject.h"
 
 class Graphics;
 class ShaderManager;
 class Transform;
 
-class Light
+class Light :public GameObject
 {
 public:
 	Light(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
@@ -16,9 +16,9 @@ public:
 	virtual void SetDiffuse(XMFLOAT4 diffuse);
 	virtual void SetAmbient(XMFLOAT4 ambient);
 	virtual void SetSpecular(XMFLOAT4 specular);
-	virtual void Update(Graphics& gfx,float deltaTime);
-	virtual void Render(Graphics& gfx);
-	virtual void controlWindow();
+	virtual void Update(Graphics& gfx,float deltaTime)override;
+	virtual void Render(Graphics& gfx)override;
+	virtual void controlWindow(Graphics& gfx);
 
 
 private:

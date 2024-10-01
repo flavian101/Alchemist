@@ -4,7 +4,7 @@
 
 Input::Input(const std::tuple<HWND, HINSTANCE>& win)
 	:
-	m_hwnd(std::get<0>(win)),
+	m_hwnd(std::move(std::get<0>(win))),
     controller(nullptr)
 {
 	CHECK_RESULT(DirectInput8Create(std::get<1>(win), DIRECTINPUT_VERSION,
@@ -27,6 +27,9 @@ Input::Input(const std::tuple<HWND, HINSTANCE>& win)
 
 Input::~Input()
 {
+    pKeyboard.Reset();
+    pMouse.Reset();
+
 }
 
 void Input::DetectInputFree(float time, FreeLook* cam)

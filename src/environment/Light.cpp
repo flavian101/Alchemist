@@ -5,7 +5,7 @@
 
 Light::Light(const std::string& name,Graphics& gfx,std::shared_ptr<ShaderManager> manager)
 	:
-	m_name(name)
+	GameObject(name)
 {
 
 	PS_Buffer.Initialize(gfx);
@@ -49,15 +49,17 @@ void Light::SetSpecular(XMFLOAT4 specular)
 }
 void Light::Update(Graphics& gfx,float deltaTime)
 {
+	GameObject::Update(gfx, deltaTime);
 	PS_Buffer.Update(gfx);
 }
 
 void Light::Render(Graphics& gfx)
 {
+	GameObject::Render(gfx);
 	gfx.GetContext()->PSSetConstantBuffers(0, 1, PS_Buffer.GetAddressOf());
 }
 
-void Light::controlWindow()
+void Light::controlWindow(Graphics& gfx)
 {
 	ImGui::Text("Light Settings");
 	//Math::ImGuiDragXMVector3("", camPosition);

@@ -3,28 +3,20 @@
 #include "Graphics/Graphics.h"
 #include "models/Model.h"
 
-GameObject::GameObject(const std::string& name,Model* model)
+GameObject::GameObject(const std::string& name)
 	:
-	m_name(name),
-	m_model(std::move(model))
-{
-	
-}
+	m_name(name)
+{}
 GameObject::~GameObject()
 {
 }
 
 void GameObject::Update(Graphics& gfx,float time)
 {
-	//m_model->Update(gfx,time);
-
 }
 void GameObject::Render(Graphics& gfx)
 {
-	m_model->Render(gfx);
 }
-
-
 std::string GameObject::getName() const
 {
 	return m_name;
@@ -37,10 +29,9 @@ void GameObject::setName(const std::string& name)
 
 
 
-void GameObject::controlWindow()
+void GameObject::controlWindow(Graphics& gfx)
 {
 	ImGui::Text("Properties");
-	m_model->controlWindow();
 }
 //
 //void GameObject::Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime)

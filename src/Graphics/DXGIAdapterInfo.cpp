@@ -60,7 +60,7 @@ void DXGIAdapterInfo::SetHighestResolution(Microsoft::WRL::ComPtr<ID3D11Device4>
             swapChainDesc.BufferDesc.Width = m_bestmode.Width;
             swapChainDesc.BufferDesc.Height = m_bestmode.Height;
 
-            CHECK_RESULT(swapChain->ResizeTarget(&swapChainDesc.BufferDesc));
+            //CHECK_RESULT(swapChain->ResizeTarget(&swapChainDesc.BufferDesc));
             swapChain->ResizeBuffers(swapChainDesc.BufferCount, m_bestmode.Width, m_bestmode.Height, swapChainDesc.BufferDesc.Format, swapChainDesc.Flags);
 
             break;  // Exit after setting the best mode

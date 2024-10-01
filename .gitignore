@@ -69,6 +69,10 @@ ScaffoldingReadMe.txt
 # StyleCop
 StyleCopReport.xml
 
+# Ignore build directory
+Intel® VTune™ Profiler Results
+GPUCache
+
 # Files built by Visual Studio
 *_i.c
 *_p.c

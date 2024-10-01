@@ -17,7 +17,7 @@ class Transform;
 class GameObject
 {
 public:
-	GameObject(const std::string& name,Model* model);
+	GameObject(const std::string& name);
 	~GameObject();
 
 	virtual void Update(Graphics& gfx,float time);
@@ -29,14 +29,11 @@ public:
 
 	std::string getName()const;
 	void setName(const std::string& name);
-	virtual void controlWindow();
+	virtual void controlWindow(Graphics& gfx);
 	
 private:
-	std::unique_ptr<Model> m_model;
 
-	float yaw;
-	float pitch;
-
+	
 
 protected:
 	std::string m_name = "untitled";

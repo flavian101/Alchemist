@@ -9,7 +9,7 @@ public:
 
 	void Update(Graphics& gfx,float deltaTime)override;
 	void Render(Graphics& gfx)override;
-	void controlWindow()override;
+	void controlWindow(Graphics& gfx)override;
 
 };
 

@@ -22,9 +22,11 @@ ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx, std::shared_
     );
     if (pScene == nullptr)
         return;
+    meshPtrs.reserve(pScene->mNumMeshes);
+
     for (size_t i = 0; i < pScene->mNumMeshes; i++)
     {
-        meshPtrs.push_back(parseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
+        meshPtrs.emplace_back(parseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
     }
     int nextID = 0;
     pRoot = parseNode(nextID, *pScene->mRootNode);
@@ -76,7 +78,7 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
             vertex = Vertex(position.x, position.y, position.z, texCoord.x, texCoord.y);
         }
 
-        m_vertices.push_back(vertex);
+        m_vertices.emplace_back(vertex);
     }
 
     // Process indices
@@ -85,9 +87,9 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
     {
         const auto& face = mesh.mFaces[i];
         assert(face.mNumIndices == 3);
-        m_indices.push_back(face.mIndices[0]);
-        m_indices.push_back(face.mIndices[1]);
-        m_indices.push_back(face.mIndices[2]);
+        m_indices.emplace_back(face.mIndices[0]);
+        m_indices.emplace_back(face.mIndices[1]);
+        m_indices.emplace_back(face.mIndices[2]);
     }
     // Create a new Mesh object
     auto newMesh = std::make_unique<Mesh>(gfx, m_indices, m_vertices);
@@ -96,7 +98,7 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
     if (mesh.mMaterialIndex >= 0)
     {
         auto& mat = *pMaterials[mesh.mMaterialIndex];
-        auto material = std::make_shared<Material>(gfx);
+        auto material = std::make_unique<Material>(gfx);
         material->HasAlbedo(LoadMaterialTextures(gfx, mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material));
         material->HasNormal(LoadMaterialTextures(gfx, mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material));
         material->HasMetallic(LoadMaterialTextures(gfx, mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material));
@@ -119,7 +121,7 @@ std::unique_ptr<Node> ModelLoader::parseNode(int& nextId, const aiNode& node)
     for (size_t i = 0; i < node.mNumMeshes; i++)
     {
         const auto meshIdx = node.mMeshes[i];
-        curMeshPtrs.push_back(meshPtrs.at(meshIdx).get());
+        curMeshPtrs.emplace_back(meshPtrs.at(meshIdx).get());
     }
 
     auto pNode = std::make_unique<Node>(nextId++, node.mName.C_Str(), std::move(curMeshPtrs), transform);

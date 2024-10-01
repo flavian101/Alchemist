@@ -2,10 +2,11 @@
 #include "models/Vertex.h"
 #include "Graphics/Graphics.h"
 #include "Scene/Shaders/ShaderManager.h"
+#include "models/Mesh.h"
 
 Grid::Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> manager)
-	:
-	builder(name, manager)
+	:GameObject(name),
+	builder(name, manager,XMMatrixIdentity())
 {
 
     float gridSize = 1000.0f; // 100 units across (50 in each direction from center)
@@ -18,17 +19,37 @@ Grid::Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager
         float alpha = 1.0f - (std::abs(position) / (gridSize / 2.0f));
 
         // Vertical lines
-        vertices.push_back(Vertex(position, 0.0f, -gridSize / 2.0f, 1.0f,1.0f,1.0f,alpha));
-        vertices.push_back(Vertex(position, 0.0f, gridSize / 2.0f, 1.0f, 1.0f, 1.0f, alpha));
+        vertices.emplace_back(position, 0.0f, -gridSize / 2.0f, 1.0f,1.0f,1.0f,alpha);
+        vertices.emplace_back(position, 0.0f, gridSize / 2.0f, 1.0f, 1.0f, 1.0f, alpha);
 
         // Horizontal lines
-        vertices.push_back(Vertex(-gridSize / 2.0f, 0.0f, position, 1.0f, 1.0f, 1.0f, alpha));
-        vertices.push_back(Vertex(gridSize / 2.0f, 0.0f, position, 1.0f, 1.0f, 1.0f, alpha));
+        vertices.emplace_back(-gridSize / 2.0f, 0.0f, position, 1.0f, 1.0f, 1.0f, alpha);
+        vertices.emplace_back(gridSize / 2.0f, 0.0f, position, 1.0f, 1.0f, 1.0f, alpha);
     }
 
     for (unsigned short i = 0; i < vertices.size(); ++i)
     {
-        indices.push_back(i);
+        indices.emplace_back(i);
     }
-    builder.createMesh(gfx,indices, vertices, nullptr);
+    auto mesh = new Mesh(gfx, indices, vertices);
+
+    builder.CreateNode(gfx, 0, name, mesh, XMMatrixIdentity());
+   
+}
+
+void Grid::Update(Graphics& gfx, float deltaTime)
+{
+    GameObject::Update(gfx, deltaTime);
+    builder.Update(gfx, deltaTime);
+}
+
+void Grid::Render(Graphics& gfx)
+{
+    GameObject::Render(gfx);
+    builder.Render(gfx);
+}
+
+void Grid::controlWindow(Graphics& gfx)
+{
+    builder.controlWindow(gfx);
 }

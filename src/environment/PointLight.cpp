@@ -18,6 +18,6 @@ void PointLight::Render(Graphics& gfx)
 {
 }
 
-void PointLight::controlWindow()
+void PointLight::controlWindow(Graphics& gfx)
 {
 }

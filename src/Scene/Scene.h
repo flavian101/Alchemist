@@ -53,7 +53,7 @@ private:
 
 	/// rederables
 	std::vector<GameObject*> objects;
-	std::unique_ptr<GameObject> m_selectedObject;
+	GameObject* m_selectedObject;
 	std::unique_ptr<GameObject> newobject;
 	ModelLoader* m_model;
 };

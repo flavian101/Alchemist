@@ -1,10 +1,13 @@
 #pragma once
 #include "models\ModelBuilder.h"
+#include "Scene/GameObject.h"
+
 class ShaderManager;
 class Graphics;
 class Vertex;
+class Mesh;
 
-class Plane 
+class Plane :public GameObject
 {
 public:
 	Plane(const std::string& name,std::shared_ptr<ShaderManager> maneger);
@@ -15,6 +18,7 @@ public:
 
 	void Update(Graphics& gfx,float deltaTime);
 	void Render(Graphics& gfx);
+	void controlWindow(Graphics& gfx);
 private:
 	ModelBuilder builder;
 	

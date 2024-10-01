@@ -7,18 +7,18 @@ class Graphics;
 class ShaderManager;
 class Vertex;
 
-class ModelBuilder
+class ModelBuilder : public Model
 {
 public:
-	ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager);
+	ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager,XMMATRIX transform_in);
 
-	void createMesh(Graphics& gfx,const std::vector<unsigned short>& indices, const std::vector<Vertex>& vertices, std::shared_ptr<Material> material);
+	void CreateNode(Graphics& gfx, int nextID, const std::string& name, Mesh* meshPart, FXMMATRIX transform_in);
 	std::shared_ptr<Material> CreateMaterial(Graphics& gfx,const char* albedoPath = nullptr, const char* normalPath = nullptr, const char* metallicPath = nullptr,
 		const char* roughnessPath = nullptr, const char* aoPath = nullptr);
-	Model& getModel();
+	void Update(Graphics& gfx, float deltaTime) override;
+	void Render(Graphics& gfx)override;
 private:	
 	std::string m_name;
-	Model m_model;
 
 
 };

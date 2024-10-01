@@ -40,11 +40,12 @@ void Mesh::Render(Graphics& gfx,FXMMATRIX accumulatedTransform)
 
 void Mesh::SetMaterial(std::shared_ptr<Material> material)
 {
-    m_material = material;
+    this->m_material = material;
 }
 
 void Mesh::controlWindow()
 {
+    
     if (m_material)
     {
         m_material->controlWindow();

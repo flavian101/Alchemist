@@ -2,10 +2,11 @@
 #include "models/Vertex.h"
 #include "Scene/Shaders/ShaderManager.h"
 #include <MathUtils/MathUtils.h>
+#include "models/Mesh.h"
 
 Plane::Plane(const std::string& name, std::shared_ptr<ShaderManager> maneger)
-	:
-    builder(name, std::move(maneger))
+    :GameObject(name),
+    builder(name, std::move(maneger), XMMatrixIdentity())
 
 {
    
@@ -43,7 +44,7 @@ void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
             float height = calculateHeight(x, z);
 
             // Placeholder normal and tangent (will be computed later)
-            vertices.push_back(Vertex(x, height, z, u, v, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+            vertices.emplace_back(x, height, z, u, v, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -58,14 +59,14 @@ void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
             UINT bottomRight = bottomLeft + 1;
 
             // First triangle (reversed winding order)
-            indices.push_back(topLeft);
-            indices.push_back(topRight);
-            indices.push_back(bottomLeft);
+            indices.emplace_back(topLeft);
+            indices.emplace_back(topRight);
+            indices.emplace_back(bottomLeft);
 
             // Second triangle (reversed winding order)
-            indices.push_back(topRight);
-            indices.push_back(bottomRight);
-            indices.push_back(bottomLeft);
+            indices.emplace_back(topRight);
+            indices.emplace_back(bottomRight);
+            indices.emplace_back(bottomLeft);
         }
     }
 
@@ -149,6 +150,7 @@ void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
         XMStoreFloat3(&vertices[i].posTexNormTan.tangent, tangent);
     }
 
+    auto meshPart = new  Mesh(gfx, indices, vertices);
     // Create the mesh with the generated vertices and indices
     auto material = builder.CreateMaterial(gfx,
         "Assets/textures/hay.jpg",
@@ -157,8 +159,9 @@ void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
         "Assets/textures/S_hay.png",
         "Assets/textures/AO_hay.png");
 
-    builder.createMesh(gfx,indices, vertices, material);
-   
+    meshPart->SetMaterial(material);
+
+    builder.CreateNode(gfx, 1, "ground,", std::move(meshPart), XMMatrixIdentity());
 }
 
 
@@ -171,10 +174,17 @@ float Plane::calculateHeight(float x, float z)
 
 void Plane::Update(Graphics& gfx,float deltaTime)
 {
-    builder.getModel().Update(gfx,deltaTime);
+    GameObject::Update(gfx, deltaTime);
+    builder.Update(gfx,deltaTime);
 }
 
 void Plane::Render(Graphics& gfx)
 {
-    builder.getModel().Render(gfx);
+    GameObject::Render(gfx);
+    builder.Render(gfx);
+}
+
+void Plane::controlWindow(Graphics& gfx)
+{
+    builder.controlWindow(gfx);
 }

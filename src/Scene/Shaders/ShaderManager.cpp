@@ -16,6 +16,11 @@ ShaderManager::ShaderManager(Graphics& gfx, D3D11_PRIMITIVE_TOPOLOGY type,
 
 ShaderManager::~ShaderManager()
 {
+
+    m_vertexShaderCode.clear();
+    m_pixelShaderCode.clear();
+    m_vertexShaderPath.clear();
+    m_pixelShaderPath.clear();
     // Smart pointers automatically handle cleanup
 }
 

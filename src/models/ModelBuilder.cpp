@@ -2,17 +2,20 @@
 #include "Mesh.h"
 #include "Material.h"
 
-ModelBuilder::ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager)
+ModelBuilder::ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager,XMMATRIX transform_in)
     :
-    m_name(name),
-    m_model(m_name, manager)
+	Model(m_name, manager),
+    m_name(name)
 {
+	int nextID = 0;
+	pRoot = std::make_unique<Node>(nextID, name, transform_in);
 }
 
-void ModelBuilder::createMesh(Graphics& gfx,const std::vector<unsigned short>& indices, const std::vector<Vertex>& vertices, std::shared_ptr<Material> material)
+void ModelBuilder::CreateNode(Graphics& gfx,int nextID, const std::string& name, Mesh* meshPart, FXMMATRIX transform_in)
 {
-    auto mesh = std::make_unique<Mesh>(gfx, indices, vertices);
-	mesh->SetMaterial(material);
+	auto childNode= std::make_unique<Node>(nextID, name, transform_in);
+	childNode->AddMesh(std::move(meshPart));
+	pRoot->AddChild(std::move(childNode));
 }
 
 std::shared_ptr<Material> ModelBuilder::CreateMaterial(Graphics& gfx,const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
@@ -46,7 +49,15 @@ std::shared_ptr<Material> ModelBuilder::CreateMaterial(Graphics& gfx,const char*
 	return material;
 }
 
-Model& ModelBuilder::getModel()
+void ModelBuilder::Update(Graphics& gfx, float deltaTime)
 {
-	return m_model;
+	Model::Update(gfx, deltaTime);
 }
+
+void ModelBuilder::Render(Graphics& gfx)
+{
+	Model::Render(gfx);
+}
+
+
+

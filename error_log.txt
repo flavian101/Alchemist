@@ -593,3 +593,19 @@ Error in function Texture at line 274: The parameter is incorrect.
 
 Error in function Texture at line 282: The parameter is incorrect.
 
+Error in function Texture at line 262: The parameter is incorrect.
+
+Error in function Texture at line 270: The parameter is incorrect.
+
+Error in function Texture at line 262: The parameter is incorrect.
+
+Error in function Texture at line 270: The parameter is incorrect.
+
+Error in function Texture at line 262: The parameter is incorrect.
+
+Error in function Texture at line 270: The parameter is incorrect.
+
+Error in function Texture at line 262: The parameter is incorrect.
+
+Error in function Texture at line 270: The parameter is incorrect.
+

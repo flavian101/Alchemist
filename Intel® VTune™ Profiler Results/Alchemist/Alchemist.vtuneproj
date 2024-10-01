@@ -285,6 +285,91 @@
    </selected_workload>
    <workloads>
     <localhost>
+     <system type="pointer" type_id="dasID_cctrl2::SystemWideWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>system</targetName>
+       <result_directory.path>D:\projects\The Alchemist\src\Engine\Intel® VTune™ Profiler Results\Alchemist\r@@@{at}</result_directory.path>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <context>
+        <contextValue>
+         <id>allowMultipleRuns</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>analyzeKvmGuest</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>cpuMask</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>customCollector</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>dataLimit</id>
+         <value type="s32_t">1000</value>
+        </contextValue>
+        <contextValue>
+         <id>enableRing</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>finalizationMode</id>
+         <value>fast</value>
+        </contextValue>
+        <contextValue>
+         <id>followChild</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>groupForFinalizationControl</id>
+         <value type="null"></value>
+        </contextValue>
+        <contextValue>
+         <id>kvmGuestKallsyms</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>kvmGuestModules</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>kvmProfileGuest</id>
+         <value type="null"></value>
+        </contextValue>
+        <contextValue>
+         <id>mrteMode</id>
+         <value>native</value>
+        </contextValue>
+        <contextValue>
+         <id>targetDurationType</id>
+         <value>short</value>
+        </contextValue>
+        <contextValue>
+         <id>targetRingBuffer</id>
+         <value type="double">0</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>system</value>
+        </contextValue>
+        <contextValue>
+         <id>tracingMode</id>
+         <value type="null"></value>
+        </contextValue>
+        <contextValue>
+         <id>wrapperScriptContent</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>wrapperScriptPath</id>
+         <value></value>
+        </contextValue>
+       </context>
+      </workload>
+     </system>
      <launch type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
       <workload>
        <targetName>launch</targetName>
@@ -407,7 +492,7 @@
        </contextValue>
        <contextValue>
         <id>collectMemoryBW</id>
-        <value type="bool">false</value>
+        <value type="bool">true</value>
        </contextValue>
        <contextValue>
         <id>collectPCIeBW</id>
@@ -536,6 +621,10 @@
         <value type="double">1</value>
        </contextValue>
       </knob_values>
+     </at_start_point>
+     <at_start_point>
+      <at_path>C:\Users\judef\AppData\Roaming\Intel\VTune\analysis_type\memory-access-0.cfg</at_path>
+      <knob_values type="bag"/>
      </at_start_point>
     </launch>
    </localhost>
