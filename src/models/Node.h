@@ -1,8 +1,8 @@
 #pragma once
+#include <memory>
 #include "stdafx.h"
 #include <string>
 #include <vector>
-#include <memory>
 #include <iostream>
 
 class Graphics;
@@ -17,13 +17,13 @@ public:
 	Node(int id,const std::string& name, std::vector<Mesh*> meshPtrs, const DirectX::XMMATRIX& transform_in);
 	Node(int id,const std::string& name,const DirectX::FXMMATRIX& transform_in);
 
-	Node(Node&& other)
-		: id(other.id), m_name(std::move(other.m_name)), childPtrs(std::move(other.childPtrs)),
-		meshPtrs(std::move(other.meshPtrs)), transform(other.transform), appliedTransform(other.appliedTransform)
-	{
-		move++;
-		std::cout << "moved " << move << std::endl;
-	}
+	//Node(Node&& other)
+	//	: id(other.id), m_name(other.m_name), childPtrs(other.childPtrs),
+	//	meshPtrs(other.meshPtrs), transform(other.transform), appliedTransform(other.appliedTransform)
+	//{
+	//	move++;
+	//	std::cout << "moved " << move << std::endl;
+	//}
 
 	void Update(Graphics& gfx, float deltaTime);
 	void Draw(Graphics& gfx, FXMMATRIX accumulatedTransform);

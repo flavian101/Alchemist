@@ -73,8 +73,6 @@ Utils::IndexBuffer::~IndexBuffer()
     pIndexBuffer.Reset();
 }
 
-
-
 void Utils::IndexBuffer::Bind(Graphics& gfx)
 {
     gfx.GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
@@ -137,8 +135,10 @@ void Utils::InputLayout::Bind(Graphics& gfx)
     gfx.GetContext()->IASetInputLayout(pInputLayout.Get());
 }
 
-Utils::VertexShader::VertexShader()
-{}
+Utils::VertexShader::VertexShader(Graphics& gfx,const std::wstring& path)
+{
+    LoadCompiledVertexShader(gfx, path);
+}
 
 Utils::VertexShader::~VertexShader()
 {
@@ -178,8 +178,10 @@ void Utils::VertexShader::Bind(Graphics& gfx)
     gfx.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
 }
 
-Utils::PixelShader::PixelShader()
-{}
+Utils::PixelShader::PixelShader(Graphics& gfx,const std::wstring path)
+{
+    LoadCompiledPixelShader(gfx, path);
+}
 
 Utils::PixelShader::~PixelShader()
 {

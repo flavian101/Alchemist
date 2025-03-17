@@ -12,14 +12,14 @@ struct VS_OUTPUT
 
 cbuffer cb_vsConstantBuffer
 {
-    matrix WVP; 
-    matrix Model;
+    matrix modelView : packoffset(c0);
+    matrix modelViewProj : packoffset(c4);
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.Position = mul(float4(input.Position, 1.0f), WVP);
+    output.Position = mul(float4(input.Position, 1.0f), modelViewProj);
     output.Color = input.Color;
     return output;
 }

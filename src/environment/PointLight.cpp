@@ -1,8 +1,8 @@
 #include "PointLight.h"
 
-PointLight::PointLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager)
+PointLight::PointLight(const std::string& name, Graphics& g)
 	:
-	Light(name, g, manager)
+	Light(name, g)
 {
 }
 

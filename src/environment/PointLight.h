@@ -4,7 +4,7 @@
 class PointLight : public Light
 {
 public:
-	PointLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	PointLight(const std::string& name, Graphics& g);
 	void SetRange(float range);
 
 	void Update(Graphics& gfx,float deltaTime)override;

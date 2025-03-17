@@ -9,7 +9,8 @@ Mesh::Mesh(Graphics& gfx, const std::vector<unsigned short>& indices, const std:
     indexBuffer(std::make_unique<Utils::IndexBuffer>(gfx, indices)),
     indexCount(static_cast<UINT>(indices.size())),
     vertexCount(static_cast<UINT>(vertices.size())),
-    localTransform(std::make_unique<Transform>(gfx))
+    localTransform(std::make_unique<Transform>(gfx)),
+    m_material(std::make_shared<Material>(gfx))
 {
 }
 

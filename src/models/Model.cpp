@@ -3,10 +3,9 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "models/Vertex.h"
-#include "Scene/Shaders/ShaderManager.h"
 
 
-Model::Model(const std::string& name, std::shared_ptr<ShaderManager> shaderManager)
+Model::Model(const std::string& name)
 :
 	GameObject(name),
 	pWindow(std::make_unique<ModelWindow>())

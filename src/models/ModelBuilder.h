@@ -10,15 +10,14 @@ class Vertex;
 class ModelBuilder : public Model
 {
 public:
-	ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager,XMMATRIX transform_in);
+	ModelBuilder(const std::string& name,XMMATRIX transform_in);
 
 	void CreateNode(Graphics& gfx, int nextID, const std::string& name, Mesh* meshPart, FXMMATRIX transform_in);
-	std::shared_ptr<Material> CreateMaterial(Graphics& gfx,const char* albedoPath = nullptr, const char* normalPath = nullptr, const char* metallicPath = nullptr,
+	std::shared_ptr<Material> CreateMaterialFromTexture(Graphics& gfx,const char* albedoPath = nullptr, const char* normalPath = nullptr, const char* metallicPath = nullptr,
 		const char* roughnessPath = nullptr, const char* aoPath = nullptr);
 	void Update(Graphics& gfx, float deltaTime) override;
 	void Render(Graphics& gfx)override;
 private:	
-	std::string m_name;
 
 
 };

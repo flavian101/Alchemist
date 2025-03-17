@@ -6,7 +6,7 @@ class Graphics;
 class DirectionalLight : public Light
 {
 public:
-	DirectionalLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	DirectionalLight(const std::string& name, Graphics& g);
 	
 
 

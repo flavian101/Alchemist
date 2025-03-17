@@ -25,37 +25,21 @@ Scene::Scene(const std::string& name, Window& win)
     //cameras
     sceneCamera = new SceneCamera("main", win.GetInstance());
 
-	//initialize shadermanager
-    auto defaultShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/VertexShader.hlsl", L"Assets/shader/PixelShader.hlsl");
-    defaultShader->SetShaderLayout(win.GetInstance(),"POSITION|COLOR");
-
-    auto texturedShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, L"Assets/shader/T_vertexShader.hlsl", L"Assets/shader/T_pixelShader.hlsl");
-    texturedShader->SetShaderLayout(win.GetInstance(),"POSITION|TEXCOORD|NORMAL|TANGENT");
-
-    auto gridShader = std::make_shared<ShaderManager>(win.GetInstance(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST, L"Assets/shader/GridVertex.hlsl", L"Assets/shader/GridPixel.hlsl");
-    gridShader->SetShaderLayout(win.GetInstance(),"POSITION|COLOR");
-    
-    shaders.emplace_back(defaultShader);
-    shaders.emplace_back(gridShader);
-    shaders.emplace_back(texturedShader);
-
-    //shaderEditor
-    editor = std::make_unique<ShaderEditor>(texturedShader);
 	
     //light
     //light = std::make_unique<DirectionalLight>("Directional", m_graphics, texturedShader);
-    light = new DirectionalLight("Directional", win.GetInstance(), texturedShader);
+    light = new DirectionalLight("Directional", win.GetInstance());
     AddGameObject(light);
 	//model loading 
-    grid = std::make_unique<Grid>("grid", win.GetInstance(), gridShader);
+    grid = std::make_unique<Grid>("grid", win.GetInstance());
     AddGameObject(grid.get());
     //player
-    player = std::make_unique<Player>("player", win.GetInstance(), texturedShader);
+    player = std::make_unique<Player>("player", win.GetInstance());
     AddGameObject(player.get());
 
-	cube = new Cube("cube", win.GetInstance(),texturedShader);
+	cube = new Cube("cube", win.GetInstance());
     AddGameObject(cube);
-	plane = new Plane("ground", texturedShader);
+	plane = new Plane("ground");
 	plane->CreatePlane(win.GetInstance(),200.0f,200.0f,30.0f,30.0f);
     AddGameObject(plane);
 
@@ -66,7 +50,7 @@ Scene::Scene(const std::string& name, Window& win)
     //m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance(), texturedShader);
      // m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics, texturedShader);
    // m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance(), texturedShader);
-     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj", win.GetInstance(), texturedShader);
+     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj", win.GetInstance());
      //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance(), texturedShader);
    // m_model->LoadModel("Assets/model/nano.gltf");
     AddGameObject(m_model);
@@ -80,7 +64,6 @@ Scene::~Scene()
 	delete cube;
 	delete plane;
     delete light;
-    shaders.clear();
     objects.clear();
 }
 
@@ -111,7 +94,6 @@ void Scene::Update(Graphics& gfx,float deltaTime)
 
 void Scene::Render(Graphics& gfx)
 {
-    shaders[2]->BindShaders(gfx);
   
 	this->controlWindow(gfx);
     for (const auto& object : objects)
@@ -229,17 +211,17 @@ void Scene::controlWindow(Graphics& gfx)
                     RemoveGameObject(model);
                 }
            
-                if (ImGui::BeginMenu("Change Shader"))
-                {
-                    for (size_t i = 0; i < shaders.size(); ++i)
-                    {
-                        if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str()))
-                        {
-                            //model->SetShaderManager(shaders[i]);
-                        }
-                    }
-                    ImGui::EndMenu();
-                }
+              //  if (ImGui::BeginMenu("Change Shader"))
+              //  {
+              //      for (size_t i = 0; i < shaders.size(); ++i)
+              //      {
+              //          if (ImGui::MenuItem(("Shader " + std::to_string(i)).c_str()))
+              //          {
+              //              //model->SetShaderManager(shaders[i]);
+              //          }
+              //      }
+              //      ImGui::EndMenu();
+              //  }
                 ImGui::EndPopup();
             }
         }
@@ -311,7 +293,7 @@ void Scene::controlWindow(Graphics& gfx)
 
         if (ImGui::BeginTabItem("Shader Editor"))
         {
-            editor->Render(gfx);
+           // editor->Render(gfx);
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

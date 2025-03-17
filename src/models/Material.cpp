@@ -5,6 +5,7 @@
 
 Material::Material(Graphics& gfx)
 	:
+	shaderManager(std::make_unique<ShaderManager>(gfx)),
 	hasAlbedoMap(FALSE),
 	hasNormalMap (FALSE),
 	hasMetallicMap( FALSE),
@@ -17,6 +18,7 @@ Material::Material(Graphics& gfx)
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
+	materialBuffer.data.materialStruct.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	samp = std::make_unique<Utils::Sampler>(gfx);
 }
 
@@ -27,14 +29,30 @@ void Material::Update(Graphics& gfx)
 	materialBuffer.data.materialStruct.hasMetallicMap = static_cast<BOOL>(hasMetallicMap);
 	materialBuffer.data.materialStruct.hasRoughnessMap = static_cast<BOOL>(hasRoughnessMap);
 	materialBuffer.data.materialStruct.hasAOMap = static_cast<BOOL>(hasAOMap);
+	materialBuffer.data.materialStruct.hasSpecularMAp = static_cast<BOOL>(hasSpecularMap);
 	materialBuffer.Update(gfx);
 }
 
 void Material::Bind(Graphics& gfx)
 {
-	gfx.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
-	BindTextures(gfx);
 	samp->Bind(gfx);
+	if (materialBuffer.data.materialStruct.hasAlbedoMap == TRUE ||
+		materialBuffer.data.materialStruct.hasNormalMap == TRUE||
+		materialBuffer.data.materialStruct.hasMetallicMap ==TRUE||
+		materialBuffer.data.materialStruct.hasRoughnessMap == TRUE||
+		materialBuffer.data.materialStruct.hasAOMap == TRUE ||
+		materialBuffer.data.materialStruct.hasSpecularMAp == TRUE
+		)
+	{
+		gfx.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
+		BindTextures(gfx);
+		shaderManager->BindShader(gfx, "Textured");
+	}
+	else
+	{
+		shaderManager->BindShader(gfx, "Grid");
+	}
+	
 }
 
 void Material::LoadTexture(Graphics& gfx,TextureType type, const std::string& path)
@@ -81,7 +99,6 @@ void Material::SetAO(float AO)
 {
 	materialBuffer.data.materialStruct.ao = AO;
 }
-
 
 void Material::controlWindow()
 {

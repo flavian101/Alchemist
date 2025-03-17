@@ -9,7 +9,7 @@ class Transform;
 class Light :public GameObject
 {
 public:
-	Light(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager);
+	Light(const std::string& name, Graphics& g);
 	virtual void SetPosition(const XMFLOAT3& position);
 	virtual void SetColor(const XMFLOAT4& color);
 	virtual void SetIntensity(float intensity);

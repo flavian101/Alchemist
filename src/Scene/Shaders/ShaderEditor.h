@@ -8,7 +8,7 @@ class Graphics;
 class ShaderEditor
 {
 public:
-	ShaderEditor(std::shared_ptr<ShaderManager> shaderManager);
+	ShaderEditor(std::shared_ptr<ShaderManager> shader);
 
 	void Render(Graphics& gfx);
 

@@ -12,7 +12,7 @@ class Cube :public GameObject
 {
 
 public:
-	Cube(const std::string& name,Graphics& gfx, std::shared_ptr<ShaderManager> manager);
+	Cube(const std::string& name,Graphics& gfx);
 	void Update(Graphics& gfx,float deltaTime);
 	void Render(Graphics& gfx);
 	void controlWindow(Graphics& gfx);

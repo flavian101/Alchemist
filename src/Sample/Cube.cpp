@@ -4,16 +4,11 @@
 #include "models/Mesh.h"
 
 
-Cube::Cube(const std::string& name,Graphics& gfx, std::shared_ptr<ShaderManager> manager)
+Cube::Cube(const std::string& name,Graphics& gfx)
     :
     GameObject(name),
-    builder(name,std::move(manager), XMMatrixIdentity())
+    builder(name, XMMatrixIdentity())
 {
-  //  m_position = XMVectorSet(0.0f,3.0f, 0.0f, 0.0f);
-  //  this->setTranslation(Math::XMVectorToFloat3(m_position));
-  //  m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
-  //  this->setRotation(Math::XMVectorToFloat4(m_orientation));
-
     vertices.reserve(24);
       // Front face
     vertices.emplace_back(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f); // bottom-left-back
@@ -104,7 +99,7 @@ Cube::Cube(const std::string& name,Graphics& gfx, std::shared_ptr<ShaderManager>
 
     auto newMesh = new Mesh(gfx, indices, vertices);
 
-  auto material =   builder.CreateMaterial(gfx,
+  auto material =   builder.CreateMaterialFromTexture(gfx,
         "Assets/textures/metalpanel.jpg",
         "Assets/textures/N_metalpanel.jpg",
         "Assets/textures/M_metalpanel.jpg",

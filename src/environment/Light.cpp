@@ -3,7 +3,7 @@
 #include "Graphics/Graphics.h"
 #include "Scene/Shaders/ShaderManager.h"
 
-Light::Light(const std::string& name,Graphics& gfx,std::shared_ptr<ShaderManager> manager)
+Light::Light(const std::string& name,Graphics& gfx)
 	:
 	GameObject(name)
 {

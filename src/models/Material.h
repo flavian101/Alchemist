@@ -4,6 +4,7 @@
 #include <string>
 #include "Graphics/ConstantBuffer.h"
 #include "Graphics/Utilis.h"
+#include "Scene/Shaders/ShaderManager.h"
 
 class Graphics;
 
@@ -17,7 +18,8 @@ public:
 		Normal,
 		Metallic,
 		Roughness,
-		AmbientOcclusion
+		AmbientOcclusion,
+		Specular
 	};
 	Material(Graphics& gfx);
 	void Update(Graphics& gfx);
@@ -29,11 +31,14 @@ public:
 	void HasMetallic(bool has) { hasMetallicMap = has; };
 	void HasRoughness(bool has) { hasRoughnessMap = has; };
 	void HasAO(bool has) { hasAOMap = has; };
+	void HasSpecularMap(bool has) { hasSpecularMap = has; }
+
 	void SetAmbient(const XMFLOAT4& ambient);
 	void SetEmissive(const XMFLOAT4& emissive);
 	void SetMetallic(float metallic);
 	void SetRoughness(float roughness);
 	void SetAO(float AO);
+	
 	void controlWindow();
 	
 private:
@@ -44,10 +49,14 @@ private:
 	std::unique_ptr<Utils::Sampler> samp;
 	ConstantBuffer<cb_psMaterialBuffer> materialBuffer;
 	std::unordered_map<TextureType, std::unique_ptr<Utils::Texture>> textures;
+	std::unique_ptr<ShaderManager> shaderManager;
 	bool hasAlbedoMap;
 	bool hasNormalMap;
 	bool hasMetallicMap;
 	bool hasRoughnessMap;
 	bool hasAOMap;
+	bool hasSpecularMap;
+private:
+	friend class ModelLoader;
 };
 

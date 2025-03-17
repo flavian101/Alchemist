@@ -4,9 +4,9 @@
 #include "Scene/Shaders/ShaderManager.h"
 #include "models/Mesh.h"
 
-Grid::Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> manager)
+Grid::Grid(const std::string& name, Graphics& gfx)
 	:GameObject(name),
-	builder(name, manager,XMMatrixIdentity())
+	builder(name,XMMatrixIdentity())
 {
 
     float gridSize = 1000.0f; // 100 units across (50 in each direction from center)

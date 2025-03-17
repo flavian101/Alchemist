@@ -11,7 +11,7 @@ class Vertex;
 class Grid :public GameObject
 {
 public:
-	Grid(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> manager);
+	Grid(const std::string& name, Graphics& gfx);
 	void Update(Graphics& gfx, float deltaTime);
 	void Render(Graphics& gfx);
 

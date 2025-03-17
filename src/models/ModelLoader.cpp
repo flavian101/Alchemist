@@ -6,10 +6,9 @@
 #include "Node.h"
 
 
-ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx, std::shared_ptr<ShaderManager> manager)
-	:Model(filepath, manager)
+ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx)
+	:Model(filepath)
 {
-    //m_filepath = filepath;
     Assimp::Importer importer;
     basePath = std::filesystem::path(filepath).parent_path().string();
 
@@ -17,7 +16,7 @@ ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx, std::shared_
         aiProcess_Triangulate |
         aiProcess_JoinIdenticalVertices |
         aiProcess_ConvertToLeftHanded |
-        aiProcess_GenNormals |
+        aiProcess_GenSmoothNormals |
         aiProcess_CalcTangentSpace
     );
     if (pScene == nullptr)
@@ -38,9 +37,12 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
     std::vector<unsigned short> m_indices;
     std::vector<Vertex> m_vertices;
 
+    //reserve mesh space
     m_vertices.reserve(mesh.mNumVertices);
     m_indices.reserve(mesh.mNumFaces * 3);
-    // Process vertices
+
+  
+    // Process mesh vertices
     for (unsigned int i = 0; i < mesh.mNumVertices; i++) {
         XMFLOAT3 position;
         position.x = mesh.mVertices[i].x;
@@ -80,8 +82,11 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
 
         m_vertices.emplace_back(vertex);
     }
+    // Create and set the material
+   
 
-    // Process indices
+
+    // Process mesh indices
     m_indices.reserve(mesh.mNumFaces * 3);
     for (unsigned int i = 0; i < mesh.mNumFaces; i++)
     {
@@ -94,18 +99,75 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
     // Create a new Mesh object
     auto newMesh = std::make_unique<Mesh>(gfx, m_indices, m_vertices);
 
-    // Create and set the material
+    //material flags 
+    bool hasDiffuseMap = false;
+    bool hasNormalMap = false;
+    bool hasMetallicMap = false;
+    bool hasRoughnessMap = false;
+    bool hasAOMap = false;
+    bool hasSpecularMap = false;
+
+    //process mesh materials 
     if (mesh.mMaterialIndex >= 0)
     {
         auto& mat = *pMaterials[mesh.mMaterialIndex];
         auto material = std::make_unique<Material>(gfx);
-        material->HasAlbedo(LoadMaterialTextures(gfx, mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material));
-        material->HasNormal(LoadMaterialTextures(gfx, mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material));
-        material->HasMetallic(LoadMaterialTextures(gfx, mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material));
-        material->HasRoughness(LoadMaterialTextures(gfx, mat, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::Roughness, *material));
-        material->HasAO(LoadMaterialTextures(gfx, mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material));
-        newMesh->SetMaterial(std::move(material));
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_DIFFUSE, Material::TextureType::Albedo, *material))
+        {
+            material->HasAlbedo(true);
+            hasDiffuseMap = true;
+        }
+        else
+        {
+            mat.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(material->materialBuffer.data.materialStruct.baseColor));
+        }
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material))
+        {
+            material->HasNormal(true);
+            hasNormalMap = true;
+        }
+
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_METALNESS, Material::TextureType::Metallic, *material))
+        {
+            material->HasMetallic(true);
+            hasMetallicMap = true;
+        }
+        else
+        {
+            //mat.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(diffuseColor));
+
+        }
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_DIFFUSE_ROUGHNESS, Material::TextureType::Roughness, *material))
+        {
+            material->HasRoughness(true);
+            hasRoughnessMap = true;
+        }
+        else
+        {
+
+        }
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material))
+        {
+            material->HasAO(true);
+            hasAOMap = true;
+
+        }
+        else
+        {
+
+        }
+        if (LoadMaterialTextures(gfx, mat, aiTextureType_SPECULAR, Material::TextureType::Specular, *material))
+        {
+            material->HasSpecularMap(true);
+            hasSpecularMap = true;
+        }
+        else
+        {
+            mat.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(material->materialBuffer.data.materialStruct.specular));
+        }
+         newMesh->SetMaterial(std::move(material));
     }
+  
 
 
     return newMesh;

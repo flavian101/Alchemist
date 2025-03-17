@@ -15,7 +15,7 @@ class Graphics;
 class Player :public GameObject
 {
 public:
-	Player(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> shaderManager);
+	Player(const std::string& name, Graphics& gfx);
 	void Update(Graphics& gfx,float deltaTime);
 	void Render(Graphics& gfx);
 	void controlWindow(Graphics& gfx);

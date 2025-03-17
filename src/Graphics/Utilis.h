@@ -43,7 +43,7 @@ namespace Utils
 	class VertexShader
 	{
 	public:
-		VertexShader();
+		VertexShader(Graphics& gfx, const std::wstring& path);
 		~VertexShader();
 		void LoadStreamVertexShader(Graphics& gfx,std::string stream);
 		void LoadCompiledVertexShader(Graphics& gfx,std::wstring path);
@@ -57,7 +57,7 @@ namespace Utils
 	class PixelShader
 	{
 	public:
-		PixelShader();
+		PixelShader(Graphics& gfx, const std::wstring path);
 		~PixelShader();
 		void LoadStreamPixelShader(Graphics& gfx,std::string stream);
 		void LoadCompiledPixelShader(Graphics& gfx,std::wstring path);

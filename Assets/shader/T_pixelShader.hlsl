@@ -23,11 +23,13 @@ struct Material
 {
     float4 baseColor;
     float4 emissive;
+    float4 specular;
     bool hasAlbedoMap;
     bool hasNormalMap;
     bool hasMetallicMap;
     bool hasRoughnessMap;
     bool hasAOMap;
+    bool hasSpecular;
     float metallic;
     float roughness; 
     float ao;
@@ -61,6 +63,7 @@ Texture2D NormalMap : register(t1);
 Texture2D metallicMap : register(t2);
 Texture2D smoothnessMap : register(t3); // roughnessMap
 Texture2D aoMap : register(t4);
+Texture2D specularMap : register(t5);
 SamplerState samp : register(s0);
 
 // Helper functions
@@ -107,12 +110,15 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 // Main pixel shader function
 float4 main(VertexOut input) : SV_Target
 {
-    // Sample textures
+     // Sample textures
     float4 albedo = material.hasAlbedoMap ? albedoMap.Sample(samp, input.tex) : material.baseColor;
-    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz :input.normal;
+    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz : input.normal;
     float metallic = material.hasMetallicMap ? metallicMap.Sample(samp, input.tex).r : material.metallic;
     float smoothness = material.hasRoughnessMap ? smoothnessMap.Sample(samp, input.tex).r : 1.0;
     float ao = material.hasAOMap ? aoMap.Sample(samp, input.tex).r : material.ao;
+    
+    // Check for Specular Map
+    float3 specularColor = material.hasSpecular ? specularMap.Sample(samp, input.tex).rgb : material.specular.rgb;
 
     // Convert smoothness to roughness
     float roughness = 1.0 - smoothness;
@@ -120,7 +126,7 @@ float4 main(VertexOut input) : SV_Target
     // Apply material properties
     albedo *= material.baseColor;
     metallic = saturate(metallic * material.metallic);
-    roughness = clamp(roughness * (1.0 - material.roughness), 0.01, 1.0); // material.roughness now represents smoothness
+    roughness = clamp(roughness * (1.0 - material.roughness), 0.01, 1.0);
     ao *= material.ao;
 
     // Transform normal to world space
@@ -140,8 +146,8 @@ float4 main(VertexOut input) : SV_Target
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
 
-    // Calculate Fresnel term
-    float3 F0 = float3(0.04, 0.04, 0.04);
+    // Fresnel term using Specular Map or Default F0
+    float3 F0 = specularColor; // Use specular map if available
     F0 = lerp(F0, albedo.rgb, metallic);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
@@ -154,7 +160,7 @@ float4 main(VertexOut input) : SV_Target
     // Calculate specular BRDF
     float3 numerator = NDF * G * F;
     float denominator = 4.0 * NdotV * NdotL + 0.0001;
-    float3 specular = numerator / denominator;
+    float3 specularBRDF = numerator / denominator;
 
     // Calculate diffuse BRDF
     float3 kS = F;
@@ -166,11 +172,11 @@ float4 main(VertexOut input) : SV_Target
     float3 lightColor = light.color.rgb * light.intensity;
     float3 radiance = lightColor * NdotL;
 
-    float3 finalColor = ambient + (diffuse + specular) * radiance;
+    float3 finalColor = ambient + (diffuse + specularBRDF) * radiance;
 
-    // Apply light intensity and HDR tone mapping
+    // Apply HDR tone mapping
     finalColor = finalColor / (finalColor + float3(1.0, 1.0, 1.0));
-    
+
     // Apply gamma correction
     float gamma = 2.2;
     finalColor = pow(finalColor, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));

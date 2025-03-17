@@ -8,7 +8,6 @@
 #include "Scene/GameObject.h"
 #include "Node.h"
 
-class ShaderManager;
 class Graphics;
 class Mesh;
 class ThirdPerson;
@@ -78,7 +77,7 @@ private:
 class Model : public GameObject
 {
 public:
-	Model(const std::string& name, std::shared_ptr<ShaderManager> shaderManager);
+	Model(const std::string& name);
 	~Model();
 
 

@@ -2,10 +2,9 @@
 #include "Mesh.h"
 #include "Material.h"
 
-ModelBuilder::ModelBuilder(const std::string& name, std::shared_ptr<ShaderManager> manager,XMMATRIX transform_in)
+ModelBuilder::ModelBuilder(const std::string& name,XMMATRIX transform_in)
     :
-	Model(m_name, manager),
-    m_name(name)
+	Model(m_name)
 {
 	int nextID = 0;
 	pRoot = std::make_unique<Node>(nextID, name, transform_in);
@@ -18,7 +17,7 @@ void ModelBuilder::CreateNode(Graphics& gfx,int nextID, const std::string& name,
 	pRoot->AddChild(std::move(childNode));
 }
 
-std::shared_ptr<Material> ModelBuilder::CreateMaterial(Graphics& gfx,const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
+std::shared_ptr<Material> ModelBuilder::CreateMaterialFromTexture(Graphics& gfx,const char* albedoPath, const char* normalPath, const char* metallicPath, const char* roughnessPath, const char* aoPath)
 {
 	auto material = std::make_shared<Material>(gfx);
 	if (albedoPath)

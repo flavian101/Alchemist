@@ -45,8 +45,7 @@ private:
 	std::unique_ptr<Grid> grid;
 	Cube* cube;
 	Plane* plane;
-	std::vector< std::shared_ptr<ShaderManager>> shaders;
-	std::unique_ptr<ShaderEditor> editor;
+	//std::unique_ptr<ShaderEditor> editor;
 	bool m_renameObject = false;
 	DirectionalLight* light;
 	friend class SceneSerializer;

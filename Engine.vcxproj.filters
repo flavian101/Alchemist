@@ -96,9 +96,6 @@
     <ClCompile Include="src\environment\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\dataPack\SceneSerializer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -172,6 +169,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\models\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Shaders\Shaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dataPack\SceneSerializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -287,9 +290,6 @@
     <ClInclude Include="src\dataPack\Json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\dataPack\SceneSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -368,9 +368,17 @@
     <ClInclude Include="src\Scene\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\Shaders\Shaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dataPack\SceneSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />
+    <None Include="Assets\shader\T_pixelShader.cso" />
+    <None Include="Assets\shader\T_vertexShader.cso" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\PixelShader.hlsl" />
@@ -381,6 +389,8 @@
     </FxCompile>
     <FxCompile Include="Assets\shader\GridVertex.hlsl" />
     <FxCompile Include="Assets\shader\GridPixel.hlsl" />
+    <FxCompile Include="Assets\shader\m_pixelShader.hlsl" />
+    <FxCompile Include="Assets\shader\m_vertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\Alchemist.rc">

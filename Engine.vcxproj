@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalIncludeDirectories>$(SolutionDir)src;D:\projects\The Alchemist\src\Engine\dependencies</AdditionalIncludeDirectories>
@@ -158,6 +158,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
+    <ClCompile Include="src\Scene\Shaders\Shaders.cpp" />
     <ClCompile Include="src\models\Model.cpp" />
     <ClCompile Include="src\models\Node.cpp" />
     <ClCompile Include="src\models\ModelBuilder.cpp" />
@@ -193,6 +195,18 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Assets\shader\m_pixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Assets\shader\m_vertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Assets\shader\T_pixelShader.hlsl">
       <FileType>CppCode</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -203,7 +217,6 @@
     </FxCompile>
     <ClCompile Include="src\Scene\Shaders\ShaderEditor.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
-    <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\environment\Light.cpp" />
     <ClCompile Include="src\models\Mesh.cpp" />
     <ClCompile Include="src\Sample\Plane.cpp" />
@@ -233,6 +246,8 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\dataPack\SceneSerializer.h" />
+    <ClInclude Include="src\Scene\Shaders\Shaders.h" />
     <ClInclude Include="src\models\Node.h" />
     <ClInclude Include="src\models\ModelBuilder.h" />
     <ClInclude Include="src\Graphics\DXRenderTarget.h" />
@@ -258,7 +273,6 @@
     <ClInclude Include="src\Scene\Shaders\ShaderEditor.h" />
     <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="src\dataPack\Json.hpp" />
-    <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\environment\Light.h" />
     <ClInclude Include="src\MathUtils\MathUtils.h" />
     <ClInclude Include="src\Sample\Plane.h" />
@@ -300,6 +314,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shader\Shader.dgsl" />
+    <None Include="Assets\shader\T_pixelShader.cso" />
+    <None Include="Assets\shader\T_vertexShader.cso" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\shader\PixelShader.hlsl">

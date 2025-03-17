@@ -11,8 +11,8 @@ ShaderEditor::ShaderEditor(std::shared_ptr<ShaderManager> shaderManager)
     m_needsSaving(false)
 {
 	//load the initial code form the shader manager
-	m_vertexShaderCode = shaderManager->GetVertexShaderCode();
-	m_pixelShaderCode = shaderManager->GetPixelShaderCode();
+	//m_vertexShaderCode = shaderManager->GetVertexShaderCode();
+	//m_pixelShaderCode = shaderManager->GetPixelShaderCode();
 }
 
 
@@ -38,29 +38,29 @@ void ShaderEditor::Render(Graphics& gfx) {
     if (ImGui::InputTextMultiline("##pixel", pixelShaderBuffer, sizeof(pixelShaderBuffer), ImVec2(-1.0f, ImGui::GetTextLineHeight() * 16))) {
         m_pixelShaderCode = pixelShaderBuffer;
         m_needsReload = true;
-        m_needsSaving = true;
+     //   m_needsSaving = true;
     }
     if (m_needsReload && ImGui::Button("compile")) {
-        m_shaderManager->SetVertexShaderCode(m_vertexShaderCode);
-        m_shaderManager->SetPixelShaderCode(m_pixelShaderCode);
-        m_shaderManager->ReloadShaders(gfx);
+       // m_shaderManager->SetVertexShaderCode(m_vertexShaderCode);
+        //m_shaderManager->SetPixelShaderCode(m_pixelShaderCode);
+        //m_shaderManager->ReloadShaders(gfx);
         m_needsReload = false;
         m_needsSaving = true;
     }
     if (m_needsSaving && ImGui::Button("save"))
     {
-        std::ofstream vertexShaderFile(m_shaderManager->getVertexShaderPath());
-        if (vertexShaderFile.is_open()) {
-            vertexShaderFile << m_vertexShaderCode;
-            vertexShaderFile.close();
+        //std::ofstream vertexShaderFile(m_shaderManager->getVertexShaderPath());
+       // if (vertexShaderFile.is_open()) {
+        //    vertexShaderFile << m_vertexShaderCode;
+       //     vertexShaderFile.close();
         }
-        std::ofstream pixelShaderFile(m_shaderManager->getPixelShaderPath());
-        if (pixelShaderFile.is_open()) {
-            pixelShaderFile << m_pixelShaderCode;
-            pixelShaderFile.close();
-        }
+        //std::ofstream pixelShaderFile(m_shaderManager->getPixelShaderPath());
+       // if (pixelShaderFile.is_open()) {
+       //     pixelShaderFile << m_pixelShaderCode;
+       //     pixelShaderFile.close();
+       // }
         m_needsSaving = false;
-    }
+   // }
 
   
 }

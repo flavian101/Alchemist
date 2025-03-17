@@ -1,9 +1,9 @@
 #include "DirectionalLight.h"
 #include "Graphics/Graphics.h"
 
-DirectionalLight::DirectionalLight(const std::string& name, Graphics& g, std::shared_ptr<ShaderManager> manager)
+DirectionalLight::DirectionalLight(const std::string& name, Graphics& g)
 	:
-	Light(name, g, manager)
+	Light(name, g)
 {
 
 }

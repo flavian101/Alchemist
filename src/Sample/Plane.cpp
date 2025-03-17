@@ -4,18 +4,11 @@
 #include <MathUtils/MathUtils.h>
 #include "models/Mesh.h"
 
-Plane::Plane(const std::string& name, std::shared_ptr<ShaderManager> maneger)
+Plane::Plane(const std::string& name)
     :GameObject(name),
-    builder(name, std::move(maneger), XMMatrixIdentity())
+    builder(name, XMMatrixIdentity())
 
-{
-   
-
-	//m_position = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//this->setTranslation(Math::XMVectorToFloat3(m_position));
-	//m_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	//this->setScale(Math::XMVectorToFloat3(m_scale));
-}
+{}
 
 void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
 {
@@ -152,7 +145,7 @@ void Plane::CreatePlane(Graphics& gfx,float width, float depth, UINT m, UINT n)
 
     auto meshPart = new  Mesh(gfx, indices, vertices);
     // Create the mesh with the generated vertices and indices
-    auto material = builder.CreateMaterial(gfx,
+    auto material = builder.CreateMaterialFromTexture(gfx,
         "Assets/textures/hay.jpg",
         "Assets/textures/N_hay.png",
         "Assets/textures/M_hay.png",

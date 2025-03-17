@@ -4,15 +4,10 @@
 #include "models/Vertex.h"
 #include "models/Mesh.h"
 
-Player::Player(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderManager> shaderManager)
+Player::Player(const std::string& name, Graphics& gfx)
     :GameObject(name),
-    builder(name, shaderManager,XMMatrixIdentity())
+    builder(name,XMMatrixIdentity())
 {
-    // m_position = XMVectorSet(1.0f, 2.0f, 0.0f, 0.0f);
-    // this->setTranslation(Math::XMVectorToFloat3(m_position));
-    // m_orientation = XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
-    // this->setRotation(Math::XMVectorToFloat4(m_orientation));
-
     vertices.reserve(24);
       // Front face
     vertices.emplace_back(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f); // bottom-left-back
@@ -103,7 +98,7 @@ Player::Player(const std::string& name, Graphics& gfx, std::shared_ptr<ShaderMan
 
     auto mesh = new Mesh(gfx, indices, vertices);
 
-    auto material = builder.CreateMaterial(gfx,
+    auto material = builder.CreateMaterialFromTexture(gfx,
         "Assets/textures/stone wall.jpg",
         "Assets/textures/N_stone wall.jpg",
         "Assets/textures/M_stone wall.jpg",

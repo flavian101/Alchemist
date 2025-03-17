@@ -18,7 +18,7 @@ class Node;
 class ModelLoader : public Model
 {
 public:
-	ModelLoader(const std::string& filepath, Graphics& gfx, std::shared_ptr<ShaderManager> manager);
+	ModelLoader(const std::string& filepath, Graphics& gfx);
 	void Update(Graphics& gfx,float deltaTime);
 	void Render(Graphics& gfx);
 	//std::string& GetPath() { return m_filepath; }
