@@ -22,6 +22,11 @@ Material::Material(Graphics& gfx)
 	samp = std::make_unique<Utils::Sampler>(gfx);
 }
 
+Material::~Material()
+{
+
+}
+
 void Material::Update(Graphics& gfx)
 {
 	materialBuffer.data.materialStruct.hasAlbedoMap =static_cast<BOOL>(hasAlbedoMap);
@@ -46,10 +51,12 @@ void Material::Bind(Graphics& gfx)
 	{
 		gfx.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
 		BindTextures(gfx);
+		shaderManager->UnBindShader(gfx,"Grid");
 		shaderManager->BindShader(gfx, "Textured");
 	}
 	else
 	{
+		shaderManager->UnBindShader(gfx, "Textured");
 		shaderManager->BindShader(gfx, "Grid");
 	}
 	

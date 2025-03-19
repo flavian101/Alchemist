@@ -44,6 +44,13 @@ void Utils::VertexBuffer::Bind(Graphics& gfx)
     gfx.GetContext()->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
 }
 
+void Utils::VertexBuffer::Unbind(Graphics& gfx)
+{
+    ID3D11Buffer* nullBuffer = nullptr;
+    UINT zero = 0;
+    gfx.GetContext()->IASetVertexBuffers(0, 1, &nullBuffer, &zero, &zero);
+}
+
 Utils::IndexBuffer::IndexBuffer(Graphics& gfx, const std::vector<unsigned short>& indices)
     :
     pIndexBuffer(nullptr)
@@ -76,6 +83,10 @@ Utils::IndexBuffer::~IndexBuffer()
 void Utils::IndexBuffer::Bind(Graphics& gfx)
 {
     gfx.GetContext()->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+}
+void Utils::IndexBuffer::UnBind(Graphics& gfx)
+{
+    gfx.GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 }
 Utils::InputLayout::InputLayout(Graphics& gfx, const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode)
 {
@@ -135,6 +146,11 @@ void Utils::InputLayout::Bind(Graphics& gfx)
     gfx.GetContext()->IASetInputLayout(pInputLayout.Get());
 }
 
+void Utils::InputLayout::UnBind(Graphics& gfx)
+{
+    gfx.GetContext()->IASetInputLayout(nullptr);
+}
+
 Utils::VertexShader::VertexShader(Graphics& gfx,const std::wstring& path)
 {
     LoadCompiledVertexShader(gfx, path);
@@ -178,6 +194,11 @@ void Utils::VertexShader::Bind(Graphics& gfx)
     gfx.GetContext()->VSSetShader(pVertexShader.Get(), nullptr, 0);
 }
 
+void Utils::VertexShader::UnBind(Graphics& gfx)
+{
+    gfx.GetContext()->VSSetShader(nullptr, nullptr, 0);
+}
+
 Utils::PixelShader::PixelShader(Graphics& gfx,const std::wstring path)
 {
     LoadCompiledPixelShader(gfx, path);
@@ -213,6 +234,10 @@ ID3DBlob* Utils::PixelShader::GetByteCode()
 void Utils::PixelShader::Bind(Graphics& gfx)
 {
     gfx.GetContext()->PSSetShader(pPixelShader.Get(), nullptr,0);
+}
+void Utils::PixelShader::Unbind(Graphics& gfx)
+{
+    gfx.GetContext()->PSSetShader(nullptr, nullptr, 0);
 }
 Utils::Topology::Topology(Graphics& g, D3D11_PRIMITIVE_TOPOLOGY type)
     :
@@ -291,6 +316,12 @@ void Utils::Texture::Bind(Graphics& gfx,UINT slot)
     m_slot = slot;
     gfx.GetContext()->PSSetShaderResources(m_slot, 1, textureView.GetAddressOf());
 
+}
+
+void Utils::Texture::UnBind(Graphics& gfx)
+{
+    ID3D11ShaderResourceView* nullSRV = nullptr;
+    gfx.GetContext()->PSSetShaderResources(0, 1, &nullSRV);
 }
 
 Utils::Sampler::Sampler(Graphics& gfx)

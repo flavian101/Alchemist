@@ -39,7 +39,7 @@ void ShaderManager::UnBindShader(Graphics& gfx,const char* shaderName)
 	auto it = shaders.find(shaderName);
 	if (it != shaders.end())
 	{
-		//it->second->Unbind(gfx);
+		it->second->DestroyShader(gfx);
 	}
 }
 

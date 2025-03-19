@@ -25,9 +25,12 @@ void Shaders::BindShader(Graphics& gfx)
 	m_pixelShader.Bind(gfx);
 }
 
-void Shaders::DeleteShader()
+void Shaders::DestroyShader(Graphics& gfx)
 {
-	delete this;
+    m_layout.UnBind(gfx);
+    m_vertexShader.UnBind(gfx);
+    m_pixelShader.Unbind(gfx);
+
 }
 
 void Shaders::LoadShaders(Graphics& gfx, bool isCompiled)

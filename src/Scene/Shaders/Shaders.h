@@ -16,7 +16,7 @@ public:
 
 	void RecompileShader(Graphics& gfx);
 	void BindShader(Graphics& gfx);
-	void DeleteShader();
+	void DestroyShader(Graphics& gfx);
 
 	void SetVertexShaderCode(const std::string& V_code);
 	void SetPixelShaderCode(const std::string& P_code);

@@ -14,6 +14,7 @@ namespace Utils
 		VertexBuffer(Graphics& gfx,const std::vector<Vertex>& vertices);
 		~VertexBuffer();
 		void Bind(Graphics& gfx);
+		void Unbind(Graphics& gfx);
 	private:
 		UINT stride;
 		UINT offset = 0u;
@@ -27,6 +28,7 @@ namespace Utils
 		IndexBuffer(Graphics& gfx,const std::vector<unsigned short>& indices);
 		~IndexBuffer();
 		void Bind(Graphics& gfx);
+		void UnBind(Graphics& gfx);
 	private:
 		Microsoft::WRL::ComPtr< ID3D11Buffer> pIndexBuffer;
 	};
@@ -36,6 +38,7 @@ namespace Utils
 		InputLayout(Graphics& gfx, const std::string& keyword, Microsoft::WRL::ComPtr<ID3DBlob> pVsByteCode);
 		~InputLayout();
 		void Bind(Graphics& gfx);
+		void UnBind(Graphics& gfx);
 	private:
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
 		std::vector< D3D11_INPUT_ELEMENT_DESC> layouts;
@@ -49,6 +52,7 @@ namespace Utils
 		void LoadCompiledVertexShader(Graphics& gfx,std::wstring path);
 		ID3DBlob* GetByteCode();
 		void Bind(Graphics& gfx);
+		void UnBind(Graphics& gfx);
 	private:
 		Microsoft::WRL::ComPtr< ID3D11VertexShader> pVertexShader = nullptr;
 		Microsoft::WRL::ComPtr< ID3DBlob> pShaderBlob = nullptr;
@@ -61,8 +65,9 @@ namespace Utils
 		~PixelShader();
 		void LoadStreamPixelShader(Graphics& gfx,std::string stream);
 		void LoadCompiledPixelShader(Graphics& gfx,std::wstring path);
-		ID3DBlob* GetByteCode();
+		ID3DBlob* GetByteCode();	
 		void Bind(Graphics& gfx);
+		void Unbind(Graphics& gfx);
 	private:
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader = nullptr;
 		Microsoft::WRL::ComPtr< ID3DBlob> pShaderBlob = nullptr;
@@ -84,6 +89,7 @@ namespace Utils
 		~Texture();
 		void Bind(Graphics& gfx,UINT slot= 0);
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
+		void UnBind(Graphics& gfx);
 	private:
 		UINT m_slot = 0u;
 		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView> textureView;

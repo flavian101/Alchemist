@@ -22,6 +22,7 @@ public:
 		Specular
 	};
 	Material(Graphics& gfx);
+	~Material();
 	void Update(Graphics& gfx);
 	void Bind(Graphics& gfx);
 	void LoadTexture(Graphics& gfx,TextureType type, const std::string& path);
