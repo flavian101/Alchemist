@@ -20,7 +20,7 @@ class DXViewPort;
 
 class Renderer {
 public:
-    Renderer(HWND hwnd);
+    Renderer(HWND hwnd,UINT width,UINT height);
     Renderer(const Renderer&) = delete;
     Renderer& operator=(const Renderer&) = delete;
     ~Renderer();
@@ -30,6 +30,8 @@ public:
     void Render(UINT indexCount);
     void EndFrame();
 
+    void setWidth(UINT width);
+    void setHeight(UINT height);
     UINT GetWidth()const;
     UINT GetHeight()const;
 

@@ -5,13 +5,13 @@
 #include "DXContext.h"
 #include "DXRenderTarget.h"
 
-SwapChain::SwapChain(HWND hwnd, DXGIAdapterInfo& info, DXDevice& device, bool enableMsaa)
+SwapChain::SwapChain(HWND hwnd, DXGIAdapterInfo& info, DXDevice& device,UINT width, UINT height, bool enableMsaa)
 {
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-    swapChainDesc.BufferDesc.Width = 1024;
-    swapChainDesc.BufferDesc.Height = 720;
+    swapChainDesc.BufferDesc.Width = width;
+    swapChainDesc.BufferDesc.Height = height;
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     //to implement vsync later
     swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
@@ -32,7 +32,7 @@ SwapChain::SwapChain(HWND hwnd, DXGIAdapterInfo& info, DXDevice& device, bool en
         device.pDevice.Get(), &swapChainDesc,pSwapChain.GetAddressOf()));
 
     //resize the swap chain to the highest res of the primary adapter
-    info.SetHighestResolution(device.pDevice, pSwapChain, hwnd);
+    //info.SetHighestResolution(device.pDevice, pSwapChain, hwnd);
 
    
     ///create the render target after swapchain initialization

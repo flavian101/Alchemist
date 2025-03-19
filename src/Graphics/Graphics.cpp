@@ -8,10 +8,10 @@
 
 
 
-Graphics::Graphics(HWND hwnd)
+Graphics::Graphics(HWND hwnd,UINT width, UINT height)
     :
     imguiEnabled(true),
-    renderer(std::make_unique<Renderer>(hwnd)),
+    renderer(std::make_unique<Renderer>(hwnd,width,height)),
     view(XMMatrixIdentity()),
     projection(XMMatrixIdentity())
 {
@@ -103,6 +103,8 @@ void Graphics::SetWin(const std::tuple<HWND, HINSTANCE>& win)
     m_hwnd = std::get<0>(win);
     m_hinstance = std::get<1>(win);
 }
+
+
 
 std::tuple<HWND, HINSTANCE> Graphics::getWin()
 {

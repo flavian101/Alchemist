@@ -14,11 +14,11 @@
 
 
 
-Renderer::Renderer(HWND hwnd)
+Renderer::Renderer(HWND hwnd,UINT width,UINT height)
     :
     hWnd(hwnd),
-    m_width(1024.0f),
-    m_height(720.0f),
+    m_width(width),
+    m_height(height),
     enabledMsaa(false),
     isVsyncEnabled(false)
 {
@@ -27,10 +27,10 @@ Renderer::Renderer(HWND hwnd)
 
     device = std::make_unique<DXDevice>(*info.get());
 
-    swapChain = std::make_unique<SwapChain>(hWnd, *info.get(), *device.get(), enabledMsaa);
+    swapChain = std::make_unique<SwapChain>(hWnd, *info.get(), *device.get(),m_width,m_height, enabledMsaa);
     context = std::make_unique<DXContext>(*device);
-    m_width = info->getWidth();
-    m_height = info->getHeight();
+    //m_width = info->getWidth();
+    //m_height = info->getHeight();
     renderTarget = std::make_unique<DXRenderTarget>(device->getDevice(), swapChain->getIDXGISwapChain(), enabledMsaa);
     depthStencil = std::make_unique<DXDepthStencil>(*device, m_width, m_height, enabledMsaa);
     rasterizer = std::make_unique<DXRasterizer>(device->getDevice());
@@ -128,6 +128,16 @@ void Renderer::EndFrame()
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     swapChain->Present(isVsyncEnabled);
+}
+
+void Renderer::setWidth(UINT width)
+{
+    m_width = width;
+}
+
+void Renderer::setHeight(UINT height)
+{
+    m_height = height;
 }
 
 UINT Renderer::GetWidth()const

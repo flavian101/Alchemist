@@ -11,7 +11,7 @@ private:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 public:
-    Graphics(HWND hwnd);
+    Graphics(HWND hwnd, UINT width,UINT height);
    // Graphics();
     ~Graphics();
 
@@ -35,6 +35,7 @@ public:
     float GetHeight() const;
     //
     void SetWin(const std::tuple<HWND, HINSTANCE>& win);
+    void SetRenderAreaDimensions(std::tuple<float, float> dimensions);
     std::tuple<HWND, HINSTANCE> getWin();
 
     //To be implementes as static methods

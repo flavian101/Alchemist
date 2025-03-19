@@ -75,62 +75,44 @@ bool Window::Initialize()
 		return 1;
 	}
 
-	//create windows rect
-	RECT initialRect = { 0,0,m_width, m_height };
-	AdjustWindowRectEx(&initialRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
-	LONG initialWidth = initialRect.right - initialRect.left;
-	LONG initialHeight = initialRect.bottom - initialRect.top;
+	RECT workArea;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
 
-	m_hwnd = CreateWindow(
+	// Set width and height based on work area
+	m_width = workArea.right - workArea.left;
+	m_height = workArea.bottom - workArea.top;
+
+	// Ensure we do not expand beyond work area (no AdjustWindowRectEx needed for WS_POPUP)
+	LONG newWidth = m_width;
+	LONG newHeight = m_height;
+
+	// Create window (borderless)
+	m_hwnd = CreateWindowEx(
+		WS_EX_APPWINDOW,  // Ensure window appears on the taskbar
 		m_windowClass,
 		m_windowTitle,
-		WS_POPUP | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		initialWidth, initialHeight,
-		NULL,
-		NULL,
-		m_hInstance,
-		this
+		WS_POPUP | WS_VISIBLE,  // WS_POPUP for borderless mode
+		workArea.left, workArea.top,  // Position at top-left of work area
+		newWidth, newHeight,
+		NULL, NULL, m_hInstance, this
 	);
 
 	if (!m_hwnd)
 	{
-		MessageBox(NULL, L"Error creating window",
-			L"Error", MB_OK | MB_ICONERROR);
-		return 1;
+		MessageBox(NULL, L"Error creating window", L"Error", MB_OK | MB_ICONERROR);
+		return false;
 	}
 
+	// Show and update window
 	ShowWindow(m_hwnd, SW_SHOWDEFAULT);
 	UpdateWindow(m_hwnd);
 	SetFocus(m_hwnd);
 	ImGui_ImplWin32_Init(m_hwnd);
-	pGfx = std::make_unique<Graphics>(m_hwnd);
+
+	pGfx = std::make_unique<Graphics>(m_hwnd,newWidth,newHeight);
 	pGfx->SetWin(std::make_tuple(m_hwnd, m_hInstance));
+
 	
-	int maxWidth = pGfx->GetWidth();  
-	int maxHeight = pGfx->GetHeight();
-
-	// Adjust the window rect to account for window styles
-	RECT newRect = { 0, 0, maxWidth, maxHeight };
-	AdjustWindowRectEx(&newRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
-	LONG newWidth = newRect.right - newRect.left;
-	LONG newHeight = newRect.bottom - newRect.top;
-
-	// Resize the window
-	SetWindowPos(m_hwnd, HWND_TOP, 0, 0, newWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-
-	// Optionally, center the window on the screen
-	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-	int x = (screenWidth - newWidth) / 2;
-	int y = (screenHeight - newHeight) / 2;
-	
-	SetWindowPos(m_hwnd, HWND_TOP, x, y, newWidth, newHeight, SWP_NOZORDER | SWP_NOACTIVATE);
-
-	// Update window and focus
-	UpdateWindow(m_hwnd);
-	SetFocus(m_hwnd);
-
     return true;
 }
 
