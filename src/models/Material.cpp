@@ -7,6 +7,7 @@ Material::Material(Graphics& gfx)
 	:
 	shaderManager(std::make_unique<ShaderManager>(gfx)),
 	hasAlbedoMap(FALSE),
+	hasBaseColor(FALSE),
 	hasNormalMap (FALSE),
 	hasMetallicMap( FALSE),
 	hasRoughnessMap (FALSE),
@@ -18,7 +19,7 @@ Material::Material(Graphics& gfx)
 	materialBuffer.data.materialStruct.metallic =0.5f;
 	materialBuffer.data.materialStruct.roughness = 0.5f;
 	materialBuffer.data.materialStruct.ao = 1.0f;
-	materialBuffer.data.materialStruct.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialBuffer.data.materialStruct.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	samp = std::make_unique<Utils::Sampler>(gfx);
 }
 
@@ -30,6 +31,7 @@ Material::~Material()
 void Material::Update(Graphics& gfx)
 {
 	materialBuffer.data.materialStruct.hasAlbedoMap =static_cast<BOOL>(hasAlbedoMap);
+	//materialBuffer.data.materialStruct.hasBaseColor =static_cast<BOOL>(hasBaseColor);
 	materialBuffer.data.materialStruct.hasNormalMap = static_cast<BOOL>(hasNormalMap);
 	materialBuffer.data.materialStruct.hasMetallicMap = static_cast<BOOL>(hasMetallicMap);
 	materialBuffer.data.materialStruct.hasRoughnessMap = static_cast<BOOL>(hasRoughnessMap);
@@ -46,19 +48,23 @@ void Material::Bind(Graphics& gfx)
 		materialBuffer.data.materialStruct.hasMetallicMap ==TRUE||
 		materialBuffer.data.materialStruct.hasRoughnessMap == TRUE||
 		materialBuffer.data.materialStruct.hasAOMap == TRUE ||
-		materialBuffer.data.materialStruct.hasSpecularMAp == TRUE
+		materialBuffer.data.materialStruct.hasSpecularMAp == TRUE||
+		hasBaseColor == TRUE
+		//materialBuffer.data.materialStruct.hasBaseColor == TRUE
 		)
 	{
 		gfx.GetContext()->PSSetConstantBuffers(1, 1, materialBuffer.GetAddressOf());
 		BindTextures(gfx);
 		shaderManager->UnBindShader(gfx,"Grid");
 		shaderManager->BindShader(gfx, "Textured");
+
 	}
 	else
 	{
 		shaderManager->UnBindShader(gfx, "Textured");
 		shaderManager->BindShader(gfx, "Grid");
 	}
+
 	
 }
 
@@ -79,6 +85,18 @@ void Material::BindTextures(Graphics& gfx)
 		if (texture)
 		{
 			texture->Bind(gfx,static_cast<UINT>(type)); 
+		}
+	}
+}
+
+void Material::UnbindMaterials(Graphics& gfx)
+{
+
+	for (const auto& [type, texture] : textures)
+	{
+		if (texture)
+		{
+			texture->UnBind(gfx, static_cast<UINT>(type));
 		}
 	}
 }

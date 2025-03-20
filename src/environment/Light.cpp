@@ -10,7 +10,7 @@ Light::Light(const std::string& name,Graphics& gfx)
 
 	PS_Buffer.Initialize(gfx);
 	PS_Buffer.data.lightStruct.position = XMFLOAT3(0.0f, 10.0f, 0.0f);
-	PS_Buffer.data.lightStruct.dir = XMFLOAT3(0.0f, -1.0f, 0.0f);
+	PS_Buffer.data.lightStruct.dir = XMFLOAT3(20.0f, -1.0f, 3.0f);
 	PS_Buffer.data.lightStruct.range = 1000.0f;
 	PS_Buffer.data.lightStruct.cone = 20.0f;
 	PS_Buffer.data.lightStruct.att = XMFLOAT3(0.4f, 0.02f, 0.0f);

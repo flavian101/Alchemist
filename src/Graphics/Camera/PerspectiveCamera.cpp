@@ -9,7 +9,7 @@ PerspectiveCamera::PerspectiveCamera()
     camPosition = DirectX::XMVectorSet(0.0f, 6.0f, -16.0f, 1.0f);
     camTarget = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
     camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    m_aspectRatio = static_cast<float>(4.0) / static_cast<float>(3.0);
+    m_aspectRatio = static_cast<float>(16.0f) / static_cast<float>(9.0f);
     m_nearPlane = 1.0f;
     m_farPlane = 1000.0f;
     mode = freeLook;

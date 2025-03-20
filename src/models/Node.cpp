@@ -30,6 +30,7 @@ void Node::Draw(Graphics& gfx, FXMMATRIX accumulatedTransform)
     for (const auto& pm : meshPtrs)
     {
         pm->Update(gfx);
+        //pm->controlWindow();
         pm->Bind(gfx);
         pm->Render(gfx, built);
     }

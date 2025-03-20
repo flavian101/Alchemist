@@ -13,7 +13,7 @@ class Mesh
 public:
 
     Mesh(Graphics& gfx, const std::vector<unsigned short>& indices, const std::vector<Vertex>& vertices);
-
+    ~Mesh();
     void Update(Graphics& gfx);
     void Bind(Graphics& gfx);
     void Render(Graphics& gfx,FXMMATRIX accumulatedTransform);

@@ -89,7 +89,7 @@ namespace Utils
 		~Texture();
 		void Bind(Graphics& gfx,UINT slot= 0);
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
-		void UnBind(Graphics& gfx);
+		void UnBind(Graphics& gfx,UINT slot = 0);
 	private:
 		UINT m_slot = 0u;
 		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView> textureView;

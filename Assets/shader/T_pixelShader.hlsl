@@ -4,7 +4,7 @@ cbuffer cb_vsConstantBuffer
     matrix modelViewProj : packoffset(c4);
 };
 
-// Structures
+// Light and Material Structures
 struct Light
 {
     float3 position;
@@ -13,27 +13,14 @@ struct Light
     float cone;
     float3 att;
     float intensity;
-    float4 color;
-    float4 ambient;
-    float4 diffuse;
-    float4 specular;
+    float4 color, ambient, diffuse, specular;
 };
 
 struct Material
 {
-    float4 baseColor;
-    float4 emissive;
-    float4 specular;
-    bool hasAlbedoMap;
-    bool hasNormalMap;
-    bool hasMetallicMap;
-    bool hasRoughnessMap;
-    bool hasAOMap;
-    bool hasSpecular;
-    float metallic;
-    float roughness; 
-    float ao;
-    float pad1[4];
+    float4 baseColor, emissive, specular;
+    bool hasAlbedoMap, hasNormalMap, hasMetallicMap, hasRoughnessMap, hasAOMap, hasSpecular;
+    float metallic, roughness, ao;
 };
 
 // Constant Buffers
@@ -41,145 +28,75 @@ cbuffer cb_psConstantBuffer : register(b0)
 {
     Light light;
 };
-
 cbuffer cb_psMaterialBuffer : register(b1)
 {
     Material material;
 };
 
+// Vertex Output
 struct VertexOut
 {
     float4 posH : SV_POSITION;
     float2 tex : TEXCOORD0;
-    float3 normal : NORMAL;
-    float3 worldPos : POSITION1;
-    float3 viewPos : TEXCOORD1;
-    float3 tangent : TANGENT;
+    float3 normal : NORMAL, worldPos : POSITION1, viewPos : TEXCOORD1, tangent : TANGENT;
 };
 
 // Textures and Sampler
-Texture2D albedoMap : register(t0);
-Texture2D NormalMap : register(t1);
-Texture2D metallicMap : register(t2);
-Texture2D smoothnessMap : register(t3); // roughnessMap
-Texture2D aoMap : register(t4);
-Texture2D specularMap : register(t5);
+Texture2D albedoMap : register(t0), NormalMap : register(t1), metallicMap : register(t2), roughnessMap : register(t3), aoMap : register(t4), specularMap : register(t5);
 SamplerState samp : register(s0);
 
-// Helper functions
+// Fresnel-Schlick Approximation
 float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+// GGX Distribution Function
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
-    float a = roughness * roughness;
-    float a2 = a * a;
-    float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH * NdotH;
-
-    float num = a2;
+    float a2 = roughness * roughness * roughness * roughness;
+    float NdotH2 = max(dot(N, H), 0.0) * max(dot(N, H), 0.0);
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = 3.14159265359 * denom * denom;
-
-    return num / max(denom, 1e-7);
+    return a2 / (3.14159265 * denom * denom);
 }
 
+// Schlick-GGX Geometry Function
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-
-    float num = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return num / max(denom, 1e-7);
+    float k = (roughness + 1.0) * (roughness + 1.0) / 8.0;
+    return NdotV / (NdotV * (1.0 - k) + k);
 }
 
+// Smith Geometry Function
 float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
+    return GeometrySchlickGGX(max(dot(N, V), 0.0), roughness) * GeometrySchlickGGX(max(dot(N, L), 0.0), roughness);
 }
 
-// Main pixel shader function
+// Main Pixel Shader
 float4 main(VertexOut input) : SV_Target
 {
-     // Sample textures
     float4 albedo = material.hasAlbedoMap ? albedoMap.Sample(samp, input.tex) : material.baseColor;
-    float3 normalMap = material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz : input.normal;
+    float3 N = normalize(mul((material.hasNormalMap ? NormalMap.Sample(samp, input.tex).xyz * 2.0 - 1.0 : input.normal), float3x3(normalize(input.tangent), normalize(cross(input.normal, input.tangent)), normalize(input.normal))));
     float metallic = material.hasMetallicMap ? metallicMap.Sample(samp, input.tex).r : material.metallic;
-    float smoothness = material.hasRoughnessMap ? smoothnessMap.Sample(samp, input.tex).r : 1.0;
+    float roughness = material.hasRoughnessMap ? 1.0 - roughnessMap.Sample(samp, input.tex).r : material.roughness;
     float ao = material.hasAOMap ? aoMap.Sample(samp, input.tex).r : material.ao;
-    
-    // Check for Specular Map
     float3 specularColor = material.hasSpecular ? specularMap.Sample(samp, input.tex).rgb : material.specular.rgb;
-
-    // Convert smoothness to roughness
-    float roughness = 1.0 - smoothness;
-
-    // Apply material properties
-    albedo *= material.baseColor;
-    metallic = saturate(metallic * material.metallic);
-    roughness = clamp(roughness * (1.0 - material.roughness), 0.01, 1.0);
-    ao *= material.ao;
-
-    // Transform normal to world space
-    float3 N = normalize(input.normal);
-    float3 T = normalize(input.tangent);
-    float3 B = normalize(cross(N, T));
-    float3x3 TBN = float3x3(T, B, N);
-    normalMap = normalMap * 2.0 - 1.0;
-    N = normalize(mul(normalMap, TBN));
-
-    // Calculate view and light directions
+    
     float3 V = normalize(input.viewPos - input.worldPos);
-    float3 L = normalize(-light.dir); // Assuming directional light
+    float3 L = normalize(-light.dir);
     float3 H = normalize(V + L);
-
-    // Calculate necessary dot products
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-
-    // Fresnel term using Specular Map or Default F0
-    float3 F0 = specularColor; // Use specular map if available
-    F0 = lerp(F0, albedo.rgb, metallic);
+    float NdotV = max(dot(N, V), 0.0), NdotL = max(dot(N, L), 0.0);
+    
+    float3 F0 = lerp(specularColor, albedo.rgb, metallic);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-    // Calculate Normal Distribution Function
-    float NDF = DistributionGGX(N, H, roughness);
-
-    // Calculate Geometry Function
-    float G = GeometrySmith(N, V, L, roughness);
-
-    // Calculate specular BRDF
-    float3 numerator = NDF * G * F;
-    float denominator = 4.0 * NdotV * NdotL + 0.0001;
-    float3 specularBRDF = numerator / denominator;
-
-    // Calculate diffuse BRDF
-    float3 kS = F;
-    float3 kD = (1.0 - kS) * (1.0 - metallic);
-    float3 diffuse = kD * albedo.rgb / 3.14159265359;
-
-    // Combine results
-    float3 ambient = light.ambient.rgb * albedo.rgb * ao;
-    float3 lightColor = light.color.rgb * light.intensity;
-    float3 radiance = lightColor * NdotL;
-
-    float3 finalColor = ambient + (diffuse + specularBRDF) * radiance;
-
-    // Apply HDR tone mapping
-    finalColor = finalColor / (finalColor + float3(1.0, 1.0, 1.0));
-
-    // Apply gamma correction
-    float gamma = 2.2;
-    finalColor = pow(finalColor, float3(1.0 / gamma, 1.0 / gamma, 1.0 / gamma));
-
+    
+    float3 specularBRDF = (DistributionGGX(N, H, roughness) * GeometrySmith(N, V, L, roughness) * F) / max(4.0 * NdotV * NdotL, 1e-4);
+    float3 diffuse = (1.0 - F) * (1.0 - metallic) * albedo.rgb / 3.14159265;
+    
+    float3 radiance = light.color.rgb * light.intensity * NdotL;
+    float3 finalColor = light.ambient.rgb * albedo.rgb * ao + (diffuse + specularBRDF) * radiance;
+    finalColor = pow(finalColor / (finalColor + 1.0), 1.0 / 2.2);
+    
     return float4(finalColor, 1.0);
 }

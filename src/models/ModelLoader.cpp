@@ -119,6 +119,7 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
         }
         else
         {
+            material->HasBaseColor(true);
             mat.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(material->materialBuffer.data.materialStruct.baseColor));
         }
         if (LoadMaterialTextures(gfx, mat, aiTextureType_NORMALS, Material::TextureType::Normal, *material))
@@ -142,20 +143,14 @@ std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, 
             material->HasRoughness(true);
             hasRoughnessMap = true;
         }
-        else
-        {
-
-        }
+ 
         if (LoadMaterialTextures(gfx, mat, aiTextureType_AMBIENT_OCCLUSION, Material::TextureType::AmbientOcclusion, *material))
         {
             material->HasAO(true);
             hasAOMap = true;
 
         }
-        else
-        {
-
-        }
+    
         if (LoadMaterialTextures(gfx, mat, aiTextureType_SPECULAR, Material::TextureType::Specular, *material))
         {
             material->HasSpecularMap(true);

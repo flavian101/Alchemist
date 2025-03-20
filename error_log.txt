@@ -14,3 +14,27 @@ Error in function LoadCompiledVertexShader at line 166: The parameter is incorre
 
 Error in function InputLayout at line 120: The parameter is incorrect.
 
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+
+Error in function Texture at line 289: The parameter is incorrect.
+
+Error in function Texture at line 297: The parameter is incorrect.
+

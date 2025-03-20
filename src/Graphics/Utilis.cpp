@@ -318,10 +318,10 @@ void Utils::Texture::Bind(Graphics& gfx,UINT slot)
 
 }
 
-void Utils::Texture::UnBind(Graphics& gfx)
+void Utils::Texture::UnBind(Graphics& gfx,UINT slot)
 {
     ID3D11ShaderResourceView* nullSRV = nullptr;
-    gfx.GetContext()->PSSetShaderResources(0, 1, &nullSRV);
+    gfx.GetContext()->PSSetShaderResources(slot, 1, &nullSRV);
 }
 
 Utils::Sampler::Sampler(Graphics& gfx)

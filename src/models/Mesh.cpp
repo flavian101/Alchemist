@@ -14,6 +14,10 @@ Mesh::Mesh(Graphics& gfx, const std::vector<unsigned short>& indices, const std:
 {
 }
 
+Mesh::~Mesh()
+{
+}
+
 void Mesh::Update(Graphics& gfx)
 {
     if (m_material)
@@ -37,6 +41,7 @@ void Mesh::Render(Graphics& gfx,FXMMATRIX accumulatedTransform)
         m_material->Bind(gfx); 
     }
     gfx.Render(indexCount);
+    m_material->UnbindMaterials(gfx);
 }
 
 void Mesh::SetMaterial(std::shared_ptr<Material> material)

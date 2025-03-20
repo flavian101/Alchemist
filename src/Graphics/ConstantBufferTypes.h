@@ -45,6 +45,7 @@ struct MaterialStruct
     alignas(16)XMFLOAT4 emissive;
     alignas(16)XMFLOAT4 specular;
     BOOL hasAlbedoMap;
+   // BOOL hasBaseColor;
     BOOL hasNormalMap;
     BOOL hasMetallicMap;
     BOOL hasRoughnessMap;

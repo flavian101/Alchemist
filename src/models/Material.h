@@ -25,9 +25,12 @@ public:
 	~Material();
 	void Update(Graphics& gfx);
 	void Bind(Graphics& gfx);
+	void UnbindMaterials(Graphics& gfx);
+
 	void LoadTexture(Graphics& gfx,TextureType type, const std::string& path);
 
 	void HasAlbedo(bool has) { hasAlbedoMap = has; };
+	void HasBaseColor(bool has) { hasBaseColor = has; }
 	void HasNormal(bool has) { hasNormalMap = has; };
 	void HasMetallic(bool has) { hasMetallicMap = has; };
 	void HasRoughness(bool has) { hasRoughnessMap = has; };
@@ -52,6 +55,7 @@ private:
 	std::unordered_map<TextureType, std::unique_ptr<Utils::Texture>> textures;
 	std::unique_ptr<ShaderManager> shaderManager;
 	bool hasAlbedoMap;
+	bool hasBaseColor;
 	bool hasNormalMap;
 	bool hasMetallicMap;
 	bool hasRoughnessMap;

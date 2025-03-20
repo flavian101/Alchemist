@@ -9,8 +9,8 @@ Grid::Grid(const std::string& name, Graphics& gfx)
 	builder(name,XMMatrixIdentity())
 {
 
-    float gridSize = 1000.0f; // 100 units across (50 in each direction from center)
-    int numLines = 215; // Odd number for center line
+    float gridSize = 200.0f; // 100 units across (50 in each direction from center)
+    int numLines = 13; // Odd number for center line
     float spacing = gridSize / (numLines - 1);
 
     for (int i = 0; i < numLines; ++i)

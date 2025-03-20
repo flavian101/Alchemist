@@ -43,15 +43,14 @@ Scene::Scene(const std::string& name, Window& win)
 	plane->CreatePlane(win.GetInstance(),200.0f,200.0f,30.0f,30.0f);
     AddGameObject(plane);
 
-   // m_model = new ModelLoader("Assets/model/ghost/ghost.glb", win.GetInstance(), texturedShader);
+    //m_model = new ModelLoader("Assets/model/ghost/ghost.glb", win.GetInstance());
     //m_model = new ModelLoader("Assets/model/g/ghost.gltf", win.GetInstance(), texturedShader);
-    //m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",win.GetInstance(), texturedShader);
-   // m_model = new ModelLoader("Assets/model/ring.gltf", win.GetInstance(), texturedShader);
-    //m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance(), texturedShader);
-     // m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics, texturedShader);
-   // m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance(), texturedShader);
-     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj", win.GetInstance());
-     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance(), texturedShader);
+   // m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",win.GetInstance());
+    ////m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance());
+    //  m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics);
+    //m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance());
+    m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj", win.GetInstance());
+     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance());
    // m_model->LoadModel("Assets/model/nano.gltf");
     AddGameObject(m_model);
 
