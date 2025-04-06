@@ -1,8 +1,6 @@
 #include "Model.h"
 #include "Graphics/Camera/ThirdPerson.h"
 #include "Material.h"
-#include "Mesh.h"
-#include "models/Vertex.h"
 
 
 Model::Model(const std::string& name)

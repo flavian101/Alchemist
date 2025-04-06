@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\dataPack\ModelExporter.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\Scene\Shaders\Shaders.cpp" />
     <ClCompile Include="src\models\Model.cpp" />
@@ -246,6 +247,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\dataPack\ModelExporter.h" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\Scene\Shaders\Shaders.h" />
     <ClInclude Include="src\models\Node.h" />

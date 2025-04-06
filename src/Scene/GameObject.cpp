@@ -17,7 +17,7 @@ void GameObject::Update(Graphics& gfx,float time)
 void GameObject::Render(Graphics& gfx)
 {
 }
-std::string GameObject::getName() const
+std::string GameObject::GetName() const
 {
 	return m_name;
 }

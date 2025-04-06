@@ -63,5 +63,6 @@ private:
 	bool hasSpecularMap;
 private:
 	friend class ModelLoader;
+	friend class ModelExporter;
 };
 

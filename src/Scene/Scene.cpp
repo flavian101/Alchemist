@@ -11,7 +11,7 @@
 #include "models/ModelLoader.h"
 #include "Player.h"
 #include "Scene/Shaders/ShaderManager.h"
-
+#include "dataPack/ModelExporter.h"
 
 Scene::Scene(const std::string& name, Window& win)
 	:
@@ -49,11 +49,15 @@ Scene::Scene(const std::string& name, Window& win)
     ////m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance());
     //  m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics);
     //m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance());
-    m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj", win.GetInstance());
+  // m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj","nanosuit", win.GetInstance());
+    m_model = new ModelLoader("trial/molel.gltf","nanosuit", win.GetInstance());
      //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance());
    // m_model->LoadModel("Assets/model/nano.gltf");
     AddGameObject(m_model);
 
+    ModelExporter ex(*dynamic_cast<Model*>(m_model));
+
+   // ex.Export("trial/molel.gltf");
 
 }
 
@@ -188,7 +192,7 @@ void Scene::controlWindow(Graphics& gfx)
         for (auto& model : objects)
         {
             // Display model names as selectable items
-            if (ImGui::Selectable(model->getName().c_str(), m_selectedObject == model))
+            if (ImGui::Selectable(model->GetName().c_str(), m_selectedObject == model))
             {
                 // Update the selected model
                 m_selectedObject = model;

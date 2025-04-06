@@ -27,7 +27,7 @@ public:
 	void Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime);
 	void Rotate(float yawAmount, float pitchAmount);
 
-	std::string getName()const;
+	std::string GetName()const;
 	void setName(const std::string& name);
 	virtual void controlWindow(Graphics& gfx);
 	

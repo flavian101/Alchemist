@@ -250,6 +250,8 @@ void Utils::Topology::Bind(Graphics& gfx)
 }
 
 Utils::Texture::Texture(Graphics& gfx, const char* path)
+    :
+    m_path(path)
 {
     if (pTex) pTex.Reset();
     if (textureView) textureView.Reset();

@@ -7,12 +7,13 @@
 #include <unordered_map>
 #include "Scene/GameObject.h"
 #include "Node.h"
+#include "Mesh.h"
+#include "models/Vertex.h"
+
 
 class Graphics;
-class Mesh;
 class ThirdPerson;
 class Material;
-class Vertex;
 
 
 class ModelWindow
@@ -79,12 +80,16 @@ class Model : public GameObject
 public:
 	Model(const std::string& name);
 	~Model();
-
+	std::vector < std::shared_ptr<Mesh>> getMeshParts()
+	{
+		return meshPtrs;
+	}
 
 	void Update(Graphics& gfx,float deltaTime) override;
 	void SetRootTransform(FXMMATRIX tf);
 	void Render(Graphics& gfx) override;
 	void controlWindow(Graphics& gfx);
+
 
 	
 private:
@@ -92,7 +97,7 @@ private:
 
 protected:
 	std::unique_ptr<Node> pRoot;
-	std::vector<std::unique_ptr<Mesh>> meshPtrs;
+	std::vector<std::shared_ptr<Mesh>> meshPtrs;
 	std::unique_ptr<ModelWindow> pWindow;
 };
 

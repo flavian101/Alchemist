@@ -90,8 +90,10 @@ namespace Utils
 		void Bind(Graphics& gfx,UINT slot= 0);
 		ID3D11ShaderResourceView* GetSRV() { return textureView.Get(); }
 		void UnBind(Graphics& gfx,UINT slot = 0);
+		std::string GetPath() { return m_path; }
 	private:
 		UINT m_slot = 0u;
+		std::string m_path = "";
 		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView> textureView;
 		Microsoft::WRL::ComPtr < ID3D11Texture2D> pTex = nullptr;
 	};

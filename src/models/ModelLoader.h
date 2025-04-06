@@ -18,14 +18,14 @@ class Node;
 class ModelLoader : public Model
 {
 public:
-	ModelLoader(const std::string& filepath, Graphics& gfx);
+	ModelLoader(const std::string& filepath, const std::string& name, Graphics& gfx);
 	void Update(Graphics& gfx,float deltaTime);
 	void Render(Graphics& gfx);
 	//std::string& GetPath() { return m_filepath; }
 	//void setPath(std::string& path);
 
 private:
-	std::unique_ptr<Mesh> parseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
+	std::shared_ptr<Mesh> parseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 	std::unique_ptr<Node> parseNode(int& nextId, const aiNode& node);
 	bool LoadMaterialTextures(Graphics& gfx,const aiMaterial& mat, aiTextureType type, Material::TextureType textureType, Material& material);
 	

@@ -18,7 +18,12 @@ public:
     void Bind(Graphics& gfx);
     void Render(Graphics& gfx,FXMMATRIX accumulatedTransform);
     void SetMaterial(std::shared_ptr<Material> material);
+	std::shared_ptr<Material> GetMaterial() { return m_material; }
     void controlWindow();
+
+    std::vector<Vertex> getVertices() { return m_vertices; }
+    std::vector<unsigned short> getIndices() { return m_indices; }
+
 
     UINT getIndexCount() { return indexCount; };
     UINT getVertexCount() { return vertexCount; }
@@ -31,6 +36,8 @@ private:
     std::shared_ptr<Material> m_material;
     mutable DirectX::XMFLOAT4X4 transform;
     std::shared_ptr<Transform> localTransform;
+    std::vector<Vertex> m_vertices;
+    std::vector<unsigned short> m_indices;
     UINT indexCount;
     UINT vertexCount;
 

@@ -6,8 +6,8 @@
 #include "Node.h"
 
 
-ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx)
-	:Model(filepath)
+ModelLoader::ModelLoader(const std::string& filepath,const std::string& name,Graphics& gfx)
+	:Model(name)
 {
     Assimp::Importer importer;
     basePath = std::filesystem::path(filepath).parent_path().string();
@@ -31,7 +31,7 @@ ModelLoader::ModelLoader(const std::string& filepath,Graphics& gfx)
     pRoot = parseNode(nextID, *pScene->mRootNode);
 }
 
-std::unique_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
+std::shared_ptr<Mesh> ModelLoader::parseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
 {
 
     std::vector<unsigned short> m_indices;
