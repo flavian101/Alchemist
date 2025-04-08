@@ -23,7 +23,7 @@ class SceneSerializer
 {
 public:
 	SceneSerializer(Graphics& g);
-	nlohmann::json Serialize(Scene* scene);
+	nlohmann::json Serialize(Scene* scene, const std::string& projectDir, const std::string& projectName);
 	void Deserialize(Scene* scene, nlohmann::json j);
 private:
 	//Serialize
@@ -80,6 +80,7 @@ private:
 
 
 private:
+	friend class Project;
 	Graphics& m_graphics;
 	//friend Scene;
 };

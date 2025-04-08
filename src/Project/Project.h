@@ -4,6 +4,10 @@
 #include <vector>
 #include <memory>
 #include "window/Window.h"
+#include <filesystem> // C++17
+
+namespace fs = std::filesystem;
+
 
 class Project {
 public:

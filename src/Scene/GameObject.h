@@ -20,6 +20,8 @@ public:
 	GameObject(const std::string& name);
 	~GameObject();
 
+	void SetFilePath(const std::string& path);
+	std::string GetFilePath()const;
 	virtual void Update(Graphics& gfx,float time);
 	virtual void Render(Graphics& gfx);
 	
@@ -36,6 +38,7 @@ private:
 	
 
 protected:
+	std::string filepath = "";
 	std::string m_name = "untitled";
 
 };

@@ -30,6 +30,7 @@ public:
 	void Update(Graphics& gfx,float time);
 	void Render(Graphics& gfx);
 	std::string GetName()const { return m_name; }
+	std::vector<GameObject*> GetObjects()const { return objects; }
 	void SetName(const std::string& name);
 	void controlWindow(Graphics& gfx);
 	void AddObjectWindow();

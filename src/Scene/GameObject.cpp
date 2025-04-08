@@ -11,6 +11,16 @@ GameObject::~GameObject()
 {
 }
 
+void GameObject::SetFilePath(const std::string& path)
+{
+	filepath = path;
+}
+
+std::string GameObject::GetFilePath() const
+{
+	return filepath;
+}
+
 void GameObject::Update(Graphics& gfx,float time)
 {
 }

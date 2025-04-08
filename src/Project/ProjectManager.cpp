@@ -37,17 +37,18 @@ void ProjectManager::ShowMenuBar(Graphics& gfx)
         }
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New Scene"))
+            if (ImGui::MenuItem("New project"))
             {
-                createScenePopup = true;
             }
-            if (ImGui::MenuItem("Load Scene"))
+            if (ImGui::MenuItem("Load project"))
             {
                 //serializer->Deserialize("flavian.json");
             }
-            if (ImGui::MenuItem("Save Scene"))
+            if (ImGui::MenuItem("Save Project"))
             {
-                //serializer->Serialize("flavian.json");
+                if (currentProject) {
+                    currentProject->Save(); // Save the current project
+                }
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit"))
@@ -59,6 +60,9 @@ void ProjectManager::ShowMenuBar(Graphics& gfx)
         }
         if (ImGui::BeginMenu("Edit"))
         {
+            if (ImGui::MenuItem("add Scene"))
+            {
+            }
             if (ImGui::MenuItem("add object"))
             {
             }
@@ -114,17 +118,22 @@ void ProjectManager::ShowMenuBar(Graphics& gfx)
         }
 
 
+
         ImGui::EndMainMenuBar();
     }
 }
 
 void ProjectManager::LoadProjects()
 {
-    m_projects.push_back(std::make_unique<Project>(m_window, "Project1", "C:/Projects/Project1"));
+    m_projects.push_back(std::make_unique<Project>(m_window, "Project1", "C:Projects/Project1"));
 }
 
 void ProjectManager::ShowProjectWindow()
 {
+    if (!showProjectWindow) {
+        return; // Do not render the window if the flag is false
+    }
+
     // Set the window size and position
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin("Project Manager");
@@ -213,5 +222,6 @@ void ProjectManager::LoadSelectedProject()
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
         currentProject = m_projects[selectedProjectIndex].get();
         currentProject->GetSceneManager()->Update(m_window.GetInstance(), m_timer.Tick());
+        showProjectWindow = false; 
     }
 }

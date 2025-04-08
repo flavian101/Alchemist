@@ -126,10 +126,10 @@ void SceneManager::ControlWindow(Graphics& gfx)
 }
 
 
-nlohmann::json SceneManager::SerializeSceneManager() {
+nlohmann::json SceneManager::SerializeSceneManager(const std::string& projectDir) {
     nlohmann::json j;
     for (const auto& scene : scenes) {
-        j["scenes"].push_back(serializer->Serialize(scene));
+        j["scenes"].push_back(serializer->Serialize(scene, projectDir));
     }
     return j;
 }

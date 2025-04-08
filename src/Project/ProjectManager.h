@@ -27,8 +27,9 @@ private:
     Window& m_window;
     std::vector<std::unique_ptr<Project>> m_projects;
     int selectedProjectIndex = -1;
-    Project* currentProject = nullptr; // Add this line
-    FrameTime m_timer; // Add this line
+    bool showProjectWindow = true; 
+    Project* currentProject = nullptr; 
+    FrameTime m_timer; 
     bool showSceneWindow = true;
     bool createScenePopup = false;
     bool g_isDragging = false;

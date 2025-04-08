@@ -16,19 +16,26 @@
 #include "ModelExporter.h"
 #include "models/ModelLoader.h"
 #include "models/Node.h"
+#include <filesystem> 
+
+namespace fs = std::filesystem;
 
 SceneSerializer::SceneSerializer(Graphics& g)
 	:
 	m_graphics(g)
 {}
-nlohmann::json SceneSerializer::Serialize(Scene* scene)
+nlohmann::json SceneSerializer::Serialize(Scene* scene, const std::string& projectDir,const std::string& projectName)
 {
 	nlohmann::json j;
+	j["projectName"] = projectName;
 	j["Scene Name"] = scene->GetName();
 	//j["device"] = SerializeDevice(*res);
 	//j["window"] = SerializeWindow(*Window::get());
 	j["SceneCamera"] = SerializeSceneCamera(scene->sceneCamera);
 	//j["SceneShader"] = SerializeSceneShader(scene->shaders);
+
+	std::string modelsDir = projectDir + "/Models/";
+	std::filesystem::create_directories(modelsDir);
 
 	j["models"] = nlohmann::json::array();
 	for (auto& object : scene->objects) 
@@ -36,7 +43,7 @@ nlohmann::json SceneSerializer::Serialize(Scene* scene)
 		if (auto model = dynamic_cast<Model*>(object))
 		{
 			ModelExporter exporter(*model);
-			std::string modelPath = "exported_models/" + model->GetName() + ".gltf";
+			std::string modelPath = modelsDir + model->GetName() + ".gltf";
 			exporter.Export(modelPath);
 			nlohmann::json modelJson;
 			modelJson["name"] = model->GetName();
