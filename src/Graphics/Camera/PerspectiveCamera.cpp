@@ -16,6 +16,13 @@ PerspectiveCamera::PerspectiveCamera()
     m_FOV = 45.0f;
     camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
 }
+void PerspectiveCamera::setCamera(float FOV, float aspectRatio, float nearPlane, float farPlane)
+{
+	m_FOV = FOV;
+	m_aspectRatio = aspectRatio;
+	m_nearPlane = nearPlane;
+	m_farPlane = farPlane;
+}
 void PerspectiveCamera::SetAspectRatio(float ratio)
 {
     m_aspectRatio = ratio;

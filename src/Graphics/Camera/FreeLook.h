@@ -23,6 +23,7 @@ public:
 
 
 private:
+	friend class SceneSerializer;
 	float moveLeftRight = 0.0f;
 	float moveBackForward = 0.0f;
 	float moveUpDown = 0.0f;

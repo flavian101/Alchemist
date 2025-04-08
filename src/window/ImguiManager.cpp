@@ -29,6 +29,8 @@ ImguiManager::ImguiManager()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+   // io.DisplaySize = ImVec2(static_cast<float>(1366.0f), static_cast<float>(720.0f));
+
 
     io.Fonts->AddFontFromFileTTF("Assets/font/constan.ttf", 15.0f);
 

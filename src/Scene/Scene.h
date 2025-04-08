@@ -39,6 +39,7 @@ private:
 
 
 private:
+	friend class SceneSerializer;
 	std::string m_name;
 	SceneCamera* sceneCamera;
 	std::unique_ptr<Player> player;
@@ -48,7 +49,6 @@ private:
 	//std::unique_ptr<ShaderEditor> editor;
 	bool m_renameObject = false;
 	DirectionalLight* light;
-	friend class SceneSerializer;
 
 	/// rederables
 	std::vector<GameObject*> objects;

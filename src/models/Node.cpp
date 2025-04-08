@@ -45,6 +45,16 @@ void Node::SetAppliedTransfrom(FXMMATRIX transform)
     XMStoreFloat4x4(&appliedTransform, transform);
 }
 
+void Node::SetTransform(FXMMATRIX transform)
+{
+	XMStoreFloat4x4(&this->transform, transform);
+}
+
+XMMATRIX Node::GetTransform() const
+{
+	return XMLoadFloat4x4(&transform);
+}
+
 int Node::getID() const
 {
     return id;

@@ -103,18 +103,20 @@ bool Renderer::CreateViewPort()
 
 bool Renderer::initializeImgui()
 {
+    ImGui_ImplWin32_Init(hWnd); 
     return ImGui_ImplDX11_Init(device->getDevice().Get(), context->getContext().Get());
 }
 
 void Renderer::Bind(float red, float green, float blue, float alpha)
 {
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
     renderTarget->ClearDepthAndColor(context->getContext(), red, green, blue, alpha);
     depthStencil->Bind(context->getContext());
     renderTarget->Bind(context->getContext(), *depthStencil.get());
     rasterizer->Bind(context->getContext());
+
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
 
 }
 

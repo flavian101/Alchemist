@@ -3,8 +3,11 @@
 #include "ImguiManager.h"
 #include "Graphics/FrameTime.h"
 #include <vector>
-#include "Scene\SceneManager.h"
 #include "Graphics/Graphics.h"
+#include "LoginWindow.h"
+#include "Project/ProjectManager.h"
+#include <memory>
+
 class App
 {
 public:
@@ -20,10 +23,12 @@ private:
 private:
 	ImguiManager imgui;
 	Window window;
-	FrameTime timer;
+	LoginWindow loginWin;
+	ProjectManager projectManager;
 	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
-	SceneManager sceneManager;
+	bool loggedIn;
+
 	
 };
 

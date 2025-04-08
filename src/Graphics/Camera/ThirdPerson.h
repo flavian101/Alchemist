@@ -25,6 +25,7 @@ public:
 	float GetRotationSpeed() { return rotationSpeed; }
 
 private:
+	friend class SceneSerializer;
 	bool FollowPlayer;
 	float distance;
 	float height;

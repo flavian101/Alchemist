@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "dataPack/SceneSerializer.h"
+#include "dataPack/Json.hpp"
 #include "stdafx.h"
 #include <string>
 #include <memory>
@@ -10,6 +11,7 @@ class Graphics;
 class Scene;
 class Window;
 class SceneSerializer;
+
 namespace Utils
 {
     class Texture;
@@ -40,23 +42,18 @@ public:
 
     void ControlWindow(Graphics& gfx);
 
+    nlohmann::json SerializeSceneManager();
+    void DeserializeSceneManager(const nlohmann::json& j);
 
 private:
+    Window& m_window;;
     std::vector<Scene*> scenes;
     Scene* activeScene;
     std::unique_ptr<Utils::Texture> thumbnail;
-    std::unique_ptr<Utils::Texture> Logo;
-    std::unique_ptr<Utils::Texture> close;
-    std::unique_ptr<Utils::Texture> minimize;
-    std::unique_ptr<Utils::Texture> maximize;
+  
     bool showSceneWindow = true;
     bool createScenePopup = false;
     SceneSerializer* serializer;
-    bool g_isDragging = false;
-    POINT g_dragStartPoint = { 0, 0 };
-    POINT g_windowStartPoint = { 0, 0 };
-
-
 
 };
 

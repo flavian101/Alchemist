@@ -1,6 +1,4 @@
 ﻿#include "ModelExporter.h"
-#include <assimp/scene.h>
-#include <assimp/Exporter.hpp>
 #include <assimp/material.h> 
 #include <filesystem>
 #include <fstream>
@@ -355,12 +353,15 @@ void ModelExporter::Export(const std::string& filepath)
             }
         }
 
+        // 7) Export the transformation of the model's nodes
+        ExportNodeTransformations(scene->mRootNode, m_model.GetRootNode());
+
         // Debug log
         std::cout << "Exporting scene: "
             << scene->mNumMeshes << " meshes, "
             << scene->mNumMaterials << " materials\n";
 
-        // 7) Export to GLTF2
+        // 8) Export to GLTF2
         aiReturn result = exporter.Export(scene, "gltf2", filepath);
         if (result != aiReturn_SUCCESS) {
             std::string err = exporter.GetErrorString();
@@ -373,6 +374,31 @@ void ModelExporter::Export(const std::string& filepath)
 
    
     delete scene;
+}
+
+void ModelExporter::ExportNodeTransformations(aiNode* ai_node, const Node* node)
+{
+    // Set the transformation matrix
+    DirectX::XMMATRIX transform = node->GetTransform();
+    DirectX::XMFLOAT4X4 transformFloat4x4;
+    DirectX::XMStoreFloat4x4(&transformFloat4x4, transform);
+    aiMatrix4x4 ai_transform(
+        transformFloat4x4.m[0][0], transformFloat4x4.m[0][1], transformFloat4x4.m[0][2], transformFloat4x4.m[0][3],
+        transformFloat4x4.m[1][0], transformFloat4x4.m[1][1], transformFloat4x4.m[1][2], transformFloat4x4.m[1][3],
+        transformFloat4x4.m[2][0], transformFloat4x4.m[2][1], transformFloat4x4.m[2][2], transformFloat4x4.m[2][3],
+        transformFloat4x4.m[3][0], transformFloat4x4.m[3][1], transformFloat4x4.m[3][2], transformFloat4x4.m[3][3]
+    );
+    ai_node->mTransformation = ai_transform;
+
+    // Recursively export child nodes
+    ai_node->mNumChildren = static_cast<unsigned int>(node->childPtrs.size());
+    if (ai_node->mNumChildren > 0) {
+        ai_node->mChildren = new aiNode * [ai_node->mNumChildren];
+        for (unsigned int i = 0; i < ai_node->mNumChildren; ++i) {
+            ai_node->mChildren[i] = new aiNode();
+            ExportNodeTransformations(ai_node->mChildren[i], node->childPtrs[i].get());
+        }
+    }
 }
 
 

@@ -90,6 +90,10 @@ public:
 	void Render(Graphics& gfx) override;
 	void controlWindow(Graphics& gfx);
 
+	Node* GetRootNode()const
+	{
+		return pRoot.get();
+	}
 
 	
 private:

@@ -28,6 +28,8 @@ public:
 	void Update(Graphics& gfx, float deltaTime);
 	void Draw(Graphics& gfx, FXMMATRIX accumulatedTransform);
 	void SetAppliedTransfrom(FXMMATRIX transform);
+	void SetTransform(FXMMATRIX transform);
+	XMMATRIX GetTransform()const;
 	int getID()const;
 	void ShowTree(Node*& pSelectedNode)const;
 	void ControlNode(Graphics& gfx);///material buffer
@@ -45,7 +47,10 @@ private:
 	DirectX::XMFLOAT4X4 transform;
 	DirectX::XMFLOAT4X4 appliedTransform;
 private:
+	friend class ModelExporter;
 	friend class ModelLoader;
 	friend class ModelBuilder;
+	friend class SceneSerializer;
+
 };
 

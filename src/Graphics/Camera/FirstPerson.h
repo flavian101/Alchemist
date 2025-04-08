@@ -15,6 +15,7 @@ public:
 	void SetSpeed(float speed);
 	float GetSpeed()const;
 private:
+	friend class SceneSerializer;
 	float movementSpeed;
 	float mouseSensitivity;
 };

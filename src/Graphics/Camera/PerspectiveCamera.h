@@ -17,6 +17,8 @@ class PerspectiveCamera :public Camera
 public:
 	PerspectiveCamera();
 
+	void setCamera(float FOV, float aspectRatio, float nearPlane, float farPlane);
+
 	void Reset();
 	void SetView(DirectX::XMMATRIX view);
 	virtual void ControlWindow() override;

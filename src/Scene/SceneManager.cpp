@@ -4,22 +4,20 @@
 #include "imgui/imgui.h"
 #include "Graphics/Utilis.h"
 #include "window/Window.h"
+#include <fstream>
+
 
 
 SceneManager::SceneManager (Window* win)
     :
-    activeScene(nullptr),
-    thumbnail(nullptr)
+    m_window(*win),
+    activeScene(nullptr)
 {
     activeScene = new Scene("begin", *win);
     AddScene(activeScene);
     showSceneWindow = true; 
     thumbnail = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/Alchemist.png");
-    Logo = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/Alchemist.png");
-    minimize= std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/minimize.png");
-    maximize = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/maximize.png");
-    close = std::make_unique<Utils::Texture>(win->GetInstance(), "Assets/textures/thumbnail/close.png");
-    serializer = new SceneSerializer(*activeScene,win->GetInstance());
+    serializer = new SceneSerializer(win->GetInstance());
 
 }
 
@@ -68,95 +66,6 @@ void SceneManager::Render(Graphics& gfx)
 }
 void SceneManager::ControlWindow(Graphics& gfx)
 { 
-
-    if (ImGui::BeginMainMenuBar())
-    {
-        ImTextureID tex_id_1 = Logo->GetSRV();
-        if (ImGui::ImageButton(tex_id_1, ImVec2(20, 20)))
-        {
-            
-        }
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("New Scene"))
-            {
-                createScenePopup = true;
-            }
-            if (ImGui::MenuItem("Load Scene"))
-            {
-                serializer->Deserialize("flavian.json");
-            }
-            if (ImGui::MenuItem("Save Scene"))
-            {
-                serializer->Serialize("flavian.json");
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Exit"))
-            {
-                PostMessage(get<0>(gfx.getWin()), WM_CLOSE, 0, 0);
-
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Edit"))
-        {
-            if (ImGui::MenuItem("add object"))
-            {
-            }
-
-            ImGui::EndMenu();
-        }
-        ImGui::Separator();
-        ImGui::SameLine(ImGui::GetWindowWidth() - 140);
-        ImTextureID tex_id_2 = minimize->GetSRV();
-        if (ImGui::ImageButton(tex_id_2, ImVec2(20, 20)))
-        {
-            ShowWindow(get<0>(gfx.getWin()), SW_MINIMIZE);
-        }
-        ImGui::SameLine();
-        ImTextureID tex_id_3 = maximize->GetSRV();
-
-        if (ImGui::ImageButton(tex_id_3, ImVec2(20, 20)))
-        {
-            ShowWindow(get<0>(gfx.getWin()), IsZoomed(get<0>(gfx.getWin())) ? SW_RESTORE : SW_MAXIMIZE);
-        }
-        ImGui::SameLine();
-        ImTextureID tex_id_4 = close->GetSRV();
-        if (ImGui::ImageButton(tex_id_4, ImVec2(20, 20)))
-        {
-            PostMessage(get<0>(gfx.getWin()), WM_CLOSE, 0, 0);
-        }
-        // Handle dragging
-        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
-        {
-            if (!g_isDragging)
-            {
-                g_isDragging = true;
-                GetCursorPos(&g_dragStartPoint);
-                RECT windowRect;
-                GetWindowRect(get<0>(gfx.getWin()), &windowRect);
-                g_windowStartPoint.x = windowRect.left;
-                g_windowStartPoint.y = windowRect.top;
-            }
-        }
-        else if (!ImGui::IsMouseDown(0))
-        {
-            g_isDragging = false;
-        }
-
-        if (g_isDragging)
-        {
-            POINT currentPos;
-            GetCursorPos(&currentPos);
-            int dx = currentPos.x - g_dragStartPoint.x;
-            int dy = currentPos.y - g_dragStartPoint.y;
-
-            SetWindowPos(get<0>(gfx.getWin()), NULL, g_windowStartPoint.x + dx, g_windowStartPoint.y + dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        }
-
-
-        ImGui::EndMainMenuBar();
-    }
 
     RECT rect;
     GetClientRect(get<0>(gfx.getWin()), &rect);
@@ -214,4 +123,21 @@ void SceneManager::ControlWindow(Graphics& gfx)
       
     }
     ImGui::End();
+}
+
+
+nlohmann::json SceneManager::SerializeSceneManager() {
+    nlohmann::json j;
+    for (const auto& scene : scenes) {
+        j["scenes"].push_back(serializer->Serialize(scene));
+    }
+    return j;
+}
+
+void SceneManager::DeserializeSceneManager(const nlohmann::json& j) {
+    for (const auto& sceneJson : j["scenes"]) {
+        auto scene = new Scene(sceneJson["name"], m_window);
+        serializer->Deserialize(scene, sceneJson);
+        AddScene(scene);
+    }
 }

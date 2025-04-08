@@ -107,7 +107,7 @@ bool Window::Initialize()
 	ShowWindow(m_hwnd, SW_SHOWDEFAULT);
 	UpdateWindow(m_hwnd);
 	SetFocus(m_hwnd);
-	ImGui_ImplWin32_Init(m_hwnd);
+	//ImGui_ImplWin32_Init(m_hwnd);
 
 	pGfx = std::make_unique<Graphics>(m_hwnd,newWidth,newHeight);
 	pGfx->SetWin(std::make_tuple(m_hwnd, m_hInstance));
