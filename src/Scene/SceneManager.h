@@ -37,7 +37,7 @@ public:
     void ControlWindow(Graphics& gfx);
 
 	std::vector<Scene*> GetScenes() const { return scenes; }
-    nlohmann::json SerializeSceneManager(const std::string& projectDir);
+    nlohmann::json SerializeSceneManager(const std::string& projectName, const std::string& projectDir);
     void DeserializeSceneManager(const nlohmann::json& j);
 
 private:
