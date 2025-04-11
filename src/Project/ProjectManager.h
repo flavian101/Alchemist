@@ -6,10 +6,10 @@
 #include "window/Window.h"
 #include "window/ImguiManager.h"
 #include "Graphics/FrameTime.h"
-
+#include "window/ChatWindow.h"
 #include "Graphics/Utilis.h" 
 
-
+class Client;
 
 class ProjectManager {
 public:
@@ -21,7 +21,9 @@ public:
     void ShowProjectWindow();
     void CreateNewProject(const std::string& name, const std::string& rootDir);
     Project* GetSelectedProject();
-    void LoadSelectedProject(); // Add this line
+    void LoadSelectedProject(); 
+    void ShowChatWindow( Client& client); // New method to display the chat window
+    
 
 private:
     Window& m_window;
@@ -39,4 +41,6 @@ private:
     std::unique_ptr<Utils::Texture> close;
     std::unique_ptr<Utils::Texture> minimize;
     std::unique_ptr<Utils::Texture> maximize;
+    std::unique_ptr<ChatWindow> chatWindow_; // ChatWindow instance
+
 };

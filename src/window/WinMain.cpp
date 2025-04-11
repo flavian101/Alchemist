@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
+#include <winsock2.h>
+#pragma comment(lib, "ws2_32.lib")
+
 struct AllocationMetrics
 {
 	uint32_t totalAllocated = 0;
@@ -40,6 +43,13 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	PrintMemoryUsage();
+
+	WSADATA wsaData;
+	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+		std::cerr << "Failed to initialize Winsock" << std::endl;
+		return 1;
+	}
+
 	App app;
 	PrintMemoryUsage();
 	{
@@ -50,5 +60,6 @@ int main()
 
 	}
 	PrintMemoryUsage();
+	WSACleanup();
 	return 0;
 }

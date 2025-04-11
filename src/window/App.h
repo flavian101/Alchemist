@@ -7,6 +7,7 @@
 #include "LoginWindow.h"
 #include "Project/ProjectManager.h"
 #include <memory>
+#include "network/Client.h"
 
 class App
 {
@@ -25,6 +26,7 @@ private:
 	Window window;
 	LoginWindow loginWin;
 	ProjectManager projectManager;
+	Client client;
 	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
 	bool loggedIn;

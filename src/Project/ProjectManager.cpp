@@ -1,6 +1,7 @@
 #include "ProjectManager.h"
 #include <iostream>
 #include "Graphics/Graphics.h"
+#include "network/Client.h"
 
 
 ProjectManager::ProjectManager(Window& win) : m_window(win)
@@ -21,6 +22,9 @@ void ProjectManager::Update(Graphics& gfx)
 
 void ProjectManager::Render(Graphics& gfx)
 {
+    if (chatWindow_) {
+        chatWindow_->render();
+    }
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
         m_projects[selectedProjectIndex]->Render(gfx);
     }
@@ -223,5 +227,12 @@ void ProjectManager::LoadSelectedProject()
         currentProject = m_projects[selectedProjectIndex].get();
         currentProject->GetSceneManager()->Update(m_window.GetInstance(), m_timer.Tick());
         showProjectWindow = false; 
+    }
+}
+
+void ProjectManager::ShowChatWindow( Client& client)
+{
+    if (currentProject && !chatWindow_) {
+        chatWindow_ = std::make_unique<ChatWindow>(client);
     }
 }
