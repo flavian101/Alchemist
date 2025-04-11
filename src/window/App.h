@@ -4,9 +4,13 @@
 #include "Graphics/FrameTime.h"
 #include <vector>
 #include "Graphics/Graphics.h"
-#include "LoginWindow.h"
-#include "Project/ProjectManager.h"
 #include <memory>
+#include "network/NetworkServer.h"
+#include "network/DatabaseManager.h"
+#include <stdexcept>
+#include <iostream>
+#include <boost/asio/ssl.hpp>
+#include "window/ChatWindow.h"
 
 class App
 {
@@ -14,6 +18,9 @@ public:
 	App();
 	~App();
 	int createLoop();
+	void StartServer();
+	void StopServer();
+	void ShowServerWindow();
 
 
 private:
@@ -23,11 +30,15 @@ private:
 private:
 	ImguiManager imgui;
 	Window window;
-	LoginWindow loginWin;
-	ProjectManager projectManager;
+	
 	float speedFactor = 1.0f;
-	bool showDemoWindow = true;
-	bool loggedIn;
+	bool serverRunning = false;
+	std::thread serverThread;
+	boost::asio::io_context io_context;
+	boost::asio::ssl::context ssl_context;
+	DatabaseManager* dbManager = nullptr;
+	std::shared_ptr<NetworkServer> server = nullptr;
+	ChatWindow* chatWindow = nullptr;
 
 	
 };

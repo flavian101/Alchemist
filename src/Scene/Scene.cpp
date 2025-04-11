@@ -49,8 +49,8 @@ Scene::Scene(const std::string& name, Window& win)
     ////m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance());
     //  m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics);
     //m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance());
-  // m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj","nanosuit", win.GetInstance());
-    m_model = new ModelLoader("trial/molel.gltf","nanosuit", win.GetInstance());
+     m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj","nanosuit", win.GetInstance());
+   // m_model = new ModelLoader("trial/molel.gltf","nanosuit", win.GetInstance());
      //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance());
    // m_model->LoadModel("Assets/model/nano.gltf");
     AddGameObject(m_model);

@@ -24,7 +24,7 @@
     <ProjectGuid>{18e3ec8a-0247-4747-87c2-3d03225a7f5e}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Alchemist</ProjectName>
+    <ProjectName>Server</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -126,15 +126,15 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)dependencies;C:\Program Files\OpenSSL-Win64\include\openssl</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)dependencies;C:\Program Files\OpenSSL-Win64\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(solutionDir)dependencies\libs x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc143-mtd.lib;SQLiteCpp.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(solutionDir)dependencies\libs x64;C:\Program Files\OpenSSL-Win64\lib\VC\x64\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;SQLiteCpp.lib;sqlite3.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\window\LoginWindow.cpp" />
+    <ClCompile Include="src\window\ChatWindow.cpp" />
+    <ClCompile Include="src\network\DatabaseManager.cpp" />
+    <ClCompile Include="src\network\NetworkServer.cpp" />
     <ClCompile Include="src\Project\ProjectManager.cpp" />
     <ClCompile Include="src\Project\Project.cpp" />
     <ClCompile Include="src\dataPack\ModelExporter.cpp" />
@@ -251,7 +253,9 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\window\LoginWindow.h" />
+    <ClInclude Include="src\window\ChatWindow.h" />
+    <ClInclude Include="src\network\DatabaseManager.h" />
+    <ClInclude Include="src\network\NetworkServer.h" />
     <ClInclude Include="src\Project\ProjectManager.h" />
     <ClInclude Include="src\Project\Project.h" />
     <ClInclude Include="src\dataPack\ModelExporter.h" />
