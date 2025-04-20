@@ -30,4 +30,5 @@ private:
     std::shared_ptr<ChatWindow> chatWindow_; 
     bool isConnected_;
     bool isAuthenticated_;
+	bool stopRendering_;  // Flag to control rendering loop
 };

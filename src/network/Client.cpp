@@ -3,19 +3,20 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <thread>
-#include <memory> 
+#include <memory>
+#include <chrono>
+#include <mutex>
 
 Client::Client()
     : ssl_context_(boost::asio::ssl::context::sslv23),
     socket_(io_context_, ssl_context_),
     chatWindow_(nullptr),
     isConnected_(false),
-    isAuthenticated_(false)
+    isAuthenticated_(false),
+    stopRendering_(false)  // <-- flag for rendering loop
 {
     ssl_context_.set_default_verify_paths();
     ssl_context_.set_verify_mode(boost::asio::ssl::verify_peer);
-  //  Client::work_guard_ = boost::asio::make_work_guard(io_context_);
-
 }
 
 Client::~Client() {
@@ -25,25 +26,20 @@ Client::~Client() {
 bool Client::connectToServer(const std::string& host, const std::string& port) {
     try {
         std::cout << "Attempting to connect to server at " << host << ":" << port << std::endl;
-
         boost::asio::ip::tcp::resolver resolver(io_context_);
         auto endpoints = resolver.resolve(host, port);
         boost::asio::connect(socket_.lowest_layer(), endpoints);
-
-        // Perform SSL handshake
         socket_.handshake(boost::asio::ssl::stream_base::client);
 
         isConnected_ = true;
         std::cout << "Connected to server." << std::endl;
-
-        // Start receiving messages in a separate thread
         ioThread_ = std::make_unique<std::thread>(&Client::receiveMessages, this);
-        return true; // Connection successful
+        return true;
     }
     catch (const std::exception& e) {
         std::cerr << "Connection error: " << e.what() << std::endl;
         isConnected_ = false;
-        return false; // Connection failed
+        return false;
     }
 }
 
@@ -77,9 +73,8 @@ bool Client::authenticate(const std::string& username, const std::string& passwo
         }
         else {
             std::cerr << "Authentication failed: " << response << std::endl;
-            return false;  // UI will display error and let user retry
+            return false;
         }
-
     }
     catch (const std::exception& e) {
         std::cerr << "Authentication exception: " << e.what() << std::endl;
@@ -93,28 +88,31 @@ void Client::startChat() {
         return;
     }
 
-    while (true) {
+    stopRendering_ = false;
+    // Instead of a busy loop, use a loop with a sleep or an event mechanism.
+    while (!stopRendering_) {
         render();
+        // Sleep briefly to prevent 100% CPU usage.
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
 
 void Client::stopChat() {
+    stopRendering_ = true;  // Signal to end the render loop
     if (isConnected_) {
         io_context_.stop();
         if (ioThread_ && ioThread_->joinable()) {
             ioThread_->join();
         }
         isConnected_ = false;
-
-        // Reset the chat window before stopping
         chatWindow_.reset();
     }
 }
 
-void Client::sendMessageToServer(const std::string& message)
-{
+void Client::sendMessageToServer(const std::string& message) {
     try {
-        boost::asio::write(socket_, boost::asio::buffer(message + "\n"));
+        std::string formattedMessage = "CHAT " + message + "\n";
+        boost::asio::write(socket_, boost::asio::buffer(formattedMessage));
     }
     catch (const std::exception& e) {
         std::cerr << "Error sending message: " << e.what() << std::endl;
@@ -122,45 +120,60 @@ void Client::sendMessageToServer(const std::string& message)
 }
 
 void Client::render() {
-    // Ensure that we safely access the chat window in a thread-safe manner
+    // It is assumed that ChatWindow::render handles its own thread-safety or is called only from one thread.
     if (chatWindow_) {
+        // Lock if necessary (for instance, if messages are coming in from the receive thread)
         chatWindow_->render();
     }
 }
 
 void Client::receiveMessages() {
     try {
+        boost::asio::streambuf buf;
         while (isConnected_) {
-            char buffer[1024] = { 0 }; // Initialize buffer to zeros
-
             boost::system::error_code ec;
-            size_t bytes_transferred = socket_.read_some(boost::asio::buffer(buffer, sizeof(buffer)), ec);
-
+            // Read up to and including the next '\n'
+            size_t n = boost::asio::read_until(socket_, buf, "\n", ec);
             if (ec) {
                 if (ec == boost::asio::error::eof) {
-                    std::cerr << "Connection closed by server" << std::endl;
+                    std::cerr << "Connection closed by server\n";
                 }
                 else {
-                    std::cerr << "Error receiving messages: " << ec.message() << std::endl;
+                    std::cerr << "Receive error: " << ec.message() << "\n";
                 }
                 isConnected_ = false;
                 break;
             }
 
-            if (bytes_transferred > 0) {
-                std::string message(buffer, bytes_transferred);
-                handleIncomingMessage(message);
-            }
+            // Extract exactly one line (drops the '\n')
+            std::istream is(&buf);
+            std::string line;
+            std::getline(is, line);
+
+            handleIncomingMessage(line);
         }
     }
     catch (const std::exception& e) {
-        std::cerr << "Exception in receive thread: " << e.what() << std::endl;
+        std::cerr << "Exception in receive thread: " << e.what() << "\n";
         isConnected_ = false;
     }
 }
 
 void Client::handleIncomingMessage(const std::string& message) {
-    if (chatWindow_) {
-        chatWindow_->addMessage("Server: " + message);
+    std::cout << "Received raw message: " << message << std::endl;
+	std::string msg = message;//messge is raw string
+    if (!msg.empty() && msg.back() == '\r') msg.pop_back();
+
+    // Debug:
+    std::cout << "[recv] “" << msg << "”\n";
+
+    if (msg.rfind("CHAT ", 0) == 0) {
+        // Strip off the protocol prefix
+        std::string payload = msg.substr(5);
+        if (chatWindow_) chatWindow_->addMessage(payload);
+    }
+    else {
+        // Anything else (e.g. server notices)
+        if (chatWindow_) chatWindow_->addMessage("Server: " + msg);
     }
 }
