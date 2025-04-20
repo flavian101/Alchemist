@@ -23,10 +23,13 @@ void ChatWindow::render() {
     if (ImGui::Button("Send")) {
         if (inputBuffer_[0] != '\0') {
             std::string message = inputBuffer_;
-            std::string taggedMessage = "ClientName: " + message; // Append the client's name
-            addMessage("You: " + message); // Add the user's message to the chat window
-            server_.processChatMessage(taggedMessage, nullptr); // Use processChatMessage() instead
-            inputBuffer_[0] = '\0'; // Clear the input buffer
+            addMessage("You: " + message); // Show locally 
+
+            // Format for network transmission - prefix with CHAT
+            std::string networkMessage = "CHAT " + message;
+            server_.processChatMessage(networkMessage);
+
+            inputBuffer_[0] = '\0'; // Clear input
         }
     }
 
@@ -35,8 +38,8 @@ void ChatWindow::render() {
 
 
 void ChatWindow::addMessage(const std::string& message) {
+    std::lock_guard<std::mutex> lock(messagesMutex_); // Add mutex member variable
     messages_.push_back(message);
-    // Optional: Limit the number of messages to avoid excessive memory usage
     if (messages_.size() > 100) {
         messages_.erase(messages_.begin());
     }
