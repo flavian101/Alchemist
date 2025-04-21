@@ -65,6 +65,16 @@ void NetworkServer::handleClient(std::shared_ptr<boost::asio::ssl::stream<boost:
                         authenticateClient(username, password, socket);
                     }
                 }
+                else if (msg.find("REGISTER") == 0) {
+                    auto parts = msg.substr(9);
+                    auto pos = parts.find(' ');
+                    if (pos != std::string::npos) {
+                        auto username = parts.substr(0, pos);
+                        auto password = parts.substr(pos + 1);
+                        password.erase(password.find_last_not_of(" \r\n") + 1);
+                        RegisterUser(username, password, socket);
+                    }
+                }
                 else {
                     processChatMessage(msg, socket);
                 }
@@ -112,6 +122,28 @@ void NetworkServer::authenticateClient(const std::string& username,
                         });
                 }
                 else {
+                    std::cerr << "Error sending failure message: " << ec.message() << std::endl;
+                }
+            });
+    }
+}
+
+void NetworkServer::RegisterUser(const std::string& username, const std::string& password, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket)
+{
+    if (dbManager_.registerUser(username, password)) {
+        std::string successMessage = "Registration successful.\n";
+        boost::asio::async_write(*socket, boost::asio::buffer(successMessage),
+            [](const boost::system::error_code& ec, std::size_t) {
+                if (ec) {
+                    std::cerr << "Error sending success message: " << ec.message() << std::endl;
+                }
+            });
+    }
+    else {
+        std::string failureMessage = "Registration failed. Username may already exist.\n";
+        boost::asio::async_write(*socket, boost::asio::buffer(failureMessage),
+            [](const boost::system::error_code& ec, std::size_t) {
+                if (ec) {
                     std::cerr << "Error sending failure message: " << ec.message() << std::endl;
                 }
             });

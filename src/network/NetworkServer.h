@@ -17,6 +17,7 @@ public:
     void handleAccept(const boost::system::error_code& error, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket);
     void handleClient(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket);
     void authenticateClient(const std::string& username, const std::string& password, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket);
+	void RegisterUser(const std::string& username, const std::string& password, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket);
     void processChatMessage(const std::string& message, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sender);
     void processChatMessage(const std::string& message);
     void BroadcastChatMessage(const std::string& message);

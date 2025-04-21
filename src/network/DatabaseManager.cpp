@@ -24,6 +24,21 @@ DatabaseManager::~DatabaseManager() {
     // Destructor
 }
 
+bool DatabaseManager::registerUser(const std::string& username, const std::string& password)
+{
+    try {
+        SQLite::Statement query(db_, "INSERT INTO users (username, password) VALUES (?, ?)");
+        query.bind(1, username);
+        query.bind(2, password);
+        query.exec();
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Registration error: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 bool DatabaseManager::createUser(const std::string& username, const std::string& password) {
     try {
         SQLite::Statement query(db_, "INSERT INTO users (username, password) VALUES (?, ?);");

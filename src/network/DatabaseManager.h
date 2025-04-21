@@ -7,7 +7,7 @@ class DatabaseManager {
 public:
     DatabaseManager(const std::string& dbPath);
     ~DatabaseManager();
-
+    bool registerUser(const std::string& username, const std::string& password);
     bool createUser(const std::string& username, const std::string& password);
     bool authenticateUser(const std::string& username, const std::string& password);
     bool storeModel(const std::string& username, const std::string& modelData);
