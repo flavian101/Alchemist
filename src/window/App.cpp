@@ -9,7 +9,7 @@ App::App()
     imgui(),
 	client(),
     loginWin(window,client),
-    projectManager(window),
+    projectManager(window,client),
     loggedIn(false)
 
 {
@@ -53,8 +53,16 @@ void App::Render()
     projectManager.ShowMenuBar(window.GetInstance());
     if (loggedIn) {
         projectManager.ShowProjectWindow();
-        projectManager.LoadSelectedProject();
-		projectManager.ShowChatWindow(client);
+
+        // Check if a project is selected before showing chat window
+        if (projectManager.GetSelectedProject()) {
+            projectManager.LoadSelectedProject();
+            projectManager.ShowChatWindow();
+        }
+
+        // Process any pending messages from the client
+        client.processMessages();
+
         projectManager.Update(window.GetInstance());
         projectManager.Render(window.GetInstance());
     }

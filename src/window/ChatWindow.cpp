@@ -58,8 +58,11 @@ void ChatWindow::addMessage(const std::string& message) {
 void ChatWindow::sendMessage(const std::string& message)
 {
     if (!message.empty()) {
+        // Add message to our local chat history
+        addMessage("You: " + message);
+
+        // Send to server
         client_.sendMessageToServer(message);
-        // Clear the input field after sending
     }
 }
 

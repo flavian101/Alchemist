@@ -10,7 +10,6 @@
 Client::Client()
     : ssl_context_(boost::asio::ssl::context::sslv23),
     socket_(io_context_, ssl_context_),
-    chatWindow_(nullptr),
     isConnected_(false),
     isAuthenticated_(false),
     stopRendering_(false)  // <-- flag for rendering loop
@@ -68,7 +67,6 @@ bool Client::authenticate(const std::string& username, const std::string& passwo
         if (response.find("Authentication successful") != std::string::npos) {
             std::cout << "Authentication successful.\n";
             isAuthenticated_ = true;
-            chatWindow_ = std::make_shared<ChatWindow>(*this);
             return true;
         }
         else {
@@ -91,7 +89,6 @@ void Client::startChat() {
     stopRendering_ = false;
     // Instead of a busy loop, use a loop with a sleep or an event mechanism.
     while (!stopRendering_) {
-        render();
         // Sleep briefly to prevent 100% CPU usage.
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
@@ -105,7 +102,6 @@ void Client::stopChat() {
             ioThread_->join();
         }
         isConnected_ = false;
-        chatWindow_.reset();
     }
 }
 
@@ -114,18 +110,32 @@ void Client::sendMessageToServer(const std::string& message) {
         std::string formattedMessage = "CHAT " + message + "\n";
         boost::asio::write(socket_, boost::asio::buffer(formattedMessage));
     }
+    catch (const boost::system::system_error& e) {
+        std::cerr << "Boost system error: " << e.what() << std::endl;
+    }
     catch (const std::exception& e) {
-        std::cerr << "Error sending message: " << e.what() << std::endl;
+        std::cerr << "Generic error sending message: " << e.what() << std::endl;
+    }
+
+}
+
+void Client::setMessageCallback(std::function<void(const std::string&)> callback)
+{
+    std::lock_guard<std::mutex> lock(messagesMutex_);
+    messageCallback_ = std::move(callback);
+}
+
+void Client::processMessages()
+{
+    std::lock_guard<std::mutex> lock(messagesMutex_);
+    while (!messageQueue_.empty()) {
+        if (messageCallback_) {
+            messageCallback_(messageQueue_.front());
+        }
+        messageQueue_.pop();
     }
 }
 
-void Client::render() {
-    // It is assumed that ChatWindow::render handles its own thread-safety or is called only from one thread.
-    if (chatWindow_) {
-        // Lock if necessary (for instance, if messages are coming in from the receive thread)
-        chatWindow_->render();
-    }
-}
 
 void Client::receiveMessages() {
     try {
@@ -160,20 +170,11 @@ void Client::receiveMessages() {
 }
 
 void Client::handleIncomingMessage(const std::string& message) {
-    std::cout << "Received raw message: " << message << std::endl;
-	std::string msg = message;//messge is raw string
-    if (!msg.empty() && msg.back() == '\r') msg.pop_back();
+    std::lock_guard<std::mutex> lock(messagesMutex_);
+    messageQueue_.push(message);
 
-    // Debug:
-    std::cout << "[recv] “" << msg << "”\n";
-
-    if (msg.rfind("CHAT ", 0) == 0) {
-        // Strip off the protocol prefix
-        std::string payload = msg.substr(5);
-        if (chatWindow_) chatWindow_->addMessage(payload);
-    }
-    else {
-        // Anything else (e.g. server notices)
-        if (chatWindow_) chatWindow_->addMessage("Server: " + msg);
+    // If callback is set, notify immediately
+    if (messageCallback_) {
+        messageCallback_(message);
     }
 }

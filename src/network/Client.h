@@ -3,8 +3,9 @@
 #include <boost/asio/ssl.hpp>
 #include <string>
 #include <thread>
-#include <memory> /
+#include <memory> 
 #include "window/ChatWindow.h" 
+#include <queue>
 
 class Client {
 public:
@@ -17,8 +18,11 @@ public:
     void stopChat();
     void sendMessageToServer(const std::string& message);
 
+    void setMessageCallback(std::function<void(const std::string&)> callback);
+    void processMessages();
+
+
 private:
-    void render();
     void receiveMessages();
     void handleIncomingMessage(const std::string& message);
 
@@ -27,8 +31,12 @@ private:
     boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket_;
     //  boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard_;
     std::unique_ptr<std::thread> ioThread_;
-    std::shared_ptr<ChatWindow> chatWindow_; 
     bool isConnected_;
     bool isAuthenticated_;
 	bool stopRendering_;  // Flag to control rendering loop
+
+    // Message queue with mutex for thread safety
+    std::mutex messagesMutex_;
+    std::queue<std::string> messageQueue_;
+    std::function<void(const std::string&)> messageCallback_;
 };

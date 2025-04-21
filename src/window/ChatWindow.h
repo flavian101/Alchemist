@@ -8,6 +8,8 @@
 
 
 class Client;
+class Project;
+
 
 class ChatWindow {
 public:

@@ -4,12 +4,14 @@
 #include "network/Client.h"
 
 
-ProjectManager::ProjectManager(Window& win) : m_window(win)
+ProjectManager::ProjectManager(Window& win,Client& client) : m_window(win),
+    client(client)
 {
     Logo = std::make_unique<Utils::Texture>(win.GetInstance(), "Assets/textures/thumbnail/Alchemist.png");
     minimize = std::make_unique<Utils::Texture>(win.GetInstance(), "Assets/textures/thumbnail/minimize.png");
     maximize = std::make_unique<Utils::Texture>(win.GetInstance(), "Assets/textures/thumbnail/maximize.png");
     close = std::make_unique<Utils::Texture>(win.GetInstance(), "Assets/textures/thumbnail/close.png");
+	chatWindow_ = std::make_unique<ChatWindow>(client);
     LoadProjects();
 }
 
@@ -27,6 +29,7 @@ void ProjectManager::Render(Graphics& gfx)
     }
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
         m_projects[selectedProjectIndex]->Render(gfx);
+
     }
 }
 
@@ -226,13 +229,21 @@ void ProjectManager::LoadSelectedProject()
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
         currentProject = m_projects[selectedProjectIndex].get();
         currentProject->GetSceneManager()->Update(m_window.GetInstance(), m_timer.Tick());
+        
         showProjectWindow = false; 
     }
 }
 
-void ProjectManager::ShowChatWindow( Client& client)
+void ProjectManager::ShowChatWindow()
 {
     if (currentProject && !chatWindow_) {
-        chatWindow_ = std::make_unique<ChatWindow>(client);
+        // Set the callback in the client to forward messages to our chat window
+        client.setMessageCallback([this](const std::string& message) {
+            if (chatWindow_) {
+                chatWindow_->addMessage("Server: " + message);
+            }
+            });
     }
+
+   
 }

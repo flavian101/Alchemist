@@ -8,12 +8,12 @@
 #include "Graphics/FrameTime.h"
 #include "window/ChatWindow.h"
 #include "Graphics/Utilis.h" 
+#include "network/Client.h" // Include the Client header
 
-class Client;
 
 class ProjectManager {
 public:
-    ProjectManager(Window& win);
+    ProjectManager(Window& win,Client& client);
     void Update(Graphics& gfx);
     void Render(Graphics& gfx);
     void ShowMenuBar(Graphics& gfx);
@@ -22,11 +22,12 @@ public:
     void CreateNewProject(const std::string& name, const std::string& rootDir);
     Project* GetSelectedProject();
     void LoadSelectedProject(); 
-    void ShowChatWindow( Client& client); // New method to display the chat window
+    void ShowChatWindow(); // New method to display the chat window
     
 
 private:
     Window& m_window;
+    Client& client;
     std::vector<std::unique_ptr<Project>> m_projects;
     int selectedProjectIndex = -1;
     bool showProjectWindow = true; 
