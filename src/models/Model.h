@@ -85,6 +85,10 @@ public:
 		return meshPtrs;
 	}
 
+	DirectX::XMMATRIX GetTransform() const override;
+	void SetTransform(DirectX::FXMMATRIX transform) override;
+	void ApplyNodeTransforms();
+
 	void Update(Graphics& gfx,float deltaTime) override;
 	void SetRootTransform(FXMMATRIX tf);
 	void Render(Graphics& gfx) override;

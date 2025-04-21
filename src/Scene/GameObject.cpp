@@ -37,6 +37,15 @@ void GameObject::setName(const std::string& name)
 	this->m_name = name;
 }
 
+DirectX::XMMATRIX GameObject::GetTransform() const
+{
+	return XMLoadFloat4x4(&m_transform);
+}
+
+void GameObject::SetTransform(DirectX::FXMMATRIX transform)
+{
+	XMStoreFloat4x4(&m_transform, transform);
+}
 
 
 void GameObject::controlWindow(Graphics& gfx)

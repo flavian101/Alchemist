@@ -24,6 +24,11 @@ public:
 	std::string GetFilePath()const;
 	virtual void Update(Graphics& gfx,float time);
 	virtual void Render(Graphics& gfx);
+
+	//transform
+	virtual DirectX::XMMATRIX GetTransform() const;
+	virtual void SetTransform(DirectX::FXMMATRIX transform);
+
 	
 	//motion
 	void Move(const DirectX::XMVECTOR& direction, float speed, float deltaTime);
@@ -40,6 +45,8 @@ private:
 protected:
 	std::string filepath = "";
 	std::string m_name = "untitled";
+	DirectX::XMFLOAT4X4 m_transform; // Store the transform matrix
+
 
 };
 

@@ -14,6 +14,7 @@ public:
 
     bool connectToServer(const std::string& host, const std::string& port); 
     bool authenticate(const std::string& username, const std::string& password); 
+    bool registerUser(const std::string& username, const std::string& password);
     void startChat();
     void stopChat();
     void sendMessageToServer(const std::string& message);

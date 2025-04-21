@@ -80,6 +80,34 @@ bool Client::authenticate(const std::string& username, const std::string& passwo
     }
 }
 
+bool Client::registerUser(const std::string& username, const std::string& password)
+{
+    try {
+        std::string registration = "REGISTER " + username + " " + password + "\n";
+        boost::asio::write(socket_, boost::asio::buffer(registration));
+
+        boost::asio::streambuf buf;
+        boost::system::error_code ec;
+        boost::asio::read_until(socket_, buf, "\n", ec);
+
+        if (ec) {
+            std::cerr << "Error reading registration response: " << ec.message() << std::endl;
+            return false;
+        }
+
+        std::istream is(&buf);
+        std::string response;
+        std::getline(is, response);
+
+        std::cout << response << std::endl;
+        return response.find("successful") != std::string::npos;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Registration exception: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 void Client::startChat() {
     if (!isAuthenticated_) {
         std::cerr << "You must authenticate before starting the chat." << std::endl;

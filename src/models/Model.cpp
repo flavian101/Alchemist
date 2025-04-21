@@ -17,6 +17,7 @@ Model::~Model()
 void Model::Update(Graphics& gfx,float deltaTime)
 {
 	GameObject::Update(gfx, deltaTime);
+	ApplyNodeTransforms();
 	pRoot->Update(gfx,deltaTime);
 }
 
@@ -38,7 +39,40 @@ void Model::Render(Graphics& gfx)
 void Model::controlWindow(Graphics& gfx)
 {
 	GameObject::controlWindow(gfx);
-	pWindow->show(gfx, *pRoot);
+	//pWindow->show(gfx, *pRoot);
 	ImGui::TextColored(ImVec4(0.2f, 0.5f, 0.4f, 0.5f), "information");
 
+		if (pWindow)
+		{
+			pWindow->show(gfx, *pRoot);
+
+			// Apply the transform changes immediately
+			if (pWindow->getSelectedNode() != nullptr)
+			{
+				ApplyNodeTransforms();
+			}
+		}
+
+	
+}
+
+DirectX::XMMATRIX Model::GetTransform() const
+{
+	return GameObject::GetTransform();
+}
+
+void Model::SetTransform(DirectX::FXMMATRIX transform)
+{
+	GameObject::SetTransform(transform);
+	SetRootTransform(transform);
+}
+
+void Model::ApplyNodeTransforms()
+{
+	// If we have a selected node in the window, apply its transform
+	if (pWindow && pWindow->getSelectedNode())
+	{
+		auto selectedNode = pWindow->getSelectedNode();
+		selectedNode->SetTransform(pWindow->GetTransform());
+	}
 }
