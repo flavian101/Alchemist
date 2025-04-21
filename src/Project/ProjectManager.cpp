@@ -236,14 +236,10 @@ void ProjectManager::LoadSelectedProject()
 
 void ProjectManager::ShowChatWindow()
 {
-    if (currentProject && !chatWindow_) {
-        // Set the callback in the client to forward messages to our chat window
         client.setMessageCallback([this](const std::string& message) {
             if (chatWindow_) {
-                chatWindow_->addMessage("Server: " + message);
+                chatWindow_->addMessage("Server2: " + message);
             }
             });
-    }
-
-   
+ 
 }
