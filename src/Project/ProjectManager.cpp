@@ -13,12 +13,39 @@ ProjectManager::ProjectManager(Window& win,Client& client) : m_window(win),
     close = std::make_unique<Utils::Texture>(win.GetInstance(), "Assets/textures/thumbnail/close.png");
 	chatWindow_ = std::make_unique<ChatWindow>(client);
     LoadProjects();
+
+    client.setProjectUpdateCallback([this](const std::string& id, const std::string& jsonData) {
+        // Only update if it's the same project we're viewing
+        if (currentProject && currentProject->GetName() == id) {
+            std::cout << "Received live project update for: " << id << std::endl;
+            currentProject->Deserialize(jsonData);
+        }
+        });
+
 }
 
 void ProjectManager::Update(Graphics& gfx)
 {
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
         m_projects[selectedProjectIndex]->Update(gfx, m_timer.Tick());
+    }
+
+    float deltaTime = m_timer.Tick();
+
+    // Sync timer logic
+    if (currentProject) {
+        syncTimer += deltaTime;
+        if (syncTimer >= syncInterval) {
+            syncTimer = 0.0f;
+
+            // Push update to server
+            std::string jsonData = currentProject->GetSceneManager()
+                ->SerializeSceneManager(currentProject->GetName(), currentProject->GetRootDirectory())
+                .dump();
+
+            client.pushProject(currentProject->GetName(), currentProject->GetName(), jsonData);
+            std::cout << "[Sync] Project pushed to server\n";
+        }
     }
 }
 
@@ -50,6 +77,9 @@ void ProjectManager::ShowMenuBar(Graphics& gfx)
             if (ImGui::MenuItem("Load project"))
             {
                 //serializer->Deserialize("flavian.json");
+            }
+            if (ImGui::MenuItem("Save Project to Server")) {
+                SaveSelectedProjectToServer();
             }
             if (ImGui::MenuItem("Save Project"))
             {
@@ -132,7 +162,16 @@ void ProjectManager::ShowMenuBar(Graphics& gfx)
 
 void ProjectManager::LoadProjects()
 {
-    m_projects.push_back(std::make_unique<Project>(m_window, "Project1", "C:Projects/Project1"));
+    if (!&client) return;
+
+    syncedProjects.clear();
+    selectedProjectIndex = -1;
+
+    client.listProjects([this](const std::vector<std::pair<std::string, std::string>>& projects) {
+        for (const auto& [id, name] : projects) {
+            syncedProjects.push_back({ id, name });
+        }
+        });
 }
 
 void ProjectManager::ShowProjectWindow()
@@ -152,10 +191,10 @@ void ProjectManager::ShowProjectWindow()
     // Section: Project List
     ImGui::Text("Available Projects:");
     ImGui::BeginChild("Project List", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-    for (int i = 0; i < m_projects.size(); ++i) {
+    for (int i = 0; i < syncedProjects.size(); ++i) {
         bool isSelected = (i == selectedProjectIndex);
-        if (ImGui::Selectable(m_projects[i]->GetName().c_str(), isSelected)) {
-            selectedProjectIndex = i; // Update the selected project index
+        if (ImGui::Selectable(syncedProjects[i].name.c_str(), isSelected)) {
+            selectedProjectIndex = i;
         }
     }
     ImGui::EndChild();
@@ -168,7 +207,7 @@ void ProjectManager::ShowProjectWindow()
     }
     ImGui::SameLine();
     if (ImGui::Button("Load Project") && GetSelectedProject()) {
-        LoadSelectedProject(); // Load the selected project only when this button is clicked
+        LoadSelectedProject(); //  Only loads when button is clicked
     }
     ImGui::SameLine();
     if (ImGui::Button("Delete Project") && GetSelectedProject()) {
@@ -226,13 +265,43 @@ Project* ProjectManager::GetSelectedProject()
 
 void ProjectManager::LoadSelectedProject()
 {
-    if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size()) {
-        currentProject = m_projects[selectedProjectIndex].get();
-        currentProject->GetSceneManager()->Update(m_window.GetInstance(), m_timer.Tick());
-        
-        showProjectWindow = false; 
-    }
+    if (selectedProjectIndex < 0 || selectedProjectIndex >= syncedProjects.size()) return;
+
+    const auto& entry = syncedProjects[selectedProjectIndex];
+
+    client.loadProject(entry.projectId, [this, entry](const std::string& jsonData) {
+        std::cout << "Loaded project data: " << jsonData << std::endl;
+
+        // Clear current list and create the loaded project
+        m_projects.clear();
+
+        // Create Project using name and a fake local path
+        auto project = std::make_unique<Project>(m_window, entry.name, "C:projects/" + entry.name);
+
+         project->Deserialize(jsonData);
+
+        currentProject = project.get();
+        m_projects.push_back(std::move(project));
+        selectedProjectIndex = 0;
+        showProjectWindow = false;
+        });
 }
+
+void ProjectManager::SaveSelectedProjectToServer() {
+    if (!currentProject) return;
+
+    std::string jsonData = currentProject->GetSceneManager()->SerializeSceneManager(
+        currentProject->GetName(),
+        currentProject->GetRootDirectory()
+    ).dump();  // convert JSON to string
+
+    // Use project name as projectId for now, or generate a UUID in future
+    std::string projectId = currentProject->GetName();
+    std::string projectName = currentProject->GetName();
+
+    client.saveProject(projectId, projectName, jsonData);
+}
+
 
 void ProjectManager::ShowChatWindow()
 {

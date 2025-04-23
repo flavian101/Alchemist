@@ -23,6 +23,9 @@ public:
     void Load();  
     void Save();  
 
+    void Deserialize(const std::string& jsonData);
+
+
 private:
     std::string m_name;
     std::string m_rootDirectory;

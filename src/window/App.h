@@ -25,8 +25,8 @@ private:
 	ImguiManager imgui;
 	Window window;
 	LoginWindow loginWin;
-	ProjectManager projectManager;
 	Client client;
+	ProjectManager projectManager;
 	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
 	bool loggedIn;

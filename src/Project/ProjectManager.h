@@ -12,6 +12,12 @@
 
 
 class ProjectManager {
+    struct ProjectEntry {
+        std::string projectId;
+        std::string name;
+        std::string rootDir;  
+
+    };
 public:
     ProjectManager(Window& win,Client& client);
     void Update(Graphics& gfx);
@@ -21,7 +27,9 @@ public:
     void ShowProjectWindow();
     void CreateNewProject(const std::string& name, const std::string& rootDir);
     Project* GetSelectedProject();
-    void LoadSelectedProject(); 
+    void LoadSelectedProject();
+    void SaveSelectedProjectToServer();
+
     void ShowChatWindow(); // New method to display the chat window
     
 
@@ -29,6 +37,7 @@ private:
     Window& m_window;
     Client& client;
     std::vector<std::unique_ptr<Project>> m_projects;
+    std::vector<ProjectEntry> syncedProjects;
     int selectedProjectIndex = -1;
     bool showProjectWindow = true; 
     Project* currentProject = nullptr; 
@@ -43,5 +52,7 @@ private:
     std::unique_ptr<Utils::Texture> minimize;
     std::unique_ptr<Utils::Texture> maximize;
     std::unique_ptr<ChatWindow> chatWindow_; // ChatWindow instance
+    float syncTimer = 0.0f;
+    float syncInterval = 3.0f; // Every 3 seconds
 
 };

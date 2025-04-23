@@ -71,28 +71,14 @@ void Project::Save() {
         std::cerr << "Failed to open project file for saving: " << m_rootDirectory + "/" + m_name + ".json" << std::endl;
     }
 
-    // Copy game objects and their models to the root directory
-   // if (manager) 
-   // {
-   //     for (Scene* scene : manager->GetScenes()) {
-   //         for (GameObject* object : scene->GetObjects()) {
-   //             if (object) {
-   //                 // Assume each GameObject has a method to get its model path
-   //                 std::string modelPath = object->GetFilePath();
-   //                 if (!modelPath.empty()) {
-   //                     try {
-   //                         // Copy the model file to the root directory
-   //                         fs::path sourcePath(modelPath);
-   //                         fs::path destinationPath = fs::path(m_rootDirectory) / sourcePath.filename();
-   //                         fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
-   //                         std::cout << "Copied model: " << sourcePath << " to " << destinationPath << std::endl;
-   //                     }
-   //                     catch (const fs::filesystem_error& e) {
-   //                         std::cerr << "Error copying model: " << e.what() << std::endl;
-   //                     }
-   //                 }
-   //             }
-   //         }
-   //     }
-   // }
+}
+
+void Project::Deserialize(const std::string& jsonData) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(jsonData);
+        manager->DeserializeSceneManager(j);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to deserialize project data: " << e.what() << std::endl;
+    }
 }

@@ -22,8 +22,18 @@ public:
     void setMessageCallback(std::function<void(const std::string&)> callback);
     void processMessages();
 
+    bool saveProject(const std::string& projectId, const std::string& name, const std::string& jsonData);
+    void loadProject(const std::string& projectId, std::function<void(const std::string&)> onSuccess);
+    void listProjects(std::function<void(const std::vector<std::pair<std::string, std::string>>&) > callback);
+    std::function<void(const std::string& projectId, const std::string& jsonData)> onProjectUpdateCallback_;
+    void setProjectUpdateCallback(std::function<void(const std::string&, const std::string&)> callback);
+
+    bool pushProject(const std::string& projectId, const std::string& name, const std::string& jsonData);
+
+
 
 private:
+    std::string authenticatedUsername_ = "";
     void receiveMessages();
     void handleIncomingMessage(const std::string& message);
 
@@ -42,4 +52,5 @@ private:
     std::mutex messagesMutex_;
     std::queue<std::string> messageQueue_;
     std::function<void(const std::string&)> messageCallback_;
+
 };

@@ -49,10 +49,11 @@ bool Client::authenticate(const std::string& username, const std::string& passwo
 
     {
         std::lock_guard<std::mutex> lock(handlerMutex_);
-        pendingResponseHandler_ = [this](const std::string& response) {
+        pendingResponseHandler_ = [this, username](const std::string& response) {
             if (response.find("Authentication successful") != std::string::npos) {
                 std::cout << "Authentication successful.\n";
                 isAuthenticated_ = true;
+                authenticatedUsername_ = username;
             }
             else {
                 std::cerr << "Authentication failed: " << response << std::endl;
@@ -155,6 +156,37 @@ void Client::processMessages()
 }
 
 
+
+void Client::loadProject(const std::string& projectId, std::function<void(const std::string&)> onSuccess)
+{
+    if(!isConnected_) return;
+
+    // Set up the callback handler
+    {
+        std::lock_guard<std::mutex> lock(handlerMutex_);
+        pendingResponseHandler_ = [this, projectId, onSuccess](const std::string& response) {
+            if (response.find("PROJECT_DATA " + projectId) == 0) {
+                size_t firstSpace = response.find(' ');
+                size_t secondSpace = response.find(' ', firstSpace + 1);
+                if (secondSpace != std::string::npos) {
+                    std::string jsonData = response.substr(secondSpace + 1);
+                    onSuccess(jsonData);
+                }
+                else {
+                    std::cerr << "Malformed PROJECT_DATA response\n";
+                }
+            }
+            };
+    }
+
+    // Send the load request
+    std::string command = "LOAD_PROJECT " + projectId + "\n";
+    boost::asio::write(socket_, boost::asio::buffer(command));
+}
+
+
+
+
 void Client::receiveMessages() {
     try {
         boost::asio::streambuf buf;
@@ -196,8 +228,88 @@ void Client::handleIncomingMessage(const std::string& message) {
     std::lock_guard<std::mutex> lock(messagesMutex_);
     messageQueue_.push(message);
 
+    if (message.find("PROJECT_UPDATE ") == 0 && onProjectUpdateCallback_) {
+        size_t idEnd = message.find(' ', 15); // after "PROJECT_UPDATE "
+        if (idEnd != std::string::npos) {
+            std::string projectId = message.substr(15, idEnd - 15);
+            std::string jsonData = message.substr(idEnd + 1);
+            onProjectUpdateCallback_(projectId, jsonData);
+        }
+        return;
+    }
+
     // If callback is set, notify immediately
     if (messageCallback_) {
         messageCallback_(message);
+    }
+}
+bool Client::saveProject(const std::string& projectId, const std::string& name, const std::string& jsonData) {
+    try {
+        std::string command = "SAVE_PROJECT " + projectId + " " + name + " " + jsonData + "\n";
+        boost::asio::write(socket_, boost::asio::buffer(command));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to save project: " << e.what() << std::endl;
+        return false;
+    }
+}
+void Client::listProjects(std::function<void(const std::vector<std::pair<std::string, std::string>>&) > callback) {
+    if (!isConnected_ || !socket_.lowest_layer().is_open()) {
+        std::cerr << "[Error] Socket is not connected.\n";
+        return;
+    }
+
+    if (authenticatedUsername_.empty()) {
+        std::cerr << "[Error] Username not set. Authentication may not have completed.\n";
+        return;
+    }
+
+    std::string command = "LIST_PROJECTS " + authenticatedUsername_ + "\n";
+
+    {
+        std::lock_guard<std::mutex> lock(handlerMutex_);
+        pendingResponseHandler_ = [callback](const std::string& response) {
+            std::vector<std::pair<std::string, std::string>> projects;
+
+            if (response.find("PROJECT_LIST ") == 0) {
+                std::string listPart = response.substr(13);
+                std::istringstream ss(listPart);
+                std::string entry;
+
+                while (std::getline(ss, entry, '|')) {
+                    size_t sep = entry.find(':');
+                    if (sep != std::string::npos) {
+                        std::string id = entry.substr(0, sep);
+                        std::string name = entry.substr(sep + 1);
+                        projects.emplace_back(id, name);
+                    }
+                }
+            }
+
+            callback(projects);
+            };
+    }
+
+    try {
+        boost::asio::write(socket_, boost::asio::buffer(command));
+    }
+    catch (const boost::system::system_error& e) {
+        std::cerr << "[Boost Error] Failed to send listProjects: " << e.what() << "\n";
+    }
+}
+void Client::setProjectUpdateCallback(std::function<void(const std::string&, const std::string&)> callback) {
+    std::lock_guard<std::mutex> lock(messagesMutex_);
+    onProjectUpdateCallback_ = std::move(callback);
+}
+bool Client::pushProject(const std::string& projectId, const std::string& name, const std::string& jsonData) {
+    try {
+        std::string command = "PUSH_PROJECT " + projectId + " " + name + " " + jsonData + "\n";
+        boost::asio::write(socket_, boost::asio::buffer(command));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to push project update: " << e.what() << std::endl;
+        return false;
     }
 }
