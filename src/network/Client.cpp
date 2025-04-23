@@ -43,39 +43,29 @@ bool Client::connectToServer(const std::string& host, const std::string& port) {
 }
 
 bool Client::authenticate(const std::string& username, const std::string& password) {
+    if (!isConnected_) return false;
+
+    std::string auth = "AUTH " + username + " " + password + "\n";
+
+    {
+        std::lock_guard<std::mutex> lock(handlerMutex_);
+        pendingResponseHandler_ = [this](const std::string& response) {
+            if (response.find("Authentication successful") != std::string::npos) {
+                std::cout << "Authentication successful.\n";
+                isAuthenticated_ = true;
+            }
+            else {
+                std::cerr << "Authentication failed: " << response << std::endl;
+            }
+            };
+    }
+
     try {
-        std::string auth = "AUTH " + username + " " + password + "\n";
         boost::asio::write(socket_, boost::asio::buffer(auth));
-
-        boost::asio::streambuf buf;
-        boost::system::error_code ec;
-        boost::asio::read_until(socket_, buf, "\n", ec);
-
-        if (ec == boost::asio::error::eof || ec == boost::asio::ssl::error::stream_truncated) {
-            std::cerr << "Server closed the connection after authentication failure.\n";
-            return false;
-        }
-        else if (ec) {
-            std::cerr << "Error reading authentication response: " << ec.message() << std::endl;
-            return false;
-        }
-
-        std::istream is(&buf);
-        std::string response;
-        std::getline(is, response);
-
-        if (response.find("Authentication successful") != std::string::npos) {
-            std::cout << "Authentication successful.\n";
-            isAuthenticated_ = true;
-            return true;
-        }
-        else {
-            std::cerr << "Authentication failed: " << response << std::endl;
-            return false;
-        }
+        return true;  // Assume success; actual result comes through async message
     }
     catch (const std::exception& e) {
-        std::cerr << "Authentication exception: " << e.what() << std::endl;
+        std::cerr << "Authentication send failed: " << e.what() << std::endl;
         return false;
     }
 }
@@ -170,23 +160,28 @@ void Client::receiveMessages() {
         boost::asio::streambuf buf;
         while (isConnected_) {
             boost::system::error_code ec;
-            // Read up to and including the next '\n'
-            size_t n = boost::asio::read_until(socket_, buf, "\n", ec);
+            boost::asio::read_until(socket_, buf, "\n", ec);
+
             if (ec) {
-                if (ec == boost::asio::error::eof) {
-                    std::cerr << "Connection closed by server\n";
-                }
-                else {
-                    std::cerr << "Receive error: " << ec.message() << "\n";
-                }
+                std::cerr << "Receive error: " << ec.message() << "\n";
                 isConnected_ = false;
                 break;
             }
 
-            // Extract exactly one line (drops the '\n')
             std::istream is(&buf);
             std::string line;
             std::getline(is, line);
+
+            // Check for pending handler
+            {
+                std::lock_guard<std::mutex> lock(handlerMutex_);
+                if (pendingResponseHandler_) {
+                    auto handler = std::move(pendingResponseHandler_);
+                    pendingResponseHandler_ = nullptr;
+                    handler(line);
+                    continue; // Don’t queue this message
+                }
+            }
 
             handleIncomingMessage(line);
         }

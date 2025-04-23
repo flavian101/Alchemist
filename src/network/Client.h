@@ -37,6 +37,8 @@ private:
 	bool stopRendering_;  // Flag to control rendering loop
 
     // Message queue with mutex for thread safety
+    std::function<void(const std::string&)> pendingResponseHandler_;
+    std::mutex handlerMutex_;
     std::mutex messagesMutex_;
     std::queue<std::string> messageQueue_;
     std::function<void(const std::string&)> messageCallback_;
