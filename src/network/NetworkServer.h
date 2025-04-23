@@ -24,6 +24,10 @@ public:
 
     void setMessageReceivedCallback(const std::function<void(const std::string&)>& callback);
 
+    void handleIncomingMessage(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& message);
+
+    void handleClientDisconnect(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const boost::system::error_code& ec);
+
 private:
     boost::asio::io_context& io_context_;
     boost::asio::ssl::context& ssl_context_;

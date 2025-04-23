@@ -47,45 +47,22 @@ void NetworkServer::handleAccept(const boost::system::error_code& error, std::sh
 }
 
 void NetworkServer::handleClient(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket) {
-    auto buffer = std::make_shared<std::array<char, 1024>>();
-    socket->async_read_some(boost::asio::buffer(*buffer),
-        [this, socket, buffer](const boost::system::error_code& ec, size_t len) {
-            if (!ec) {
-                std::string msg(buffer->data(), len);
-                std::cout << "Received: " << msg << std::endl;
+    auto buffer = std::make_shared<boost::asio::streambuf>();
 
-                if (msg.find("AUTH") == 0) {
-                    auto parts = msg.substr(5);
-                    auto pos = parts.find(' ');
-                    if (pos != std::string::npos) {
-                        auto username = parts.substr(0, pos);
-                        auto password = parts.substr(pos + 1);
-                        // Remove potential whitespace and newline
-                        password.erase(password.find_last_not_of(" \r\n") + 1);
-                        authenticateClient(username, password, socket);
-                    }
-                }
-                else if (msg.find("REGISTER") == 0) {
-                    auto parts = msg.substr(9);
-                    auto pos = parts.find(' ');
-                    if (pos != std::string::npos) {
-                        auto username = parts.substr(0, pos);
-                        auto password = parts.substr(pos + 1);
-                        password.erase(password.find_last_not_of(" \r\n") + 1);
-                        RegisterUser(username, password, socket);
-                    }
-                }
-                else {
-                    processChatMessage(msg, socket);
-                }
-                // Schedule another asynchronous read.
+    boost::asio::async_read_until(*socket, *buffer, "\n",
+        [this, socket, buffer](const boost::system::error_code& ec, std::size_t bytes_transferred) {
+            if (!ec) {
+                std::istream is(buffer.get());
+                std::string message;
+                std::getline(is, message);
+
+                handleIncomingMessage(socket, message);
+
+                // Continue listening for next message
                 handleClient(socket);
             }
             else {
-                std::cerr << "Read error: " << ec.message() << std::endl;
-                std::lock_guard<std::mutex> lock(clientMutex_);
-                authenticatedClients_.erase(socket);
-                clients_.erase(std::remove(clients_.begin(), clients_.end(), socket), clients_.end());
+                handleClientDisconnect(socket, ec);
             }
         });
 }
@@ -230,3 +207,47 @@ void NetworkServer::BroadcastChatMessage(const std::string& message) {
 void NetworkServer::setMessageReceivedCallback(const std::function<void(const std::string&)>& callback) {
     messageReceivedCallback_ = callback;
 }
+void NetworkServer::handleIncomingMessage(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket,
+    const std::string& message) {
+
+    std::cout << "Received: " << message << std::endl;
+
+    if (message.find("AUTH ") == 0) {
+        std::string credentials = message.substr(5);
+        size_t spacePos = credentials.find(' ');
+        if (spacePos != std::string::npos) {
+            std::string username = credentials.substr(0, spacePos);
+            std::string password = credentials.substr(spacePos + 1);
+            password.erase(password.find_last_not_of(" \r\n") + 1);
+            authenticateClient(username, password, socket);
+        }
+    }
+    else if (message.find("REGISTER ") == 0) {
+        std::string credentials = message.substr(9);
+        size_t spacePos = credentials.find(' ');
+        if (spacePos != std::string::npos) {
+            std::string username = credentials.substr(0, spacePos);
+            std::string password = credentials.substr(spacePos + 1);
+            password.erase(password.find_last_not_of(" \r\n") + 1);
+            RegisterUser(username, password, socket);
+        }
+    }
+    else {
+        processChatMessage(message, socket);
+    }
+}
+void NetworkServer::handleClientDisconnect(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket,
+    const boost::system::error_code& ec) {
+
+    std::cerr << "Client disconnected: " << ec.message() << std::endl;
+
+    boost::system::error_code ignored_ec;
+    socket->shutdown(ignored_ec);  // Clean shutdown
+
+    std::lock_guard<std::mutex> lock(clientMutex_);
+    authenticatedClients_.erase(socket);
+    clients_.erase(std::remove(clients_.begin(), clients_.end(), socket), clients_.end());
+}
+
