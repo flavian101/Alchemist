@@ -28,6 +28,14 @@ public:
 
     void handleClientDisconnect(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const boost::system::error_code& ec);
 
+    void handleSaveProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
+
+    void handleLoadProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& projectId);
+
+    void handleListProjects(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& username);
+
+    void handlePushProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
+
 private:
     boost::asio::io_context& io_context_;
     boost::asio::ssl::context& ssl_context_;
@@ -35,6 +43,7 @@ private:
     DatabaseManager& dbManager_;
     std::vector<std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>> clients_;
     std::unordered_map<std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>, bool> authenticatedClients_;
+    std::unordered_map<std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>, std::string> authenticatedUsernames_;
     std::function<void(const std::string&)> messageReceivedCallback_;
     std::mutex clientMutex_; // Mutex to protect access to shared client data
 };

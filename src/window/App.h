@@ -11,6 +11,7 @@
 #include <iostream>
 #include <boost/asio/ssl.hpp>
 #include "window/ChatWindow.h"
+#include "Project/ProjectManager.h"
 
 class App
 {
@@ -39,6 +40,7 @@ private:
 	DatabaseManager* dbManager = nullptr;
 	std::shared_ptr<NetworkServer> server = nullptr;
 	ChatWindow* chatWindow = nullptr;
+	ProjectManager manager;
 
 	
 };

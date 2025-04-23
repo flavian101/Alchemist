@@ -75,6 +75,7 @@ void NetworkServer::authenticateClient(const std::string& username,
         {
             std::lock_guard<std::mutex> lock(clientMutex_);
             authenticatedClients_[socket] = true;
+            authenticatedUsernames_[socket] = username;
         }
         std::string successMessage = "Authentication successful.\n";
         boost::asio::async_write(*socket, boost::asio::buffer(successMessage),
@@ -233,6 +234,18 @@ void NetworkServer::handleIncomingMessage(
             RegisterUser(username, password, socket);
         }
     }
+    else if (message.find("SAVE_PROJECT ") == 0) {
+        handleSaveProject(socket, message.substr(13));
+    }
+    else if (message.find("LOAD_PROJECT ") == 0) {
+        handleLoadProject(socket, message.substr(13));
+    }
+    else if (message.find("LIST_PROJECTS ") == 0) {
+        handleListProjects(socket, message.substr(14));
+    }
+    else if (message.find("PUSH_PROJECT ") == 0) {
+        handlePushProject(socket, message.substr(13));
+    }
     else {
         processChatMessage(message, socket);
     }
@@ -248,6 +261,85 @@ void NetworkServer::handleClientDisconnect(
 
     std::lock_guard<std::mutex> lock(clientMutex_);
     authenticatedClients_.erase(socket);
+    authenticatedUsernames_.erase(socket); // Prevent memory leaks / stale entries
     clients_.erase(std::remove(clients_.begin(), clients_.end(), socket), clients_.end());
 }
 
+void NetworkServer::handleSaveProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content) {
+    size_t first = content.find(' ');
+    size_t second = content.find(' ', first + 1);
+
+    if (first == std::string::npos || second == std::string::npos) {
+        boost::asio::async_write(*socket, boost::asio::buffer("SAVE_FAILED Invalid format\n"), [](auto, auto) {});
+        return;
+    }
+
+    std::string projectId = content.substr(0, first);
+    std::string name = content.substr(first + 1, second - first - 1);
+    std::string jsonData = content.substr(second + 1);
+
+    std::string username = authenticatedUsernames_[socket]; // Safely guarded
+
+    if (dbManager_.storeProject(projectId, name, username, jsonData)) {
+        boost::asio::async_write(*socket, boost::asio::buffer("SAVE_OK\n"), [](auto, auto) {});
+    }
+    else {
+        boost::asio::async_write(*socket, boost::asio::buffer("SAVE_FAILED\n"), [](auto, auto) {});
+    }
+}
+void NetworkServer::handleLoadProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& projectId) {
+    auto result = dbManager_.loadProject(projectId);
+    if (result.has_value()) {
+        std::string response = "PROJECT_DATA " + projectId + " " + result.value() + "\n";
+        boost::asio::async_write(*socket, boost::asio::buffer(response), [](auto, auto) {});
+    }
+    else {
+        boost::asio::async_write(*socket, boost::asio::buffer("PROJECT_NOT_FOUND\n"), [](auto, auto) {});
+    }
+}
+void NetworkServer::handleListProjects(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& username) {
+    auto projects = dbManager_.listProjectsForUser(username);
+
+    std::ostringstream oss;
+    oss << "PROJECT_LIST ";
+    for (const auto& [id, name] : projects) {
+        oss << id << ":" << name << "|";
+    }
+    oss << "\n";
+
+    boost::asio::async_write(*socket, boost::asio::buffer(oss.str()), [](auto, auto) {});
+}
+void NetworkServer::handlePushProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content) {
+    size_t first = content.find(' ');
+    size_t second = content.find(' ', first + 1);
+
+    if (first == std::string::npos || second == std::string::npos) {
+        boost::asio::async_write(*socket, boost::asio::buffer("PUSH_FAILED Invalid format\n"), [](auto, auto) {});
+        return;
+    }
+
+    std::string projectId = content.substr(0, first);
+    std::string name = content.substr(first + 1, second - first - 1);
+    std::string jsonData = content.substr(second + 1);
+
+    std::string username = authenticatedUsernames_[socket]; // Safely guarded
+
+
+    if (dbManager_.storeProject(projectId, name, username, jsonData)) {
+        std::string updateMessage = "PROJECT_UPDATE " + projectId + " " + jsonData + "\n";
+
+        {
+            std::lock_guard<std::mutex> lock(clientMutex_);
+            for (const auto& [client, isAuth] : authenticatedClients_) {
+                if (isAuth && client != socket) {
+                    boost::asio::async_write(*client, boost::asio::buffer(updateMessage), [](auto, auto) {});
+                }
+            }
+        }
+
+        boost::asio::async_write(*socket, boost::asio::buffer("PUSH_OK\n"), [](auto, auto) {});
+    }
+    else {
+        boost::asio::async_write(*socket, boost::asio::buffer("PUSH_FAILED\n"), [](auto, auto) {});
+    }
+}

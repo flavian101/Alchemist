@@ -9,7 +9,8 @@ App::App()
     ssl_context(boost::asio::ssl::context::sslv23),
     dbManager(nullptr),
     server(nullptr),
-    chatWindow(nullptr) 
+    chatWindow(nullptr) ,
+    manager(window)
 {
 }
 

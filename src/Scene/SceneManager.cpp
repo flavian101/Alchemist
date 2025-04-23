@@ -136,7 +136,7 @@ nlohmann::json SceneManager::SerializeSceneManager(const std::string& projectNam
 
 void SceneManager::DeserializeSceneManager(const nlohmann::json& j) {
     for (const auto& sceneJson : j["scenes"]) {
-        auto scene = new Scene(sceneJson["name"], m_window);
+        auto scene = new Scene(sceneJson["Scene Name"], m_window);
         serializer->Deserialize(scene, sceneJson);
         AddScene(scene);
     }
