@@ -362,7 +362,13 @@ void ModelExporter::Export(const std::string& filepath)
             << scene->mNumMaterials << " materials\n";
 
         // 8) Export to GLTF2
-        aiReturn result = exporter.Export(scene, "gltf2", filepath);
+// Ensure the file ends with .glb
+        std::filesystem::path outputPath(filepath);
+        if (outputPath.extension() != ".glb") {
+            outputPath.replace_extension(".glb");
+        }
+
+        aiReturn result = exporter.Export(scene, "glb", outputPath.string());
         if (result != aiReturn_SUCCESS) {
             std::string err = exporter.GetErrorString();
             throw std::runtime_error("Assimp export failed: " + err);

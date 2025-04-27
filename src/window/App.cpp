@@ -10,7 +10,7 @@ App::App()
     dbManager(nullptr),
     server(nullptr),
     chatWindow(nullptr) ,
-    manager(window)
+    manager(nullptr)
 {
 }
 
@@ -42,6 +42,13 @@ void App::Render()
     if (chatWindow) {
         chatWindow->render(); // Render the chat window
     }
+
+    if (manager) {
+        manager->ShowMenuBar(window.GetInstance());
+        manager->ShowProjectWindow(); // This is the Admin view
+        manager->Update(window.GetInstance());
+        manager->Render(window.GetInstance());
+    }
     window.GetInstance().End();
 
 
@@ -56,6 +63,7 @@ void App::StartServer()
 
         dbManager = new DatabaseManager("database.db");
         server = std::make_shared<NetworkServer>(io_context, ssl_context, 12345, *dbManager); // Port 12345
+        manager = std::make_unique<ProjectManager>(window, *dbManager);
 
         // Create the chat window and pass the server reference
         chatWindow = new ChatWindow(*server);

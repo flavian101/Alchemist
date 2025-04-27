@@ -135,9 +135,17 @@ nlohmann::json SceneManager::SerializeSceneManager(const std::string& projectNam
 }
 
 void SceneManager::DeserializeSceneManager(const nlohmann::json& j) {
+
+	for (auto& scene : scenes) {
+		delete scene; // Clean up existing scenes
+	}
+	scenes.clear(); // Clear the vector     
+        
     for (const auto& sceneJson : j["scenes"]) {
         auto scene = new Scene(sceneJson["Scene Name"], m_window);
         serializer->Deserialize(scene, sceneJson);
+        if(!activeScene)
+			activeScene = scene;    
         AddScene(scene);
     }
 }

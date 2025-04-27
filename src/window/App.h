@@ -40,7 +40,7 @@ private:
 	DatabaseManager* dbManager = nullptr;
 	std::shared_ptr<NetworkServer> server = nullptr;
 	ChatWindow* chatWindow = nullptr;
-	ProjectManager manager;
+	std::unique_ptr<ProjectManager> manager;
 
 	
 };
