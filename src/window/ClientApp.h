@@ -5,15 +5,15 @@
 #include <vector>
 #include "Graphics/Graphics.h"
 #include "LoginWindow.h"
-#include "Project/ProjectManager.h"
+#include "Project/ClientProjectManager.h"
 #include <memory>
 #include "network/Client.h"
 
-class App
+class ClientApp
 {
 public:
-	App();
-	~App();
+	ClientApp();
+	~ClientApp();
 	int createLoop();
 
 
@@ -26,7 +26,7 @@ private:
 	Window window;
 	LoginWindow loginWin;
 	Client client;
-	ProjectManager projectManager;
+	ClientProjectManager projectManager;
 	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
 	bool loggedIn;

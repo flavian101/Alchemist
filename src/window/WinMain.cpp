@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "App.h"
+#include "ClientApp.h"
 #include <exception>
 #include <iostream>
 #define _CRTDBG_MAP_ALLOC
@@ -50,7 +50,7 @@ int main()
 		return 1;
 	}
 
-	App app;
+	ClientApp app;
 	PrintMemoryUsage();
 	{
 		PrintMemoryUsage();

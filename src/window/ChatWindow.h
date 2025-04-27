@@ -3,12 +3,12 @@
 #include <string>
 #include <vector>
 #include <chrono>
-#include "Project/Project.h"
+#include "Project/ClientProject.h"
 #include <mutex>
 
 
 class Client;
-class Project;
+class ClientProject;
 
 
 class ChatWindow {

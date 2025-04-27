@@ -30,6 +30,8 @@ public:
 
     bool pushProject(const std::string& projectId, const std::string& name, const std::string& jsonData);
 
+    void startSyncLoop();
+
 
 
 private:

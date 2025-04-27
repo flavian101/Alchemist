@@ -1,15 +1,15 @@
-#include "App.h"
+#include "ClientApp.h"
 #include <imgui/imgui_impl_dx11.h>
 #include <imgui/imgui_impl_win32.h>
 #include <iostream>
 
-App::App()
+ClientApp::ClientApp()
     :
     window(L"engine", L"DirectX", 1366, 768),
     imgui(),
 	client(),
     loginWin(window,client),
-    projectManager(window,client),
+    projectManager(window,&client),
     loggedIn(false)
 
 {
@@ -17,7 +17,7 @@ App::App()
 }
 
 
-int App::createLoop()
+int ClientApp::createLoop()
 {
     while (true)
     {
@@ -48,7 +48,7 @@ int App::createLoop()
     }
  
 }
-void App::Render()
+void ClientApp::Render()
 {
     projectManager.ShowMenuBar(window.GetInstance());
     if (loggedIn) {
@@ -71,12 +71,12 @@ void App::Render()
 
 }
 
-App::~App()
+ClientApp::~ClientApp()
 {
 }
 
 
-void App::GameProjects()
+void ClientApp::GameProjects()
 {
     
 }

@@ -162,8 +162,8 @@
     <ClCompile Include="src\window\ChatWindow.cpp" />
     <ClCompile Include="src\network\Client.cpp" />
     <ClCompile Include="src\window\LoginWindow.cpp" />
-    <ClCompile Include="src\Project\ProjectManager.cpp" />
-    <ClCompile Include="src\Project\Project.cpp" />
+    <ClCompile Include="src\Project\ClientProjectManager.cpp" />
+    <ClCompile Include="src\Project\ClientProject.cpp" />
     <ClCompile Include="src\dataPack\ModelExporter.cpp" />
     <ClCompile Include="src\dataPack\SceneSerializer.cpp" />
     <ClCompile Include="src\Scene\Shaders\Shaders.cpp" />
@@ -241,12 +241,12 @@
     <ClCompile Include="src\Scene\Shaders\ShaderManager.cpp" />
     <ClCompile Include="src\models\Transform.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
-    <ClCompile Include="src\Scene\SceneManager.cpp" />
+    <ClCompile Include="src\Scene\ClientSceneManager.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
     <ClCompile Include="src\Graphics\FrameTime.cpp" />
     <ClCompile Include="src\window\ImguiManager.cpp" />
     <ClCompile Include="src\Graphics\Graphics.cpp" />
-    <ClCompile Include="src\window\App.cpp" />
+    <ClCompile Include="src\window\ClientApp.cpp" />
     <ClCompile Include="src\window\Window.cpp" />
     <ClCompile Include="src\window\WinMain.cpp" />
     <ClCompile Include="src\Graphics\Utilis.cpp" />
@@ -256,8 +256,8 @@
     <ClInclude Include="src\window\ChatWindow.h" />
     <ClInclude Include="src\network\Client.h" />
     <ClInclude Include="src\window\LoginWindow.h" />
-    <ClInclude Include="src\Project\ProjectManager.h" />
-    <ClInclude Include="src\Project\Project.h" />
+    <ClInclude Include="src\Project\ClientProjectManager.h" />
+    <ClInclude Include="src\Project\ClientProject.h" />
     <ClInclude Include="src\dataPack\ModelExporter.h" />
     <ClInclude Include="src\dataPack\SceneSerializer.h" />
     <ClInclude Include="src\Scene\Shaders\Shaders.h" />
@@ -305,7 +305,7 @@
     <ClInclude Include="src\Scene\Shaders\ShaderManager.h" />
     <ClInclude Include="src\models\Transform.h" />
     <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\Scene\SceneManager.h" />
+    <ClInclude Include="src\Scene\ClientSceneManager.h" />
     <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\Graphics\Camera\Camera.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
@@ -318,7 +318,7 @@
     <ClInclude Include="dependencies\stb\stb image.h" />
     <ClInclude Include="src\models\Vertex.h" />
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\window\App.h" />
+    <ClInclude Include="src\window\ClientApp.h" />
     <ClInclude Include="src\window\Window.h" />
     <ClInclude Include="src\Graphics\Utilis.h" />
     <ClInclude Include="src\Sample\Cube.h" />

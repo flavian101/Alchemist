@@ -1,4 +1,4 @@
-#include "SceneManager.h"
+#include "ClientSceneManager.h"
 #include "Graphics\Graphics.h"
 #include "Scene\Scene.h"
 #include "imgui/imgui.h"
@@ -8,7 +8,7 @@
 
 
 
-SceneManager::SceneManager (Window* win)
+ClientSceneManager::ClientSceneManager (Window* win)
     :
     m_window(*win),
     activeScene(nullptr)
@@ -21,16 +21,16 @@ SceneManager::SceneManager (Window* win)
 
 }
 
-SceneManager::~SceneManager() {
+ClientSceneManager::~ClientSceneManager() {
     for (auto scene : scenes)
         delete scene;
 }
 
-void SceneManager::AddScene(Scene* scene) {
+void ClientSceneManager::AddScene(Scene* scene) {
     scenes.push_back(scene);
 }
 
-void SceneManager::RemoveScene(Scene* scene) {
+void ClientSceneManager::RemoveScene(Scene* scene) {
     auto it = std::find(scenes.begin(), scenes.end(), scene);
     if (it != scenes.end()) {
         delete* it;
@@ -38,12 +38,12 @@ void SceneManager::RemoveScene(Scene* scene) {
     }
 }
 
-void SceneManager::SetActiveScene(int index) {
+void ClientSceneManager::SetActiveScene(int index) {
     if (index >= 0 && index < scenes.size())
         activeScene = scenes[index];
 }
 
-void SceneManager::SetActiveScene(const std::string& name) {
+void ClientSceneManager::SetActiveScene(const std::string& name) {
     for (auto scene : scenes) {
         if (scene->GetName() == name) {
             activeScene = scene;
@@ -52,19 +52,19 @@ void SceneManager::SetActiveScene(const std::string& name) {
     }
 }
 
-void SceneManager::Update(Graphics& gfx,float deltaTime) {
+void ClientSceneManager::Update(Graphics& gfx,float deltaTime) {
     if (activeScene)
         activeScene->Update(gfx,deltaTime);
 }
 
-void SceneManager::Render(Graphics& gfx)
+void ClientSceneManager::Render(Graphics& gfx)
 {
     thumbnail->Bind(gfx);
     this->ControlWindow(gfx);
     if (activeScene)
         activeScene->Render(gfx);
 }
-void SceneManager::ControlWindow(Graphics& gfx)
+void ClientSceneManager::ControlWindow(Graphics& gfx)
 { 
 
     RECT rect;
@@ -126,7 +126,7 @@ void SceneManager::ControlWindow(Graphics& gfx)
 }
 
 
-nlohmann::json SceneManager::SerializeSceneManager(const std::string& projectName,const std::string& projectDir) {
+nlohmann::json ClientSceneManager::SerializeSceneManager(const std::string& projectName,const std::string& projectDir) {
     nlohmann::json j;
     for (const auto& scene : scenes) {
         j["scenes"].push_back(serializer->Serialize(scene, projectDir,projectName));
@@ -134,7 +134,13 @@ nlohmann::json SceneManager::SerializeSceneManager(const std::string& projectNam
     return j;
 }
 
-void SceneManager::DeserializeSceneManager(const nlohmann::json& j) {
+void ClientSceneManager::DeserializeSceneManager(const nlohmann::json& j) {
+    for (auto& scene : scenes) {
+        delete scene; // Clean up existing scenes
+    }
+    scenes.clear(); // Clear the vector     
+    activeScene = nullptr;
+
     for (const auto& sceneJson : j["scenes"]) {
         auto scene = new Scene(sceneJson["name"], m_window);
         serializer->Deserialize(scene, sceneJson);
