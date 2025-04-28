@@ -1,0 +1,105 @@
+{
+    "models": [],
+    "scenes": [
+        {
+            "Scene Name": "begin",
+            "SceneCamera": {
+                "Cameras": [
+                    {
+                        "Camera Name": "main",
+                        "IsPerspective": true,
+                        "Perspective Camera": {
+                            "CameraMode": 0,
+                            "FOV": 45.0,
+                            "aspectRatio": 1.8763736486434937,
+                            "camPitch": 0.0,
+                            "camRoll": 0.0,
+                            "camYaw": 0.0,
+                            "farPlane": 1000.0,
+                            "free look": {
+                                "cameraSpeed": 10.0,
+                                "moveBackForward": 0.0,
+                                "moveLeftRight": 0.0,
+                                "moveUpDown": 0.0
+                            },
+                            "nearPlane": 1.0,
+                            "position": [
+                                0.0,
+                                6.0,
+                                -16.0
+                            ],
+                            "target": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "up": [
+                                0.0,
+                                1.0,
+                                0.0
+                            ]
+                        },
+                        "showCreateWindow": false
+                    }
+                ]
+            },
+            "models": [
+                {
+                    "name": "nanosuit",
+                    "path": "ServerProjects/proj_20250428082253_0/Models/nanosuit.glb"
+                }
+            ],
+            "projectName": "bigi"
+        },
+        {
+            "Scene Name": "Default",
+            "SceneCamera": {
+                "Cameras": [
+                    {
+                        "Camera Name": "main",
+                        "IsPerspective": true,
+                        "Perspective Camera": {
+                            "CameraMode": 0,
+                            "FOV": 45.0,
+                            "aspectRatio": 1.8763736486434937,
+                            "camPitch": 0.0,
+                            "camRoll": 0.0,
+                            "camYaw": 0.0,
+                            "farPlane": 1000.0,
+                            "free look": {
+                                "cameraSpeed": 10.0,
+                                "moveBackForward": 0.0,
+                                "moveLeftRight": 0.0,
+                                "moveUpDown": 0.0
+                            },
+                            "nearPlane": 1.0,
+                            "position": [
+                                0.0,
+                                6.0,
+                                -16.0
+                            ],
+                            "target": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "up": [
+                                0.0,
+                                1.0,
+                                0.0
+                            ]
+                        },
+                        "showCreateWindow": false
+                    }
+                ]
+            },
+            "models": [
+                {
+                    "name": "nanosuit",
+                    "path": "ServerProjects/proj_20250428082253_0/Models/nanosuit.glb"
+                }
+            ],
+            "projectName": "bigi"
+        }
+    ]
+}

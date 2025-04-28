@@ -223,13 +223,13 @@ void SceneCamera::ControlWindow(Graphics& gfx)
             switch (this->GetPerspective()->GetCameraMode())
             {
             case CameraMode::freeLook:
-               dynamic_cast<FreeLook*>(m_selectedCamera->GetPerspective())->ControlWindow();
+               reinterpret_cast<FreeLook*>(m_selectedCamera->GetPerspective())->ControlWindow();
                 break;
             case CameraMode::thirdPerson:
-                dynamic_cast<ThirdPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
+                reinterpret_cast<ThirdPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
                 break;
             case CameraMode::firstPerson:
-                dynamic_cast<FirstPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
+                reinterpret_cast<FirstPerson*>(m_selectedCamera->GetPerspective())->ControlWindow();
                 break;
             }
         }

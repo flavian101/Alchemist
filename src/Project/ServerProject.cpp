@@ -195,35 +195,16 @@ void ServerProject::UpdateFromJson(const std::string& jsonData)
 }
 
 bool ServerProject::LoadModelsFromClient(const std::string& clientRootDir) {
-    // This method copies model files from client directories to server directories
     bool success = true;
 
     try {
-        // Parse the project JSON to get model paths
-        std::string projectFile = m_rootDirectory + "/" + m_name + ".json";
-        if (!fs::exists(projectFile)) {
-            return false;
-        }
-
-        std::ifstream file(projectFile);
-        if (!file.is_open()) {
-            return false;
-        }
-
-        nlohmann::json projectJson;
-        file >> projectJson;
-        file.close();
-
-        // Check if models array exists
-        if (!projectJson.contains("models") || !projectJson["models"].is_array()) {
-            return true; // No models to load
-        }
+        // First, ensure our model paths are up-to-date from the project file
+        Load();
 
         // Copy each model from client path to server path
-        for (const auto& modelPath : projectJson["models"]) {
-            std::string relPath = modelPath;
-            std::string clientPath = clientRootDir + "/" + relPath;
-            std::string serverPath = m_rootDirectory + "/" + relPath;
+        for (const auto& modelPath : m_modelPaths) {
+            std::string clientPath = clientRootDir + "/" + modelPath;
+            std::string serverPath = m_rootDirectory + "/" + modelPath;
 
             // Create server directories
             fs::path serverDir = fs::path(serverPath).parent_path();
@@ -268,4 +249,13 @@ std::string ServerProject::ConvertClientToServerPath(const std::string& clientPa
 
     // If not a client path, return as is
     return clientPath;
+}
+void ServerProject::AddModel(const std::string& modelPath) {
+    // Check if model already exists in paths
+    auto it = std::find(m_modelPaths.begin(), m_modelPaths.end(), modelPath);
+    if (it == m_modelPaths.end()) {
+        m_modelPaths.push_back(modelPath);
+        // No need to set modified flag - server projects don't track this
+        std::cout << "Added model to project: " << modelPath << std::endl;
+    }
 }

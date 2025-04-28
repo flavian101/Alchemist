@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "imgui/imgui.h"
 #include "Graphics/Utilis.h"
+#include <fstream>
 
 ServerProjectManager::ServerProjectManager(Window& win, DatabaseManager& dbManager, NetworkServer* server)
     : m_window(win),
@@ -523,4 +524,53 @@ void ServerProjectManager::BroadcastProjectUpdate(const std::string& projectId, 
     m_server->BroadcastToCollaborators(projectId, updateMessage);
 
     std::cout << "Broadcasted project update to collaborators for: " << projectId << std::endl;
+}
+void ServerProjectManager::HandleModelUpload(const std::string& projectId,
+    const std::string& modelPath,
+    const std::vector<char>& modelData) {
+    // Find the project
+    for (auto& project : m_projects) {
+        if (project->GetRootDirectory() == projectId) {
+            // Ensure the directory structure exists
+            std::string serverPath = project->GetRootDirectory() + "/" + modelPath;
+            fs::create_directories(fs::path(serverPath).parent_path());
+
+            // Write the model file
+            std::ofstream modelFile(serverPath, std::ios::binary);
+            if (modelFile) {
+                modelFile.write(modelData.data(), modelData.size());
+                modelFile.close();
+
+                // Add model path to project if not already present
+                auto modelPaths = project->GetModelPaths();
+                if (std::find(modelPaths.begin(), modelPaths.end(), modelPath) == modelPaths.end()) {
+                    project->AddModel(modelPath);
+                    project->Save();
+                }
+
+                // Broadcast the model update to all collaborators
+                BroadcastModelUpdate(projectId, modelPath);
+
+                std::cout << "Model uploaded successfully: " << modelPath << std::endl;
+            }
+            else {
+                std::cerr << "Failed to save uploaded model: " << serverPath << std::endl;
+            }
+            return;
+        }
+    }
+
+    std::cerr << "Project not found for model upload: " << projectId << std::endl;
+}
+
+void ServerProjectManager::BroadcastModelUpdate(const std::string& projectId, const std::string& modelPath) {
+    if (!m_server) return;
+
+    // Create update message
+    std::string updateMessage = "MODEL_UPDATED " + projectId + " " + modelPath + "\n";
+
+    // Have the server broadcast to all connected clients who are collaborators
+    m_server->BroadcastToCollaborators(projectId, updateMessage);
+
+    std::cout << "Broadcasted model update to collaborators for: " << projectId << " - " << modelPath << std::endl;
 }

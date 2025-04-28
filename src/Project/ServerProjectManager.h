@@ -49,6 +49,10 @@ public:
     std::string GenerateUniqueId();
     void BroadcastProjectUpdate(const std::string& projectId, const std::string& jsonData);
 
+    void HandleModelUpload(const std::string& projectId, const std::string& modelPath, const std::vector<char>& modelData);
+
+    void BroadcastModelUpdate(const std::string& projectId, const std::string& modelPath);
+
 private:
     std::vector<std::unique_ptr<ServerProject>> m_projects;
     Window& m_window;

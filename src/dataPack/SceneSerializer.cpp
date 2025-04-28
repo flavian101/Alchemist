@@ -149,7 +149,7 @@ nlohmann::json SceneSerializer::SerializePerspectiveCamera(PerspectiveCamera* ca
 
 	switch (camera->GetCameraMode()) {
 	case CameraMode::freeLook:
-		j["free look"] = SerializeFreelook(dynamic_cast<FreeLook*>(camera));
+		j["free look"] = SerializeFreelook(reinterpret_cast<FreeLook*>(camera));
 		break;
 	case CameraMode::thirdPerson:
 		j["thirdPerson"] = SerializeThirdPerson(dynamic_cast<ThirdPerson*>(camera));

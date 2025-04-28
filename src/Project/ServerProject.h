@@ -48,6 +48,7 @@ public:
 
     bool LoadModelsFromClient(const std::string& clientRootDir);
     std::string ConvertClientToServerPath(const std::string& clientPath, const std::string& clientRootDir);
+    void AddModel(const std::string& modelPath);
     std::vector<std::string> GetModelPaths() const;
 
 private:
