@@ -1,3 +1,4 @@
+// ClientProjectManager.cpp
 #include "ClientProjectManager.h"
 #include "Graphics/Graphics.h"
 #include <iostream>
@@ -23,13 +24,46 @@ ClientProjectManager::ClientProjectManager(Window& win, Client* networkClient)
         m_networkClient->setProjectUpdateCallback([this](const std::string& projectId, const std::string& jsonData) {
             this->OnProjectUpdatedFromServer(projectId, jsonData);
             });
-    }
 
-    showLoginWindow = true; // Show login dialog on startup
+        // Register message callback for chat messages
+        m_networkClient->setMessageCallback([this](const std::string& message) {
+            // Handle incoming chat messages
+            if (message.find("CHAT_PROJECT ") == 0) {
+                size_t firstSpace = message.find(' ');
+                size_t secondSpace = message.find(' ', firstSpace + 1);
+
+                if (secondSpace != std::string::npos) {
+                    std::string projectId = message.substr(firstSpace + 1, secondSpace - firstSpace - 1);
+                    std::string content = message.substr(secondSpace + 1);
+
+                    // Only add to chat history if this is for our current project
+                    if (currentProject && currentProject->GetProjectId() == projectId) {
+                        chatHistory.push_back(content);
+                    }
+                }
+            }
+            });
+    }
 }
 
 ClientProjectManager::~ClientProjectManager() {
     // Nothing specific to clean up
+}
+
+void ClientProjectManager::SetAuthenticated(bool authenticated, const std::string& username) {
+    isLoggedIn = authenticated;
+    currentUsername = username;
+
+    // When authenticated, immediately load projects
+    if (isLoggedIn) {
+        std::cout << "User " << currentUsername << " authenticated successfully, loading projects..." << std::endl;
+        LoadProjectsFromServer();
+    }
+    else {
+        // Clear projects when logged out
+        m_projects.clear();
+        currentProject = nullptr;
+    }
 }
 
 void ClientProjectManager::Update(Graphics& gfx)
@@ -94,7 +128,7 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
                     currentProject->UpdateLastModifiedTime();
 
                     // Upload to server
-                    std::string projectId = currentProject->GetRootDirectory();
+                    std::string projectId = currentProject->GetProjectId();
                     std::string name = currentProject->GetName();
                     std::string jsonData = currentProject->SerializeToJson();
 
@@ -108,10 +142,7 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
 
             if (ImGui::MenuItem(isLoggedIn ? "Logout" : "Login")) {
                 if (isLoggedIn) {
-                    isLoggedIn = false;
-                    currentUsername = "";
-                    m_projects.clear();
-                    currentProject = nullptr;
+                    SetAuthenticated(false, "");
                 }
                 else {
                     showLoginWindow = true;
@@ -137,6 +168,18 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
 
             if (ImGui::MenuItem("Add Object") && currentProject) {
                 // Add object functionality
+            }
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Project Manager")) {
+                showProjectWindow = true;
+            }
+
+            if (ImGui::MenuItem("Chat") && currentProject) {
+                // Toggle chat window visibility
             }
 
             ImGui::EndMenu();
@@ -194,11 +237,6 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
         ImGui::EndMainMenuBar();
     }
 
-    // Login window
-    if (showLoginWindow) {
-        ShowLoginDialog();
-    }
-
     // Project window
     if (showProjectWindow) {
         ShowProjectWindow();
@@ -207,28 +245,39 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
 
 void ClientProjectManager::LoadProjectsFromServer()
 {
-    if (!m_networkClient || !isLoggedIn) return;
+    if (!m_networkClient || !m_networkClient->isAuthenticated()) {
+        std::cerr << "Cannot load projects: client not connected or not authenticated" << std::endl;
+        return;
+    }
 
     // Clear existing projects
     m_projects.clear();
+
+    // Add a loading indicator or message
+    std::cout << "Loading projects for user: " << currentUsername << "..." << std::endl;
 
     // Request project list from server
     m_networkClient->listProjects([this](const std::vector<std::pair<std::string, std::string>>& projects) {
         // Create Project objects for each project from the server
         for (const auto& [id, name] : projects) {
-            // We initially create projects with just ID and name
-            // The full data will be loaded when a project is selected
             auto newProject = std::make_unique<ClientProject>(m_window, name, id);
             newProject->SetProjectId(id);
             m_projects.push_back(std::move(newProject));
+            std::cout << "Loaded project: " << name << " (ID: " << id << ")" << std::endl;
         }
 
-        // Show project window after receiving projects
+        // Ensure UI is updated
         showProjectWindow = true;
-        });
+        selectedProjectIndex = -1;  // Reset selection
 
-    // Reset selection
-    selectedProjectIndex = -1;
+        // If no projects were found, log it
+        if (projects.empty()) {
+            std::cout << "No projects found for user: " << currentUsername << std::endl;
+        }
+        else {
+            std::cout << "Found " << projects.size() << " projects for user: " << currentUsername << std::endl;
+        }
+        });
 }
 
 void ClientProjectManager::ShowProjectWindow()
@@ -240,25 +289,62 @@ void ClientProjectManager::ShowProjectWindow()
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin("Project Manager", &showProjectWindow);
 
+    // User status
+    if (isLoggedIn) {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Logged in as: %s", currentUsername.c_str());
+    }
+    else {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not logged in");
+    }
+
     // Refresh button to reload projects
     if (ImGui::Button("Refresh Project List")) {
         if (isLoggedIn) {
             LoadProjectsFromServer();
         }
+        else {
+            showLoginWindow = true;
+        }
     }
 
-    // Project List
+    // Project status information
+    ImGui::SameLine();
+    ImGui::Text("Total Projects: %d", static_cast<int>(m_projects.size()));
+
+    // Project List with better visibility
     ImGui::Text("Available Projects:");
     ImGui::BeginChild("Project List", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+    if (m_projects.empty()) {
+        if (isLoggedIn) {
+            ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+                "No projects found for user: %s", currentUsername.c_str());
+            ImGui::TextWrapped("You can create a new project using the 'Create New Project' button below.");
+        }
+        else {
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+                "You need to log in to view projects.");
+        }
+    }
+
     for (int i = 0; i < m_projects.size(); ++i) {
         bool isSelected = (i == selectedProjectIndex);
-        if (ImGui::Selectable(m_projects[i]->GetName().c_str(), isSelected)) {
+        std::string displayName = m_projects[i]->GetName();
+
+        // If project ID is available, show a truncated version
+        if (!m_projects[i]->GetProjectId().empty()) {
+            displayName += " (ID: " + m_projects[i]->GetProjectId().substr(0, 8) + "...)";
+        }
+
+        if (ImGui::Selectable(displayName.c_str(), isSelected)) {
             selectedProjectIndex = i;
         }
 
         // Show project details on hover
         if (ImGui::IsItemHovered() && ImGui::BeginTooltip()) {
             ImGui::Text("Project ID: %s", m_projects[i]->GetProjectId().c_str());
+            ImGui::Text("Project Name: %s", m_projects[i]->GetName().c_str());
+            ImGui::Text("Local Directory: %s", m_projects[i]->GetRootDirectory().c_str());
             ImGui::EndTooltip();
         }
     }
@@ -267,11 +353,12 @@ void ClientProjectManager::ShowProjectWindow()
     // Project Actions
     ImGui::Separator();
     ImGui::Text("Actions:");
-    if (ImGui::Button("Create New Project")) {
+
+    if (ImGui::Button("Create New Project") && isLoggedIn) {
         ImGui::OpenPopup("Create Project");
     }
-    ImGui::SameLine();
 
+    ImGui::SameLine();
     bool canLoadProject = (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size());
     if (ImGui::Button("Load Selected Project", ImVec2(150, 0)) && canLoadProject) {
         LoadSelectedProject();
@@ -346,6 +433,8 @@ void ClientProjectManager::LoadSelectedProject()
     if (selectedProjectIndex >= 0 && selectedProjectIndex < m_projects.size() && m_networkClient) {
         std::string projectId = m_projects[selectedProjectIndex]->GetProjectId();
 
+        std::cout << "Loading project from server: " << projectId << std::endl;
+
         m_networkClient->loadProject(projectId, [this, projectId](const std::string& jsonData) {
             // Find the project in our collection
             for (auto& proj : m_projects) {
@@ -357,6 +446,9 @@ void ClientProjectManager::LoadSelectedProject()
                     currentProject = proj.get();
                     showProjectWindow = false;
                     std::cout << "Project loaded from server: " << currentProject->GetName() << std::endl;
+
+                    // Clear chat history for the new project
+                    chatHistory.clear();
                     break;
                 }
             }
@@ -392,80 +484,13 @@ std::string ClientProjectManager::GenerateUniqueId()
     return ss.str();
 }
 
-void ClientProjectManager::ShowLoginDialog()
-{
-    ImGui::SetNextWindowSize(ImVec2(350, 200), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Login", &showLoginWindow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-
-    static char username[128] = "";
-    static char password[128] = "";
-    static bool loginFailed = false;
-
-    ImGui::Text("Login to Collaboration Server");
-    ImGui::Separator();
-
-    ImGui::InputText("Username", username, IM_ARRAYSIZE(username));
-    ImGui::InputText("Password", password, IM_ARRAYSIZE(password), ImGuiInputTextFlags_Password);
-
-    if (loginFailed) {
-        ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Login failed. Please try again.");
-    }
-
-    if (ImGui::Button("Login", ImVec2(100, 0))) {
-        if (m_networkClient && m_networkClient->authenticate(username, password)) {
-            isLoggedIn = true;
-            currentUsername = username;
-            loginFailed = false;
-            showLoginWindow = false;
-
-            // Load available projects after login
-            LoadProjectsFromServer();
-        }
-        else {
-            loginFailed = true;
-        }
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Register", ImVec2(100, 0))) {
-        // Show registration window instead
-        // For simplicity, we'll just call register directly
-        if (m_networkClient && strlen(username) > 0 && strlen(password) > 0) {
-            if (m_networkClient->registerUser(username, password)) {
-                ImGui::OpenPopup("Registration Success");
-            }
-            else {
-                ImGui::OpenPopup("Registration Failed");
-            }
-        }
-    }
-
-    // Registration success popup
-    if (ImGui::BeginPopupModal("Registration Success", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Registration successful. You can now login.");
-        if (ImGui::Button("OK", ImVec2(120, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
-
-    // Registration failed popup
-    if (ImGui::BeginPopupModal("Registration Failed", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Registration failed. Username may already exist.");
-        if (ImGui::Button("OK", ImVec2(120, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
-
-    ImGui::End();
-}
-
 void ClientProjectManager::SyncWithServer()
 {
     if (!isLoggedIn || !m_networkClient || !currentProject) {
         return;
     }
+
+    std::cout << "Syncing with server..." << std::endl;
 
     // 1. Check if we have local changes to push
     if (currentProject->IsModifiedLocally()) {
@@ -487,6 +512,8 @@ void ClientProjectManager::SyncWithServer()
 
 void ClientProjectManager::OnProjectUpdatedFromServer(const std::string& projectId, const std::string& jsonData)
 {
+    std::cout << "Received project update from server for project ID: " << projectId << std::endl;
+
     // Find the project in our collection
     for (auto& proj : m_projects) {
         if (proj->GetProjectId() == projectId) {
@@ -519,6 +546,7 @@ void ClientProjectManager::OnProjectUpdatedFromServer(const std::string& project
         std::cerr << "Error parsing project update: " << e.what() << std::endl;
     }
 }
+
 void ClientProjectManager::ShowChatWindow() {
     if (!currentProject) return;
 
@@ -538,12 +566,16 @@ void ClientProjectManager::ShowChatWindow() {
     strncpy(buffer, chatMessage.c_str(), sizeof(buffer));  // Copy string to buffer
     buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
 
-    if (ImGui::InputText("##chatInput", buffer, IM_ARRAYSIZE(buffer))) {
-        chatMessage = buffer;  // Update chatMessage from buffer
+    if (ImGui::InputText("##chatInput", buffer, IM_ARRAYSIZE(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+        if (strlen(buffer) > 0) {
+            SendChatMessage(buffer);
+            memset(buffer, 0, sizeof(buffer));
+            chatMessage.clear();
+        }
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Send") || ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+    if (ImGui::Button("Send")) {
         if (!chatMessage.empty()) {
             SendChatMessage(chatMessage);
             chatMessage.clear();
@@ -554,7 +586,7 @@ void ClientProjectManager::ShowChatWindow() {
 }
 
 void ClientProjectManager::SendChatMessage(const std::string& message) {
-    if (m_networkClient && currentProject) {
+    if (m_networkClient && currentProject && isLoggedIn) {
         // Add a prefix to identify this as a chat message for the current project
         std::string formattedMessage = "CHAT_PROJECT " + currentProject->GetProjectId() + " " + message;
         m_networkClient->sendMessageToServer(formattedMessage);

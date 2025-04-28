@@ -254,37 +254,64 @@ bool Client::saveProject(const std::string& projectId, const std::string& name, 
         return false;
     }
 }
-void Client::listProjects(std::function<void(const std::vector<std::pair<std::string, std::string>>&) > callback) {
+// Updates to Client.cpp for listProjects method
+void Client::listProjects(std::function<void(const std::vector<std::pair<std::string, std::string>>&)> callback) {
     if (!isConnected_ || !socket_.lowest_layer().is_open()) {
         std::cerr << "[Error] Socket is not connected.\n";
+        callback({}); // Return empty list
         return;
     }
 
-    if (authenticatedUsername_.empty()) {
-        std::cerr << "[Error] Username not set. Authentication may not have completed.\n";
+    if (!isAuthenticated_) {
+        std::cerr << "[Error] Client not authenticated.\n";
+        callback({}); // Return empty list
         return;
     }
 
     std::string command = "LIST_PROJECTS " + authenticatedUsername_ + "\n";
+    std::cout << "Sending command: " << command;
 
     {
         std::lock_guard<std::mutex> lock(handlerMutex_);
-        pendingResponseHandler_ = [callback](const std::string& response) {
+        pendingResponseHandler_ = [callback, this](const std::string& response) {
             std::vector<std::pair<std::string, std::string>> projects;
+            std::cout << "Received project list response: '" << response << "'" << std::endl;
 
             if (response.find("PROJECT_LIST ") == 0) {
                 std::string listPart = response.substr(13);
-                std::istringstream ss(listPart);
-                std::string entry;
 
-                while (std::getline(ss, entry, '|')) {
-                    size_t sep = entry.find(':');
-                    if (sep != std::string::npos) {
-                        std::string id = entry.substr(0, sep);
-                        std::string name = entry.substr(sep + 1);
-                        projects.emplace_back(id, name);
-                    }
+                // Trim whitespace
+                listPart.erase(listPart.find_last_not_of(" \r\n") + 1);
+
+                std::cout << "Project list data: '" << listPart << "'" << std::endl;
+
+                // Check if list is empty
+                if (listPart.empty()) {
+                    std::cout << "Project list is empty" << std::endl;
+                    callback(projects);
+                    return;
                 }
+
+                size_t pos = 0;
+                std::string token;
+                const std::string delimiter = "|";
+
+                while ((pos = listPart.find(delimiter)) != std::string::npos) {
+                    token = listPart.substr(0, pos);
+
+                    size_t sep = token.find(':');
+                    if (sep != std::string::npos) {
+                        std::string id = token.substr(0, sep);
+                        std::string name = token.substr(sep + 1);
+                        projects.emplace_back(id, name);
+                        std::cout << "Found project: " << name << " (ID: " << id << ")" << std::endl;
+                    }
+
+                    listPart.erase(0, pos + delimiter.length());
+                }
+            }
+            else {
+                std::cerr << "Invalid response format for project list" << std::endl;
             }
 
             callback(projects);
@@ -296,6 +323,7 @@ void Client::listProjects(std::function<void(const std::vector<std::pair<std::st
     }
     catch (const boost::system::system_error& e) {
         std::cerr << "[Boost Error] Failed to send listProjects: " << e.what() << "\n";
+        callback({}); // Return empty list on error
     }
 }
 void Client::setProjectUpdateCallback(std::function<void(const std::string&, const std::string&)> callback) {
@@ -311,5 +339,25 @@ bool Client::pushProject(const std::string& projectId, const std::string& name, 
     catch (const std::exception& e) {
         std::cerr << "Failed to push project update: " << e.what() << std::endl;
         return false;
+    }
+}
+
+void Client::startSyncLoop() {
+    while (isConnected_ && !stopRendering_) {
+        // Every 5 seconds, synchronize with the server.
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        // Send request for the latest project data from the server
+        listProjects([this](const std::vector<std::pair<std::string, std::string>>& projects) {
+            for (const auto& project : projects) {
+                std::cout << "Project: " << project.first << ", " << project.second << std::endl;
+            }
+            });
+
+        // Optionally, push updates
+        if (isAuthenticated_) {
+            std::string projectData = "some_project_data"; // Get the data to sync
+            pushProject("project_id", "project_name", projectData);
+        }
     }
 }

@@ -26,7 +26,7 @@ private:
 	Window window;
 	LoginWindow loginWin;
 	Client client;
-	ClientProjectManager projectManager;
+	std::unique_ptr<ClientProjectManager> projectManager;
 	float speedFactor = 1.0f;
 	bool showDemoWindow = true;
 	bool loggedIn;

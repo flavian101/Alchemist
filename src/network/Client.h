@@ -32,7 +32,9 @@ public:
 
     void startSyncLoop();
 
-
+    bool isAuthenticated() const {
+        return isAuthenticated_;
+    }
 
 private:
     std::string authenticatedUsername_ = "";

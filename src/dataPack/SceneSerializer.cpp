@@ -43,7 +43,7 @@ nlohmann::json SceneSerializer::Serialize(Scene* scene, const std::string& proje
 		if (auto model = dynamic_cast<Model*>(object))
 		{
 			ModelExporter exporter(*model);
-			std::string modelPath = modelsDir + model->GetName() + ".gltf";
+			std::string modelPath = modelsDir + model->GetName() + ".glb";
 			exporter.Export(modelPath);
 			nlohmann::json modelJson;
 			modelJson["name"] = model->GetName();

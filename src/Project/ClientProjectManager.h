@@ -1,16 +1,17 @@
+// ClientProjectManager.h
 #pragma once
 #include <vector>
 #include <memory>
 #include <string>
 #include <chrono>
-#include "ClientProject.h"
+#include <queue>
+#include "Project/ClientProject.h"
 #include "graphics/FrameTime.h"
 #include "network/Client.h"
 
 class Window;
 class Graphics;
 
-// Client-side project management class
 class ClientProjectManager
 {
 public:
@@ -39,10 +40,18 @@ public:
     std::string GenerateUniqueId();
 
     // Authentication
-    void ShowLoginDialog();
+    void SetAuthenticated(bool authenticated, const std::string& username);
     bool IsLoggedIn() const { return isLoggedIn; }
     const std::string& GetCurrentUsername() const { return currentUsername; }
 
+    // Chat functionality
+    void ShowChatWindow();
+    void SendChatMessage(const std::string& message);
+
+    // Add to ClientProjectManager.h in the public section
+    bool HasCurrentProject() const { return currentProject != nullptr; }
+    void SetLoggedIn(bool isLoggedIn) { this->isLoggedIn = isLoggedIn; }
+    void SetCurrentUsername(const std::string& username) { this->currentUsername = username; }
 private:
     std::vector<std::unique_ptr<ClientProject>> m_projects;
     Window& m_window;
@@ -57,6 +66,9 @@ private:
     // Synchronization
     std::chrono::system_clock::time_point lastSyncTime;
     int syncIntervalSeconds = 10;  // Default sync every 10 seconds
+
+    // Chat functionality
+    std::vector<std::string> chatHistory;
 
     // UI state
     bool showProjectWindow = false;
@@ -73,14 +85,4 @@ private:
     std::unique_ptr<Utils::Texture> minimize;
     std::unique_ptr<Utils::Texture> maximize;
     std::unique_ptr<Utils::Texture> close;
-
-public:
-    void ShowChatWindow();
-    bool HasSelectedProject() const { return currentProject != nullptr; }
-
-private:
-    // Chat functionality
-    std::string chatMessage;
-    std::vector<std::string> chatHistory;
-    void SendChatMessage(const std::string& message);
 };
