@@ -17,8 +17,7 @@ Scene::Scene(const std::string& name, Window& win)
 	:
 	m_name(name),
 	sceneCamera(nullptr),
-	cube(nullptr),			
-	plane(nullptr),
+	
 	m_selectedObject(nullptr),
     light(nullptr)
 {
@@ -30,43 +29,14 @@ Scene::Scene(const std::string& name, Window& win)
     //light = std::make_unique<DirectionalLight>("Directional", m_graphics, texturedShader);
     light = new DirectionalLight("Directional", win.GetInstance());
     AddGameObject(light);
-	//model loading 
-    grid = std::make_unique<Grid>("grid", win.GetInstance());
-    AddGameObject(grid.get());
-    //player
-    player = std::make_unique<Player>("player", win.GetInstance());
-    AddGameObject(player.get());
-
-	cube = new Cube("cube", win.GetInstance());
-    AddGameObject(cube);
-	plane = new Plane("ground");
-	plane->CreatePlane(win.GetInstance(),200.0f,200.0f,30.0f,30.0f);
-    AddGameObject(plane);
-
-    //m_model = new ModelLoader("Assets/model/ghost/ghost.glb", win.GetInstance());
-    //m_model = new ModelLoader("Assets/model/g/ghost.gltf", win.GetInstance(), texturedShader);
-   // m_model = new ModelLoader("Assets/model/gobber/GoblinX.obj",win.GetInstance());
-    ////m_model = new ModelLoader("Assets/model/boxy.gltf",win.GetInstance());
-    //  m_model = new ModelLoader("Assets/model/nano.gltf",m_graphics);
-    //m_model = new ModelLoader("Assets/model/muro/muro.obj",win.GetInstance());
      m_model = new ModelLoader("Assets/model/nano_textured/nanosuit.obj","nanosuit", win.GetInstance());
-   // m_model = new ModelLoader("trial/molel.gltf","nanosuit", win.GetInstance());
-     //m_model = new ModelLoader("Assets/model/nano_hierarchy.gltf", win.GetInstance());
-   // m_model->LoadModel("Assets/model/nano.gltf");
     AddGameObject(m_model);
-
-    ModelExporter ex(*dynamic_cast<Model*>(m_model));
-
-   // ex.Export("trial/molel.gltf");
 
 }
 
 Scene::~Scene()
 {
 	delete sceneCamera;
-	delete cube;
-	delete plane;
-    delete light;
     objects.clear();
 }
 
@@ -87,7 +57,9 @@ void Scene::AddGameObject(GameObject* object)
 
 void Scene::Update(Graphics& gfx,float deltaTime)
 {
-	sceneCamera->Update(deltaTime,*player.get());
+ 
+    sceneCamera->Update(deltaTime);
+   
     for (const auto& objects : objects)
     {
         objects->Update(gfx,deltaTime);

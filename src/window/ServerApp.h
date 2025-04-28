@@ -11,17 +11,19 @@
 #include <iostream>
 #include <boost/asio/ssl.hpp>
 #include "window/ChatWindow.h"
-#include "Project/ProjectManager.h"
+#include "Project/ServerProjectManager.h"
 
-class App
+class ServerApp
 {
 public:
-	App();
-	~App();
+	ServerApp();
+	~ServerApp();
 	int createLoop();
 	void StartServer();
 	void StopServer();
 	void ShowServerWindow();
+
+	void AddLog(const std::string& message);
 
 
 private:
@@ -40,7 +42,10 @@ private:
 	DatabaseManager* dbManager = nullptr;
 	std::shared_ptr<NetworkServer> server = nullptr;
 	ChatWindow* chatWindow = nullptr;
-	std::unique_ptr<ProjectManager> manager;
+	std::unique_ptr<ServerProjectManager> manager;
+
+	std::vector<std::string> serverLogs;
+	std::mutex logMutex;
 
 	
 };

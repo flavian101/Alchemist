@@ -17,11 +17,11 @@ namespace Utils
     class Texture;
 }
 
-class SceneManager
+class ServerSceneManager
 {
 public:
-	SceneManager(Window* win);
-	~SceneManager();
+	ServerSceneManager(Window* win);
+	~ServerSceneManager();
     // Add a scene to the manager
     void AddScene(Scene* scene);
     // Remove a scene from the manager

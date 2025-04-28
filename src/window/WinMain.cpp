@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "App.h"
+#include "ServerApp.h"
 #include <exception>
 #include <iostream>
 #define _CRTDBG_MAP_ALLOC
@@ -40,7 +40,7 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	PrintMemoryUsage();
-	App app;
+	ServerApp app;
 	PrintMemoryUsage();
 	{
 		PrintMemoryUsage();

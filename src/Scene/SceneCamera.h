@@ -23,6 +23,7 @@ public:
     void SetPerspectiveCamera(std::unique_ptr<PerspectiveCamera> newPerspectiveCamera);
     void SetOrthographicCamera(std::unique_ptr < OrthographicCamera> newOrthographicCamera);
     void Update(float delta,Player& player);
+    void Update(float delta);
     void Render(Graphics& gfx);
     Camera* getActiveCamera() const;
     SceneCamera* GetSelectedCamera();

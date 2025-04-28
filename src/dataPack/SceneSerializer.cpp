@@ -17,6 +17,7 @@
 #include "models/ModelLoader.h"
 #include "models/Node.h"
 #include <filesystem> 
+#include "environment/DirectionalLight.h"
 
 namespace fs = std::filesystem;
 
@@ -43,7 +44,7 @@ nlohmann::json SceneSerializer::Serialize(Scene* scene, const std::string& proje
 		if (auto model = dynamic_cast<Model*>(object))
 		{
 			ModelExporter exporter(*model);
-			std::string modelPath = modelsDir + model->GetName() + ".gltf";
+			std::string modelPath = modelsDir + model->GetName() + ".glb";
 			exporter.Export(modelPath);
 			nlohmann::json modelJson;
 			modelJson["name"] = model->GetName();
@@ -75,8 +76,13 @@ void SceneSerializer::Deserialize(Scene* scene,nlohmann::json j)
 		std::string modelPath = modelJson["path"];
 		std::string modelName = modelJson["name"];
 		ModelLoader* model = new ModelLoader(modelPath,modelName, m_graphics);
+
 		scene->AddGameObject(model);
 	}
+
+	DirectionalLight* light = new DirectionalLight("Directional", m_graphics);
+
+	scene->AddGameObject(light);	
 
                       
 }

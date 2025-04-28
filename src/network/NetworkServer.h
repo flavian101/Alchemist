@@ -36,6 +36,9 @@ public:
 
     void handlePushProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
 
+    void handleProjectChat(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
+   
+ 
 private:
     boost::asio::io_context& io_context_;
     boost::asio::ssl::context& ssl_context_;
@@ -47,3 +50,4 @@ private:
     std::function<void(const std::string&)> messageReceivedCallback_;
     std::mutex clientMutex_; // Mutex to protect access to shared client data
 };
+

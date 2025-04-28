@@ -80,6 +80,29 @@ void SceneCamera::Update(float delta,Player& player)
     }
 }
 
+void SceneCamera::Update(float delta)
+{
+    if (isPerspective)
+    {
+        switch (this->GetPerspective()->GetCameraMode())
+        {
+        case CameraMode::freeLook:
+            input->DetectInputFree(delta,
+                dynamic_cast<FreeLook*>(this->GetSelectedCamera()->GetPerspective()));
+            break;
+        case CameraMode::firstPerson:
+            input->DetectInputFirst(delta,
+                dynamic_cast<FirstPerson*>(this->GetSelectedCamera()->GetPerspective()));
+            break;
+        }
+
+    }
+    // m_selectedCamera = GetSelectedCamera();
+    if (m_selectedCamera) {
+        m_selectedCamera->getActiveCamera()->Update(delta);
+    }
+}
+
 void SceneCamera::Render(Graphics& gfx) {
    // m_selectedCamera = GetSelectedCamera();
     if (m_selectedCamera) {

@@ -43,10 +43,6 @@ private:
 	friend class SceneSerializer;
 	std::string m_name;
 	SceneCamera* sceneCamera;
-	std::unique_ptr<Player> player;
-	std::unique_ptr<Grid> grid;
-	Cube* cube;
-	Plane* plane;
 	//std::unique_ptr<ShaderEditor> editor;
 	bool m_renameObject = false;
 	DirectionalLight* light;

@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <fstream>
 
-
 ModelExporter::ModelExporter(Model& model)
     : m_model(model) {
 }
@@ -11,6 +10,7 @@ ModelExporter::ModelExporter(Model& model)
 ModelExporter::~ModelExporter()
 {
 }
+
 void ModelExporter::Export(const std::string& filepath)
 {
     // Get the export directory from the filepath
@@ -190,7 +190,6 @@ void ModelExporter::Export(const std::string& filepath)
             ai_mesh->mMaterialIndex = 0;
             aiMeshes.push_back(ai_mesh);
 
-           
             // --- Create aiMaterial if your meshPart has one
             if (auto mat = meshPart->GetMaterial())
             {
@@ -209,114 +208,7 @@ void ModelExporter::Export(const std::string& filepath)
                 ai_mat->AddProperty(&md.metallic, 1, AI_MATKEY_METALLIC_FACTOR);
                 ai_mat->AddProperty(&md.roughness, 1, AI_MATKEY_ROUGHNESS_FACTOR);
 
-                std::filesystem::path exportDirPath = std::filesystem::path(filepath).parent_path();
-                std::filesystem::path textureDirPath = exportDirPath / "textures";
-
-                // Textures
-                for (const auto& [type, tex] : mat->textures)
-                {
-                    if (!tex) continue;
-                    std::string texturePath = tex->GetPath();
-                    if (texturePath.empty()) {
-                        std::cerr << "Empty texture path encountered, skipping..." << std::endl;
-                        continue;
-                    }
-
-                    try {
-                        // Convert to filesystem path and validate
-                        std::filesystem::path srcTexPath(texturePath);
-                        if (!std::filesystem::exists(srcTexPath)) {
-                            std::cerr << "Texture file not found: " << srcTexPath << std::endl;
-                            continue;
-                        }
-
-                        // Create valid filename for the destination
-                        std::string validFilename = srcTexPath.filename().string();
-
-                        // Create destination path and ensure directory exists
-                        std::filesystem::create_directories(textureDirPath);
-                        std::filesystem::path destTexPath = textureDirPath / validFilename;
-
-                        // Copy the texture file
-                        std::filesystem::copy_file(
-                            srcTexPath,
-                            destTexPath,
-                            std::filesystem::copy_options::overwrite_existing
-                        );
-
-                        // Create relative path from GLTF file to texture
-                        std::string relativePathStr = "textures/" + validFilename;
-                        aiString relativePath(relativePathStr);
-
-
-                        switch (type) {
-                        case Material::TextureType::Albedo:
-                        {
-                            // Base color texture
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_BASE_COLOR, 0);
-                            // Set UV index
-                            int uvIndex = 0;
-                            ai_mat->AddProperty(&uvIndex, 1, "$tex.uvwsrc", aiTextureType_BASE_COLOR, 0);
-                        }
-                        break;
-
-                        case Material::TextureType::Normal:
-                        {
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_NORMALS, 0);
-                            float normalScale = 1.0f;
-                            ai_mat->AddProperty(&normalScale, 1, "$tex.mapping", aiTextureType_NORMALS, 0);
-                        }
-                        break;
-
-                        case Material::TextureType::Metallic:
-                        {
-                            // For metallic texture
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_METALNESS, 0);
-                            int uvIndex = 0;
-                            ai_mat->AddProperty(&uvIndex, 1, "$tex.uvwsrc", aiTextureType_METALNESS, 0);
-                        }
-                        break;
-
-                        case Material::TextureType::Roughness:
-                        {
-                            // For roughness texture
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_DIFFUSE_ROUGHNESS, 0);
-                            int uvIndex = 0;
-                            ai_mat->AddProperty(&uvIndex, 1, "$tex.uvwsrc", aiTextureType_DIFFUSE_ROUGHNESS, 0);
-                        }
-                        break;
-
-                        case Material::TextureType::AmbientOcclusion:
-                        {
-                            // For ambient occlusion texture
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_AMBIENT_OCCLUSION, 0);
-                            float aoStrength = 1.0f;
-                            ai_mat->AddProperty(&aoStrength, 1, "$tex.strength", aiTextureType_AMBIENT_OCCLUSION, 0);
-                        }
-                        break;
-
-                        case Material::TextureType::Specular:
-                        {
-                            // For specular texture
-                            ai_mat->AddProperty(&relativePath, "$tex.file", aiTextureType_SPECULAR, 0);
-
-                            // Enable KHR_materials_specular extension
-                            bool specularWorkflow = true;
-                            ai_mat->AddProperty(&specularWorkflow, 1, "$mat.gltf.specularWorkflow", 0, 0);
-                        }
-                        break;
-                        }
-
-                       
-            std::cout << "Successfully added texture: " << relativePathStr << " for type: " << static_cast<int>(type) << std::endl;
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Failed to process texture: " << e.what() << std::endl;
-        }
-
-                }
-                // assign material index on mesh
-                ai_mesh->mMaterialIndex = static_cast<unsigned int>(aiMaterials.size());
+                // Add material to scene
                 aiMaterials.push_back(ai_mat);
             }
         }
@@ -362,7 +254,7 @@ void ModelExporter::Export(const std::string& filepath)
             << scene->mNumMaterials << " materials\n";
 
         // 8) Export to GLTF2
-// Ensure the file ends with .glb
+        // Ensure the file ends with .glb
         std::filesystem::path outputPath(filepath);
         if (outputPath.extension() != ".glb") {
             outputPath.replace_extension(".glb");
@@ -378,7 +270,6 @@ void ModelExporter::Export(const std::string& filepath)
         std::cerr << "Error during export: " << e.what() << std::endl;
     }
 
-   
     delete scene;
 }
 
@@ -406,5 +297,3 @@ void ModelExporter::ExportNodeTransformations(aiNode* ai_node, const Node* node)
         }
     }
 }
-
-

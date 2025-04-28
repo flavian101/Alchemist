@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene/SceneManager.h"
+#include "Scene/ServerSceneManager.h"
 #include "Json.hpp"
 
 class Renderer;
@@ -80,7 +80,7 @@ private:
 
 
 private:
-	friend class Project;
+	friend class ServerProject;
 	Graphics& m_graphics;
 	//friend Scene;
 };

@@ -246,6 +246,10 @@ void NetworkServer::handleIncomingMessage(
     else if (message.find("PUSH_PROJECT ") == 0) {
         handlePushProject(socket, message.substr(13));
     }
+    else if (message.find("CHAT_PROJECT ") == 0) {
+        // Handle project-specific chat
+        handleProjectChat(socket, message.substr(13)); // 13 is length of "CHAT_PROJECT "
+    }
     else {
         processChatMessage(message, socket);
     }
@@ -298,16 +302,49 @@ void NetworkServer::handleLoadProject(std::shared_ptr<boost::asio::ssl::stream<b
     }
 }
 void NetworkServer::handleListProjects(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& username) {
-    auto projects = dbManager_.listProjectsForUser(username);
+    std::cout << "Handling LIST_PROJECTS request for user: " << username << std::endl;
 
+    // Verify the user exists and is authenticated
+    {
+        std::lock_guard<std::mutex> lock(clientMutex_);
+        if (authenticatedClients_.find(socket) == authenticatedClients_.end() || !authenticatedClients_[socket]) {
+            std::string errorMsg = "You must be authenticated to list projects.\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg),
+                [](const boost::system::error_code& ec, std::size_t) {
+                    if (ec) {
+                        std::cerr << "Error sending error message: " << ec.message() << std::endl;
+                    }
+                });
+            return;
+        }
+    }
+
+    // Get projects for the user
+    auto projects = dbManager_.listProjectsForUser(username);
+    std::cout << "Found " << projects.size() << " projects for user: " << username << std::endl;
+
+    // Format the response
     std::ostringstream oss;
     oss << "PROJECT_LIST ";
     for (const auto& [id, name] : projects) {
+        std::cout << "  Project: " << name << " (ID: " << id << ")" << std::endl;
         oss << id << ":" << name << "|";
     }
     oss << "\n";
 
-    boost::asio::async_write(*socket, boost::asio::buffer(oss.str()), [](auto, auto) {});
+    std::string response = oss.str();
+    std::cout << "Sending response: \"" << response << "\"" << std::endl;
+
+    // Send the response
+    boost::asio::async_write(*socket, boost::asio::buffer(response),
+        [response](const boost::system::error_code& ec, std::size_t) {
+            if (ec) {
+                std::cerr << "Error sending project list: " << ec.message() << std::endl;
+            }
+            else {
+                std::cout << "Successfully sent project list response" << std::endl;
+            }
+        });
 }
 void NetworkServer::handlePushProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content) {
     size_t first = content.find(' ');
@@ -341,5 +378,88 @@ void NetworkServer::handlePushProject(std::shared_ptr<boost::asio::ssl::stream<b
     }
     else {
         boost::asio::async_write(*socket, boost::asio::buffer("PUSH_FAILED\n"), [](auto, auto) {});
+    }
+}
+void NetworkServer::handleProjectChat(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket,
+    const std::string& content) {
+
+    // Verify authentication
+    std::string username;
+    {
+        std::lock_guard<std::mutex> lock(clientMutex_);
+        if (authenticatedClients_.find(socket) == authenticatedClients_.end() || !authenticatedClients_[socket]) {
+            std::string errorMsg = "You must be authenticated to send messages.\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+            return;
+        }
+        username = authenticatedUsernames_[socket];
+    }
+
+    // Extract project ID and message
+    size_t firstSpace = content.find(' ');
+    if (firstSpace == std::string::npos) {
+        return; // Invalid format
+    }
+
+    std::string projectId = content.substr(0, firstSpace);
+    std::string msgContent = content.substr(firstSpace + 1);
+
+    // Verify project access
+    std::vector<std::tuple<std::string, std::string>> collaborators = dbManager_.getCollaboratorsForProject(projectId);
+    bool hasAccess = false;
+
+    for (const auto& [collab, role] : collaborators) {
+        if (collab == username) {
+            hasAccess = true;
+            break;
+        }
+    }
+
+    if (!hasAccess) {
+        std::string errorMsg = "You don't have access to this project.\n";
+        boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+        return;
+    }
+
+    // Format and broadcast the message to all collaborators of this project
+    std::time_t currentTime = std::time(nullptr);
+    std::string timeStr = std::ctime(&currentTime);
+    timeStr.pop_back(); // Remove trailing newline
+
+    std::string formattedMessage = "CHAT_PROJECT " + projectId + " [" + timeStr + "] " + username + ": " + msgContent;
+
+    // Broadcast to all clients with access to this project
+    std::lock_guard<std::mutex> lock(clientMutex_);
+    for (auto it = clients_.begin(); it != clients_.end();) {
+        auto client = *it;
+        if (authenticatedClients_.find(client) != authenticatedClients_.end() && authenticatedClients_[client]) {
+            // Check if this client has access to the project
+            std::string clientUsername = authenticatedUsernames_[client];
+            bool clientHasAccess = false;
+
+            for (const auto& [collab, role] : collaborators) {
+                if (collab == clientUsername) {
+                    clientHasAccess = true;
+                    break;
+                }
+            }
+
+            if (clientHasAccess) {
+                boost::asio::async_write(*client, boost::asio::buffer(formattedMessage + "\n"),
+                    [this, client](const boost::system::error_code& error, std::size_t) {
+                        if (error) {
+                            std::cerr << "Error sending message to client: " << error.message() << std::endl;
+                            std::lock_guard<std::mutex> lock(clientMutex_);
+                            authenticatedClients_.erase(client);
+                            clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
+                        }
+                    });
+            }
+            ++it;
+        }
+        else {
+            it = clients_.erase(it);
+        }
     }
 }
