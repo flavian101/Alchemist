@@ -142,7 +142,7 @@ void ClientSceneManager::DeserializeSceneManager(const nlohmann::json& j) {
     activeScene = nullptr;
 
     for (const auto& sceneJson : j["scenes"]) {
-        auto scene = new Scene(sceneJson["name"], m_window);
+        auto scene = new Scene(sceneJson["Scene Name"], m_window);
         serializer->Deserialize(scene, sceneJson);
         AddScene(scene);
     }

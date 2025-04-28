@@ -83,3 +83,5 @@ using make_index_sequence = typename index_range<0, N>::type;
 } // namespace boost
 
 #endif // BOOST_ASIO_DETAIL_UTILITY_HPP
+
+std::string base64_encode(const unsigned char* data, size_t length);

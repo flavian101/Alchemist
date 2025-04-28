@@ -8,6 +8,7 @@
 #include "Project/ClientProject.h"
 #include "graphics/FrameTime.h"
 #include "network/Client.h"
+#include "Graphics/Utilis.h"
 
 class Window;
 class Graphics;
@@ -52,6 +53,18 @@ public:
     bool HasCurrentProject() const { return currentProject != nullptr; }
     void SetLoggedIn(bool isLoggedIn) { this->isLoggedIn = isLoggedIn; }
     void SetCurrentUsername(const std::string& username) { this->currentUsername = username; }
+      // Auto-sync control methods
+    void EnableAutoSync(bool enable) { autoSyncEnabled = enable; }
+    bool IsAutoSyncEnabled() const { return autoSyncEnabled; }
+    int GetSyncInterval() const { return syncIntervalSeconds; }
+
+
+      // Record a local change
+      void RecordChange(const std::string& operation, const std::string& target);
+
+  // Real-time sync helpers
+      bool HasLocalChanges() const { return !localChanges.empty(); }
+      void ClearLocalChanges() { localChanges.clear(); }
 private:
     std::vector<std::unique_ptr<ClientProject>> m_projects;
     Window& m_window;
@@ -64,7 +77,6 @@ private:
     std::string currentUsername;
 
     // Synchronization
-    std::chrono::system_clock::time_point lastSyncTime;
     int syncIntervalSeconds = 10;  // Default sync every 10 seconds
 
     // Chat functionality
@@ -85,4 +97,24 @@ private:
     std::unique_ptr<Utils::Texture> minimize;
     std::unique_ptr<Utils::Texture> maximize;
     std::unique_ptr<Utils::Texture> close;
+
+    bool autoSyncEnabled = true;
+    std::chrono::time_point<std::chrono::system_clock> lastSyncTime; // Last sync timestamp
+
+    // Project change history for conflict resolution
+    struct ChangeRecord {
+        std::time_t timestamp;
+        std::string operation;
+        std::string target;
+    };
+    std::vector<ChangeRecord> localChanges;
+    bool showChatWindow;
+
+    // Conflict resolution
+    bool showConflictDialog = false;
+    std::string serverUpdateData;
+
+    // Callback for model updates
+    void OnModelUpdatedFromServer(const std::string& projectId, const std::string& modelPath);
+    void ShowConflictResolutionDialog();
 };

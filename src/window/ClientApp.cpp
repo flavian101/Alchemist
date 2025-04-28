@@ -49,10 +49,7 @@ void ClientApp::Render() {
 
     if (loggedIn) {
     
-
-        if (projectManager->HasCurrentProject()) {
             projectManager->ShowChatWindow();
-        }
 
         // Process any pending messages from the client
         client.processMessages();

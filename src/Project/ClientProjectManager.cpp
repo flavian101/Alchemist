@@ -1,4 +1,3 @@
-// ClientProjectManager.cpp
 #include "ClientProjectManager.h"
 #include "Graphics/Graphics.h"
 #include <iostream>
@@ -7,7 +6,10 @@
 #include <iomanip>
 #include <algorithm>
 #include "imgui/imgui.h"
-#include "Graphics/Utilis.h"
+#include <fstream>
+#include "window/Window.h"
+
+
 
 ClientProjectManager::ClientProjectManager(Window& win, Client* networkClient)
     : m_window(win),
@@ -23,6 +25,11 @@ ClientProjectManager::ClientProjectManager(Window& win, Client* networkClient)
     if (m_networkClient) {
         m_networkClient->setProjectUpdateCallback([this](const std::string& projectId, const std::string& jsonData) {
             this->OnProjectUpdatedFromServer(projectId, jsonData);
+            });
+
+        // Register model update callback
+        m_networkClient->setModelUpdateCallback([this](const std::string& projectId, const std::string& modelPath) {
+            this->OnModelUpdatedFromServer(projectId, modelPath);
             });
 
         // Register message callback for chat messages
@@ -69,7 +76,7 @@ void ClientProjectManager::SetAuthenticated(bool authenticated, const std::strin
 void ClientProjectManager::Update(Graphics& gfx)
 {
     // Check if it's time to sync with the server
-    if (isLoggedIn && m_networkClient) {
+    if (autoSyncEnabled && isLoggedIn && m_networkClient) {
         auto now = std::chrono::system_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastSyncTime).count();
 
@@ -88,6 +95,16 @@ void ClientProjectManager::Render(Graphics& gfx)
 {
     if (currentProject) {
         currentProject->Render(gfx);
+    }
+
+    // Show conflict dialog if needed
+    if (showConflictDialog) {
+        ShowConflictResolutionDialog();
+    }
+
+    // Show chat window if needed
+    if (currentProject && showChatWindow) {
+        ShowChatWindow();
     }
 }
 
@@ -162,12 +179,32 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
                 SyncWithServer();
             }
 
+            // Add sync settings submenu
+            if (ImGui::BeginMenu("Sync Settings")) {
+                bool autoSync = IsAutoSyncEnabled();
+                if (ImGui::Checkbox("Auto-Sync", &autoSync)) {
+                    EnableAutoSync(autoSync);
+                }
+
+                int interval = GetSyncInterval();
+                if (ImGui::SliderInt("Sync Interval (seconds)", &interval, 5, 60)) {
+                    SetSyncInterval(interval);
+                }
+
+                ImGui::EndMenu();
+            }
+
+            // Add a separator before other menu items
+            ImGui::Separator();
+
             if (ImGui::MenuItem("Add Scene") && currentProject) {
                 // Add scene functionality for the SceneManager
+                RecordChange("AddScene", "NewScene");
             }
 
             if (ImGui::MenuItem("Add Object") && currentProject) {
                 // Add object functionality
+                RecordChange("AddObject", "NewObject");
             }
 
             ImGui::EndMenu();
@@ -191,6 +228,16 @@ void ClientProjectManager::ShowMenuBar(Graphics& gfx)
             ImGui::Text("User: %s", currentUsername.c_str());
         }
 
+        // Add sync status indicator
+        if (isLoggedIn && currentProject) {
+            ImGui::SameLine(ImGui::GetWindowWidth() - 350);
+            if (currentProject->IsModifiedLocally() || currentProject->AreModelsModified()) {
+                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Local Changes*");
+            }
+            else {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "In Sync");
+            }
+        }
         // Window controls
         ImGui::SameLine(ImGui::GetWindowWidth() - 140);
         ImTextureID tex_id_2 = minimize->GetSRV();
@@ -413,13 +460,55 @@ void ClientProjectManager::ShowProjectWindow()
         ImGui::EndPopup();
     }
 
-    // Project Details
+    // Project Details section - add sync status and controls
     ImGui::Separator();
     if (GetSelectedProject()) {
         ImGui::Text("Selected Project:");
         ImGui::Text("Name: %s", GetSelectedProject()->GetName().c_str());
         ImGui::Text("ID: %s", GetSelectedProject()->GetProjectId().c_str());
         ImGui::Text("Local Directory: %s", GetSelectedProject()->GetRootDirectory().c_str());
+
+        // Add sync status indicators
+        if (isLoggedIn && m_networkClient) {
+            if (GetSelectedProject()->IsModifiedLocally()) {
+                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Status: Modified Locally");
+            }
+            else {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Status: In Sync with Server");
+            }
+
+            // Add model count
+            const auto& modelPaths = GetSelectedProject()->GetModelPaths();
+            ImGui::Text("Models: %d", static_cast<int>(modelPaths.size()));
+
+            // Add model management buttons
+            if (ImGui::CollapsingHeader("Model Management")) {
+                if (ImGui::Button("Check Model Status")) {
+                    GetSelectedProject()->CheckModelStatus();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Repair Models")) {
+                    GetSelectedProject()->RepairModels(m_networkClient);
+                }
+
+                // List models
+                ImGui::BeginChild("ModelsList", ImVec2(0, 100), true);
+                for (const auto& modelPath : modelPaths) {
+                    std::string localPath = GetSelectedProject()->GetRootDirectory() + "/" + modelPath;
+                    bool exists = fs::exists(localPath);
+
+                    if (exists) {
+                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", modelPath.c_str());
+                    }
+                    else {
+                        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s (Missing)", modelPath.c_str());
+                    }
+                }
+                ImGui::EndChild();
+            }
+        }
     }
     else {
         ImGui::Text("No project selected.");
@@ -442,6 +531,10 @@ void ClientProjectManager::LoadSelectedProject()
                     // Update the project with the full data
                     proj->UpdateFromJson(jsonData);
 
+                    // Also load models from server
+                    std::cout << "Loading models for project from server..." << std::endl;
+                    proj->LoadModelsFromServer(m_networkClient);
+
                     // Set as current project
                     currentProject = proj.get();
                     showProjectWindow = false;
@@ -458,7 +551,16 @@ void ClientProjectManager::LoadSelectedProject()
 
 void ClientProjectManager::CreateNewProject(const std::string& name, const std::string& rootDir)
 {
-    m_projects.push_back(std::make_unique<ClientProject>(m_window, name, rootDir));
+    auto newProject = std::make_unique<ClientProject>(m_window, name, rootDir);
+
+    // Generate a unique ID if we'll be saving to server
+    if (isLoggedIn && m_networkClient) {
+        std::string projectId = GenerateUniqueId();
+        newProject->SetProjectId(projectId);
+    }
+
+    // Add to projects collection
+    m_projects.push_back(std::move(newProject));
     std::cout << "New project created: " << name << " at " << rootDir << std::endl;
 }
 
@@ -502,14 +604,74 @@ void ClientProjectManager::SyncWithServer()
         m_networkClient->pushProject(projectId, name, jsonData);
 
         // Reset modified flag
-        currentProject->SetModifiedLocally(false);
+        currentProject->SetLocallyModified(false);
         std::cout << "Project pushed to server: " << name << std::endl;
     }
 
-    // 2. Refresh project list to check for any new projects
+    // 2. Check if we have model changes to push
+    if (currentProject->AreModelsModified()) {
+        // Sync models with server
+        if (currentProject->SyncModels(m_networkClient)) {
+            currentProject->SetModelsModified(false);
+            std::cout << "Models synced with server" << std::endl;
+        }
+    }
+
+    // 3. Refresh project list to check for any new projects
     LoadProjectsFromServer();
 }
 
+void ClientProjectManager::OnModelUpdatedFromServer(const std::string& projectId, const std::string& modelPath)
+{
+    // Only handle if this is for our current project
+    if (!currentProject || currentProject->GetProjectId() != projectId) {
+        return;
+    }
+
+    std::cout << "Received model update notification for: " << modelPath << std::endl;
+
+    // Check if we need to download the model
+    bool needToDownload = true;
+    const auto& localModels = currentProject->GetModelPaths();
+    auto it = std::find(localModels.begin(), localModels.end(), modelPath);
+
+    if (it != localModels.end()) {
+        // Model exists in our list, check if we modified it locally
+        if (currentProject->AreModelsModified()) {
+            // We have local changes, handle conflict
+            // For now, we'll take the server version but this could be more sophisticated
+            std::cout << "Potential conflict with local model changes. Taking server version." << std::endl;
+        }
+    }
+    else {
+        // This is a new model for us, add it to our list
+        currentProject->AddModel(modelPath);
+        currentProject->SetModelsModified(false); // Don't mark as locally modified
+    }
+
+    if (needToDownload) {
+        // Download the updated model
+        m_networkClient->downloadModel(projectId, modelPath, [this, projectId, modelPath](const std::vector<char>& data) {
+            // Create the local directory structure if needed
+            std::string localPath = currentProject->GetRootDirectory() + "/" + modelPath;
+            fs::path dirPath = fs::path(localPath).parent_path();
+            fs::create_directories(dirPath);
+
+            // Save the model file
+            std::ofstream modelFile(localPath, std::ios::binary);
+            if (modelFile) {
+                modelFile.write(data.data(), data.size());
+                modelFile.close();
+                std::cout << "Downloaded model from server: " << modelPath << std::endl;
+            }
+            else {
+                std::cerr << "Failed to save downloaded model: " << localPath << std::endl;
+            }
+            });
+    }
+}
+
+// Method to handle project updates from server
 void ClientProjectManager::OnProjectUpdatedFromServer(const std::string& projectId, const std::string& jsonData)
 {
     std::cout << "Received project update from server for project ID: " << projectId << std::endl;
@@ -518,9 +680,66 @@ void ClientProjectManager::OnProjectUpdatedFromServer(const std::string& project
     for (auto& proj : m_projects) {
         if (proj->GetProjectId() == projectId) {
             // Only update if this is our current project and we're not already modifying it locally
-            if (currentProject == proj.get() && !currentProject->IsModifiedLocally()) {
-                proj->UpdateFromJson(jsonData);
-                std::cout << "Project updated from server: " << proj->GetName() << std::endl;
+            if (currentProject == proj.get()) {
+                if (!currentProject->IsModifiedLocally()) {
+                    proj->UpdateFromJson(jsonData);
+                    std::cout << "Project updated from server: " << proj->GetName() << std::endl;
+
+                    // Check for new models we need to download
+                    nlohmann::json projJson = nlohmann::json::parse(jsonData);
+                    if (projJson.contains("models") && projJson["models"].is_array()) {
+                        for (const auto& model : projJson["models"]) {
+                            std::string modelPath = model;
+
+                            // Check if we have this model locally
+                            std::string localPath = proj->GetRootDirectory() + "/" + modelPath;
+                            if (!fs::exists(localPath)) {
+                                // Need to download this model
+                                m_networkClient->downloadModel(projectId, modelPath,
+                                    [this, localPath, modelPath](const std::vector<char>& data) {
+                                        // Create directories if needed
+                                        fs::path dirPath = fs::path(localPath).parent_path();
+                                        fs::create_directories(dirPath);
+
+                                        // Save the model file
+                                        std::ofstream modelFile(localPath, std::ios::binary);
+                                        if (modelFile) {
+                                            modelFile.write(data.data(), data.size());
+                                            modelFile.close();
+                                            std::cout << "Downloaded model from server: " << modelPath << std::endl;
+                                        }
+                                        else {
+                                            std::cerr << "Failed to save downloaded model: " << localPath << std::endl;
+                                        }
+                                    });
+                            }
+                        }
+                    }
+                }
+                else {
+                    // We have local changes, handle conflict resolution
+                    std::cout << "Project update received but we have local changes. Conflict resolution needed." << std::endl;
+
+                    // Compare timestamps for a basic conflict resolution strategy
+                    try {
+                        nlohmann::json serverJson = nlohmann::json::parse(jsonData);
+                        std::time_t serverTime = serverJson["last_modified"];
+                        std::time_t localTime = std::chrono::system_clock::to_time_t(currentProject->GetLastModifiedTime());
+
+                        if (serverTime > localTime) {
+                            // Server version is newer, prompt user
+                            showConflictDialog = true;
+                            serverUpdateData = jsonData;
+                        }
+                        else {
+                            // Our version is newer, push it
+                            m_networkClient->pushProject(projectId, currentProject->GetName(), currentProject->SerializeToJson());
+                        }
+                    }
+                    catch (const std::exception& e) {
+                        std::cerr << "Error handling project conflict: " << e.what() << std::endl;
+                    }
+                }
             }
             return;
         }
@@ -547,8 +766,69 @@ void ClientProjectManager::OnProjectUpdatedFromServer(const std::string& project
     }
 }
 
+// Method to record local changes for conflict resolution
+void ClientProjectManager::RecordChange(const std::string& operation, const std::string& target)
+{
+    if (currentProject) {
+        ChangeRecord record;
+        record.timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        record.operation = operation;
+        record.target = target;
+        localChanges.push_back(record);
+
+        // Also mark the project as modified
+        currentProject->SetLocallyModified(true);
+    }
+}
+
+// Method to handle conflict resolution UI
+void ClientProjectManager::ShowConflictResolutionDialog()
+{
+    if (!showConflictDialog) return;
+
+    ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Project Conflict", &showConflictDialog);
+
+    ImGui::TextWrapped("There is a conflict between your local changes and server changes.");
+    ImGui::TextWrapped("How would you like to resolve this?");
+
+    ImGui::Separator();
+
+    if (ImGui::Button("Use Server Version (Discard Local Changes)")) {
+        // Update from server, discarding local changes
+        if (currentProject) {
+            currentProject->UpdateFromJson(serverUpdateData);
+            currentProject->SetLocallyModified(false);
+            localChanges.clear();
+        }
+        showConflictDialog = false;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Keep Local Version (Overwrite Server)")) {
+        // Push local changes to server
+        if (currentProject && m_networkClient) {
+            m_networkClient->pushProject(
+                currentProject->GetProjectId(),
+                currentProject->GetName(),
+                currentProject->SerializeToJson()
+            );
+        }
+        showConflictDialog = false;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel (Decide Later)")) {
+        showConflictDialog = false;
+    }
+
+    ImGui::End();
+}
+
 void ClientProjectManager::ShowChatWindow() {
-    if (!currentProject) return;
+   // if (!currentProject) return;
 
     ImGui::Begin("Project Chat");
 
