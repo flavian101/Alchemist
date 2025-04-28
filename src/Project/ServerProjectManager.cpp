@@ -63,15 +63,45 @@ void ServerProjectManager::ShowMenuBar(Graphics& gfx)
 
             if (ImGui::MenuItem("Save Project")) {
                 if (currentProject) {
+                    // Save the project to file first
                     currentProject->Save();
 
-                    // Update project in database
-                    std::string projectId = currentProject->GetRootDirectory();
+                    // Get project info using consistent methods
+                    std::string projectId = currentProject->GetProjectId();
                     std::string name = currentProject->GetName();
                     std::string jsonData = currentProject->SerializeToJson();
 
-                    m_dbManager.storeProject(projectId, name, "admin", jsonData);
-                    std::cout << "Project saved to database: " << name << std::endl;
+                    std::cout << "SAVING PROJECT - ID: '" << projectId << "', Name: '" << name << "'" << std::endl;
+
+                    // Update in database
+                    if (m_dbManager.storeProject(projectId, name, "admin", jsonData)) {
+                        std::cout << "Project saved to database: " << name << " (ID: " << projectId << ")" << std::endl;
+
+                        // Update project models in the database too
+                        auto modelPaths = currentProject->GetModelPaths();
+
+                        // First, clear existing models for this project
+                        try {
+                            SQLite::Statement deleteModels(m_dbManager.getDatabase(),
+                                "DELETE FROM project_models WHERE project_id = ?");
+                            deleteModels.bind(1, projectId);
+                            deleteModels.exec();
+                        }
+                        catch (const std::exception& e) {
+                            std::cerr << "Failed to clear existing models: " << e.what() << std::endl;
+                        }
+
+                        // Then add each model path
+                        for (const auto& modelPath : modelPaths) {
+                            m_dbManager.storeModelForProject(projectId, modelPath);
+                        }
+
+                        // Broadcast the update to connected clients
+                        BroadcastProjectUpdate(projectId, jsonData);
+                    }
+                    else {
+                        std::cerr << "Failed to save project to database: " << name << std::endl;
+                    }
                 }
             }
 
@@ -200,10 +230,10 @@ void ServerProjectManager::ShowProjectWindow()
 
         // Show project details on hover
         if (ImGui::IsItemHovered() && ImGui::BeginTooltip()) {
-            ImGui::Text("Project ID: %s", m_projects[i]->GetRootDirectory().c_str());
+            ImGui::Text("Project ID: %s", m_projects[i]->GetProjectId().c_str()); // Use GetProjectId instead of GetRootDirectory
 
-            // Show collaborators
-            auto collabIter = m_projectCollaborators.find(m_projects[i]->GetRootDirectory());
+            // Show collaborators - use GetProjectId for the lookup
+            auto collabIter = m_projectCollaborators.find(m_projects[i]->GetProjectId());
             if (collabIter != m_projectCollaborators.end()) {
                 ImGui::Text("Collaborators:");
                 for (const auto& collab : collabIter->second) {
@@ -374,7 +404,7 @@ void ServerProjectManager::ShowCollaboratorAssignment()
         ImGui::EndCombo();
     }
 
-    std::string projectId = m_projects[projectIndex]->GetRootDirectory();
+    std::string projectId = m_projects[projectIndex]->GetProjectId();;
 
     // Current collaborators list
     ImGui::Text("Current Collaborators:");
