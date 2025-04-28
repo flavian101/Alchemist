@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <mutex>
 #include "DatabaseManager.h"
+#include "Utility.h"
+
 
 class NetworkServer : public std::enable_shared_from_this<NetworkServer> {
 public:
@@ -37,7 +39,16 @@ public:
     void handlePushProject(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
 
     void handleProjectChat(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
-   
+
+    void handleModelUpload(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
+
+    void handleModelDownload(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket, const std::string& content);
+
+    void notifyModelUpdated(std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sender, const std::string& projectId, const std::string& modelPath);
+
+    void BroadcastToCollaborators(const std::string& projectId, const std::string& message, std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> excludeClient);
+    void BroadcastToCollaborators(const std::string& projectId, const std::string& message);
+
  
 private:
     boost::asio::io_context& io_context_;
@@ -48,6 +59,7 @@ private:
     std::unordered_map<std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>, bool> authenticatedClients_;
     std::unordered_map<std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>, std::string> authenticatedUsernames_;
     std::function<void(const std::string&)> messageReceivedCallback_;
-    std::mutex clientMutex_; // Mutex to protect access to shared client data
+    std::mutex clientMutex_;
+    // Mutex to protect access to shared client data
 };
 

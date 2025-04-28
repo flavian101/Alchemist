@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Utility.cpp" />
     <ClCompile Include="src\window\ChatWindow.cpp" />
     <ClCompile Include="src\network\DatabaseManager.cpp" />
     <ClCompile Include="src\network\NetworkServer.cpp" />
@@ -253,6 +254,7 @@
     <ClCompile Include="src\Sample\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\window\ChatWindow.h" />
     <ClInclude Include="src\network\DatabaseManager.h" />
     <ClInclude Include="src\network\NetworkServer.h" />

@@ -5,6 +5,8 @@
 DatabaseManager::DatabaseManager(const std::string& dbPath)
     : db_(dbPath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
     try {
+        db_.exec("PRAGMA foreign_keys = ON;");
+
         // Users table
         db_.exec("CREATE TABLE IF NOT EXISTS users ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, "

@@ -1,4 +1,4 @@
-#include "NetworkServer.h"
+﻿#include "NetworkServer.h"
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
@@ -6,6 +6,11 @@
 #include <algorithm>
 #include <mutex>
 #include <ctime>
+#include <filesystem> 
+#include <fstream>
+#include <unordered_set>
+
+namespace fs = std::filesystem; 
 
 NetworkServer::NetworkServer(boost::asio::io_context& io_context, boost::asio::ssl::context& ssl_context, short port, DatabaseManager& dbManager)
     : io_context_(io_context),
@@ -29,20 +34,14 @@ void NetworkServer::handleAccept(const boost::system::error_code& error, std::sh
         std::cout << "New client connected!" << std::endl;
         socket->async_handshake(boost::asio::ssl::stream_base::server, [this, socket](const boost::system::error_code& error) {
             if (!error) {
+                std::lock_guard lock(clientMutex_);
+                clients_.push_back(socket);         // ← move it *inside* the success branch
                 handleClient(socket);
             }
             else {
-                std::cerr << "Handshake error: " << error.message() << std::endl;
+                std::cerr << "Handshake error: " << error.message() << "\n";
             }
             });
-
-        {
-            std::lock_guard<std::mutex> lock(clientMutex_);
-            clients_.push_back(socket);
-        }
-    }
-    else {
-        std::cerr << "Accept error: " << error.message() << std::endl;
     }
 }
 
@@ -250,6 +249,12 @@ void NetworkServer::handleIncomingMessage(
         // Handle project-specific chat
         handleProjectChat(socket, message.substr(13)); // 13 is length of "CHAT_PROJECT "
     }
+    else if (message.find("UPLOAD_MODEL ") == 0) {
+        handleModelUpload(socket, message.substr(13)); // 13 is length of "UPLOAD_MODEL "
+    }
+    else if (message.find("DOWNLOAD_MODEL ") == 0) {
+        handleModelDownload(socket, message.substr(15)); // 15 is length of "DOWNLOAD_MODEL "
+    }
     else {
         processChatMessage(message, socket);
     }
@@ -286,6 +291,9 @@ void NetworkServer::handleSaveProject(std::shared_ptr<boost::asio::ssl::stream<b
 
     if (dbManager_.storeProject(projectId, name, username, jsonData)) {
         boost::asio::async_write(*socket, boost::asio::buffer("SAVE_OK\n"), [](auto, auto) {});
+
+        // Also broadcast the update to all collaborators
+        BroadcastToCollaborators(projectId, "PROJECT_UPDATE " + projectId + " " + jsonData + "\n");
     }
     else {
         boost::asio::async_write(*socket, boost::asio::buffer("SAVE_FAILED\n"), [](auto, auto) {});
@@ -361,18 +369,11 @@ void NetworkServer::handlePushProject(std::shared_ptr<boost::asio::ssl::stream<b
 
     std::string username = authenticatedUsernames_[socket]; // Safely guarded
 
-
     if (dbManager_.storeProject(projectId, name, username, jsonData)) {
         std::string updateMessage = "PROJECT_UPDATE " + projectId + " " + jsonData + "\n";
 
-        {
-            std::lock_guard<std::mutex> lock(clientMutex_);
-            for (const auto& [client, isAuth] : authenticatedClients_) {
-                if (isAuth && client != socket) {
-                    boost::asio::async_write(*client, boost::asio::buffer(updateMessage), [](auto, auto) {});
-                }
-            }
-        }
+        // Broadcast to all collaborators except the sender
+        BroadcastToCollaborators(projectId, updateMessage, socket);
 
         boost::asio::async_write(*socket, boost::asio::buffer("PUSH_OK\n"), [](auto, auto) {});
     }
@@ -460,6 +461,256 @@ void NetworkServer::handleProjectChat(
         }
         else {
             it = clients_.erase(it);
+        }
+    }
+}
+void NetworkServer::handleModelUpload(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket,
+    const std::string& content) {
+
+    // Verify authentication
+        {
+            std::lock_guard<std::mutex> lock(clientMutex_);
+            if (authenticatedClients_.find(socket) == authenticatedClients_.end() || !authenticatedClients_[socket]) {
+                std::string errorMsg = "You must be authenticated to upload models.\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+        }
+
+        // Parse the content: projectId modelPath base64Data
+        size_t firstSpace = content.find(' ');
+        if (firstSpace == std::string::npos) {
+            std::string errorMsg = "Invalid format for model upload.\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+            return;
+        }
+
+        size_t secondSpace = content.find(' ', firstSpace + 1);
+        if (secondSpace == std::string::npos) {
+            std::string errorMsg = "Invalid format for model upload.\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+            return;
+        }
+
+        std::string projectId = content.substr(0, firstSpace);
+        std::string modelPath = content.substr(firstSpace + 1, secondSpace - firstSpace - 1);
+        std::string base64Data = content.substr(secondSpace + 1);
+
+        try {
+            // Decode base64 data
+            std::vector<char> modelData = base64_decode(base64Data);
+
+            // Create server-side path
+            std::string serverModelDir = "ServerModels/" + projectId;
+
+            // Create all directories in the path
+            std::error_code ec;
+            if (!fs::create_directories(serverModelDir, ec) && ec) {
+                std::string errorMsg = "Failed to create directory: " + ec.message() + "\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+
+            std::string serverModelPath = serverModelDir + "/" + modelPath;
+
+            // Create parent directories for the model file if needed
+            size_t lastSlash = modelPath.find_last_of('/');
+            if (lastSlash != std::string::npos) {
+                std::string modelSubDir = serverModelDir + "/" + modelPath.substr(0, lastSlash);
+                if (!fs::create_directories(modelSubDir, ec) && ec) {
+                    std::string errorMsg = "Failed to create model subdirectory: " + ec.message() + "\n";
+                    boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                    return;
+                }
+            }
+
+            // Save the model file
+            std::ofstream modelFile(serverModelPath, std::ios::binary);
+            if (!modelFile) {
+                std::string errorMsg = "Failed to open file for writing: " + serverModelPath + "\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+
+            modelFile.write(modelData.data(), modelData.size());
+            if (!modelFile) {
+                std::string errorMsg = "Failed to write model data to file.\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+            modelFile.close();
+
+            // Store model path in database
+            if (!dbManager_.storeModelForProject(projectId, modelPath)) {
+                std::string errorMsg = "Failed to store model metadata in database.\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+
+            std::string response = "MODEL_UPLOAD_OK " + projectId + " " + modelPath + "\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(response), [](auto, auto) {});
+
+            // Notify other clients that a model has been updated
+            notifyModelUpdated(socket, projectId, modelPath);
+        }
+        catch (const std::exception& e) {
+            std::string errorMsg = "Exception during model upload: " + std::string(e.what()) + "\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+        }
+}
+
+void NetworkServer::handleModelDownload(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> socket,
+    const std::string& content) {
+
+    // Verify authentication
+        {
+            std::lock_guard<std::mutex> lock(clientMutex_);
+            if (authenticatedClients_.find(socket) == authenticatedClients_.end() || !authenticatedClients_[socket]) {
+                std::string errorMsg = "You must be authenticated to download models.\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+        }
+
+        // Parse the content: projectId modelPath
+        size_t space = content.find(' ');
+        if (space == std::string::npos) {
+            std::string errorMsg = "Invalid format for model download.\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+            return;
+        }
+
+        try {
+            std::string projectId = content.substr(0, space);
+            std::string modelPath = content.substr(space + 1);
+
+            // Create server-side path
+            std::string serverModelPath = "ServerModels/" + projectId + "/" + modelPath;
+
+            // Check if file exists
+            if (!fs::exists(serverModelPath)) {
+                std::string response = "MODEL_NOT_FOUND " + projectId + " " + modelPath + "\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(response), [](auto, auto) {});
+                return;
+            }
+
+            // Read the model file
+            std::ifstream modelFile(serverModelPath, std::ios::binary);
+            if (!modelFile) {
+                std::string errorMsg = "Failed to open model file: " + serverModelPath + "\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+
+            // Get file size
+            modelFile.seekg(0, std::ios::end);
+            size_t fileSize = modelFile.tellg();
+            modelFile.seekg(0, std::ios::beg);
+
+            // Read file content
+            std::vector<char> buffer(fileSize);
+            modelFile.read(buffer.data(), fileSize);
+            if (!modelFile) {
+                std::string errorMsg = "Failed to read model file data.\n";
+                boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+                return;
+            }
+            modelFile.close();
+
+            // Encode to base64
+            std::string base64Data = base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()), buffer.size());
+
+            // Send response
+            std::string response = "MODEL_DATA " + projectId + " " + modelPath + " " + base64Data + "\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(response), [](auto, auto) {});
+        }
+        catch (const std::exception& e) {
+            std::string errorMsg = "Exception during model download: " + std::string(e.what()) + "\n";
+            boost::asio::async_write(*socket, boost::asio::buffer(errorMsg), [](auto, auto) {});
+        }
+}
+
+void NetworkServer::notifyModelUpdated(
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> sender,
+    const std::string& projectId,
+    const std::string& modelPath) {
+
+    std::string notification = "MODEL_UPDATED " + projectId + " " + modelPath + "\n";
+
+    std::lock_guard<std::mutex> lock(clientMutex_);
+    for (auto& client : clients_) {
+        if (client != sender && authenticatedClients_[client]) {
+            boost::asio::async_write(*client, boost::asio::buffer(notification), [](auto, auto) {});
+        }
+    }
+}
+//1
+void NetworkServer::BroadcastToCollaborators(const std::string& projectId, const std::string& message) {
+    // Get all collaborators for this project
+    auto collaborators = dbManager_.getCollaboratorsForProject(projectId);
+
+    // Create a set of usernames who are collaborators
+    std::unordered_set<std::string> collaboratorUsernames;
+    for (const auto& [username, role] : collaborators) {
+        collaboratorUsernames.insert(username);
+    }
+
+    // Lock the clients list
+    std::lock_guard<std::mutex> lock(clientMutex_);
+
+    // Send to all authenticated clients who are collaborators
+    for (auto& client : clients_) {
+        if (authenticatedClients_[client]) {
+            std::string username = authenticatedUsernames_[client];
+            if (collaboratorUsernames.find(username) != collaboratorUsernames.end()) {
+                boost::asio::async_write(*client, boost::asio::buffer(message),
+                    [this, client](const boost::system::error_code& error, std::size_t) {
+                        if (error) {
+                            std::cerr << "Error broadcasting to client: " << error.message() << std::endl;
+                            std::lock_guard<std::mutex> lock(clientMutex_);
+                            authenticatedClients_.erase(client);
+                            clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
+                        }
+                    });
+            }
+        }
+    }
+}
+//2
+void NetworkServer::BroadcastToCollaborators(
+    const std::string& projectId,
+    const std::string& message,
+    std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> excludeClient) {
+
+    // Get all collaborators for this project
+    auto collaborators = dbManager_.getCollaboratorsForProject(projectId);
+
+    // Create a set of usernames who are collaborators
+    std::unordered_set<std::string> collaboratorUsernames;
+    for (const auto& [username, role] : collaborators) {
+        collaboratorUsernames.insert(username);
+    }
+
+    // Lock the clients list
+    std::lock_guard<std::mutex> lock(clientMutex_);
+
+    // Send to all authenticated clients who are collaborators except the excluded one
+    for (auto& client : clients_) {
+        if (client != excludeClient && authenticatedClients_[client]) {
+            std::string username = authenticatedUsernames_[client];
+            if (collaboratorUsernames.find(username) != collaboratorUsernames.end()) {
+                boost::asio::async_write(*client, boost::asio::buffer(message),
+                    [this, client](const boost::system::error_code& error, std::size_t) {
+                        if (error) {
+                            std::cerr << "Error broadcasting to client: " << error.message() << std::endl;
+                            std::lock_guard<std::mutex> lock(clientMutex_);
+                            authenticatedClients_.erase(client);
+                            clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
+                        }
+                    });
+            }
         }
     }
 }

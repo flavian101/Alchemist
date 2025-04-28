@@ -47,6 +47,7 @@ public:
     ServerProject* GetSelectedProject();
     void LoadSelectedProject();
     std::string GenerateUniqueId();
+    void BroadcastProjectUpdate(const std::string& projectId, const std::string& jsonData);
 
 private:
     std::vector<std::unique_ptr<ServerProject>> m_projects;

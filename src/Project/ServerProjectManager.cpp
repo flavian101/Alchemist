@@ -302,10 +302,8 @@ bool ServerProjectManager::CreateProjectInDatabase(const std::string& name)
     // Generate a unique project ID
     std::string projectId = GenerateUniqueId();
 
-
     ServerProject tempProject(m_window, name, projectId);
     std::string jsonData = tempProject.SerializeToJson();
-
 
     std::string currentUser = "admin";
 
@@ -317,9 +315,10 @@ bool ServerProjectManager::CreateProjectInDatabase(const std::string& name)
         m_projects.push_back(std::make_unique<ServerProject>(m_window, name, projectId, jsonData));
         std::cout << "Created new project in database: " << name << " (ID: " << projectId << ")" << std::endl;
 
-
         // Set initial collaborator (admin as owner)
         AddCollaborator(projectId, currentUser, "owner");
+
+        // No need to broadcast here since this is a new project
     }
 
     return success;
@@ -509,4 +508,19 @@ std::vector<ServerProjectManager::CollaboratorInfo> ServerProjectManager::GetCol
     }
 
     return collaborators;
+}
+void ServerProjectManager::BroadcastProjectUpdate(const std::string& projectId, const std::string& jsonData)
+{
+    if (!m_server) return;
+
+    // Get all collaborators for this project
+    auto collaborators = GetCollaborators(projectId);
+
+    // Create update message
+    std::string updateMessage = "PROJECT_UPDATE " + projectId + " " + jsonData + "\n";
+
+    // Have the server broadcast to all connected clients who are collaborators
+    m_server->BroadcastToCollaborators(projectId, updateMessage);
+
+    std::cout << "Broadcasted project update to collaborators for: " << projectId << std::endl;
 }

@@ -4,6 +4,8 @@
 #include "Scene/GameObject.h"
 #include "Scene/Scene.h"
 #include "Graphics/Graphics.h"
+#include "ServerProjectManager.h"
+#include "network/NetworkServer.h"
 
 // Constructor for creating a new project
 ServerProject::ServerProject(Window& win, const std::string& name, const std::string& rootDir)
@@ -85,6 +87,15 @@ void ServerProject::Load()
 
         // Deserialize project data
         manager->DeserializeSceneManager(j);
+
+        // Load model paths from project file
+        if (j.contains("models") && j["models"].is_array()) {
+            m_modelPaths.clear();
+            for (const auto& model : j["models"]) {
+                m_modelPaths.push_back(model);
+            }
+        }
+
         std::cout << "Project loaded from: " << projectFile << std::endl;
     }
     else {
@@ -102,7 +113,11 @@ void ServerProject::Save()
     std::ofstream file(projectFile);
     if (file.is_open()) {
         nlohmann::json j = manager->SerializeSceneManager(m_name, m_rootDirectory);
-        file << j.dump(4); 
+
+        // Add model paths
+        j["models"] = m_modelPaths;
+
+        file << j.dump(4);
         file.close();
 
         // Update modification time
@@ -112,6 +127,9 @@ void ServerProject::Save()
     else {
         std::cerr << "Failed to open project file for saving: " << projectFile << std::endl;
     }
+}
+std::vector<std::string> ServerProject::GetModelPaths() const {
+    return m_modelPaths;
 }
 
 // Serialize the project to JSON for database storage
@@ -126,6 +144,9 @@ std::string ServerProject::SerializeToJson() const
     // Convert the timestamp to a number
     auto timeT = std::chrono::system_clock::to_time_t(m_lastModified);
     projectJson["last_modified"] = timeT;
+
+    // Add model paths
+    projectJson["models"] = m_modelPaths;
 
     return projectJson.dump();
 }
@@ -157,10 +178,94 @@ void ServerProject::UpdateFromJson(const std::string& jsonData)
             m_lastModified = std::chrono::system_clock::now();
         }
 
+        // Update model paths if available
+        if (projectJson.contains("models") && projectJson["models"].is_array()) {
+            m_modelPaths.clear();
+            for (const auto& model : projectJson["models"]) {
+                m_modelPaths.push_back(model);
+            }
+        }
+
         std::cout << "Project updated from JSON data: " << m_name << std::endl;
     }
     catch (const std::exception& e) {
         std::cerr << "Error updating project from JSON: " << e.what() << std::endl;
         throw; // Rethrow to let the caller handle it
     }
+}
+
+bool ServerProject::LoadModelsFromClient(const std::string& clientRootDir) {
+    // This method copies model files from client directories to server directories
+    bool success = true;
+
+    try {
+        // Parse the project JSON to get model paths
+        std::string projectFile = m_rootDirectory + "/" + m_name + ".json";
+        if (!fs::exists(projectFile)) {
+            return false;
+        }
+
+        std::ifstream file(projectFile);
+        if (!file.is_open()) {
+            return false;
+        }
+
+        nlohmann::json projectJson;
+        file >> projectJson;
+        file.close();
+
+        // Check if models array exists
+        if (!projectJson.contains("models") || !projectJson["models"].is_array()) {
+            return true; // No models to load
+        }
+
+        // Copy each model from client path to server path
+        for (const auto& modelPath : projectJson["models"]) {
+            std::string relPath = modelPath;
+            std::string clientPath = clientRootDir + "/" + relPath;
+            std::string serverPath = m_rootDirectory + "/" + relPath;
+
+            // Create server directories
+            fs::path serverDir = fs::path(serverPath).parent_path();
+            fs::create_directories(serverDir);
+
+            // Check if client file exists
+            if (fs::exists(clientPath)) {
+                // Copy file
+                try {
+                    fs::copy_file(clientPath, serverPath, fs::copy_options::overwrite_existing);
+                    std::cout << "Copied model from " << clientPath << " to " << serverPath << std::endl;
+                }
+                catch (const std::exception& e) {
+                    std::cerr << "Failed to copy model: " << e.what() << std::endl;
+                    success = false;
+                }
+            }
+            else {
+                std::cerr << "Client model not found: " << clientPath << std::endl;
+                success = false;
+            }
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error loading models from client: " << e.what() << std::endl;
+        success = false;
+    }
+
+    return success;
+}
+
+// Method to convert client path to server path
+std::string ServerProject::ConvertClientToServerPath(const std::string& clientPath, const std::string& clientRootDir) {
+    // Client path format: "[clientRootDir]/[relativePath]"
+    // Server path format: "[m_rootDirectory]/[relativePath]"
+
+    // Extract the relative path part
+    if (clientPath.find(clientRootDir + "/") == 0) {
+        std::string relativePath = clientPath.substr(clientRootDir.length() + 1);
+        return m_rootDirectory + "/" + relativePath;
+    }
+
+    // If not a client path, return as is
+    return clientPath;
 }

@@ -42,17 +42,19 @@ public:
     // Collaboration functions
     std::string SerializeToJson() const;
     void UpdateFromJson(const std::string& jsonData);
-
     // Modification tracking
     std::chrono::system_clock::time_point GetLastModifiedTime() const { return m_lastModified; }
     void UpdateLastModifiedTime() { m_lastModified = std::chrono::system_clock::now(); }
 
+    bool LoadModelsFromClient(const std::string& clientRootDir);
+    std::string ConvertClientToServerPath(const std::string& clientPath, const std::string& clientRootDir);
+    std::vector<std::string> GetModelPaths() const;
+
 private:
     std::string m_name;
     std::string m_rootDirectory;
-    std::string m_projectId;      // Server identifier
-    ServerSceneManager* manager;
-
-    // Collaboration tracking
+    std::string m_projectId;
+    ServerSceneManager* manager; // Adjust according to your actual class name
     std::chrono::system_clock::time_point m_lastModified;
+    std::vector<std::string> m_modelPaths; // Store model paths
 };
